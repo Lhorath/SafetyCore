@@ -22,8 +22,22 @@
 
 // ── 1. Security & Access Control ─────────────────────────────────────────────
 
+// --- 1. Security & Access Control ---
+
+// Ensure the user is logged in.
 if (!isset($_SESSION['user'])) {
-    header('Location: /login');
+    echo "<script>window.location.href = '/login';</script>";
+    exit();
+}
+
+// Enforce Role-Based Access.
+// Only Admins, Managers, and Company Owners can access the panel.
+$userRole = $_SESSION['user']['role_name'] ?? '';
+$allowedRoles = ['Admin', 'Manager', 'Owner / CEO'];
+
+if (!in_array($userRole, $allowedRoles)) {
+    // Unauthorized access attempts are redirected to the homepage.
+    echo "<script>window.location.href = '/';</script>";
     exit();
 }
 
