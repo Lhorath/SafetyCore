@@ -1,0 +1,67 @@
+# =============================================================================
+# NorthPoint 360 — .htaccess
+# =============================================================================
+# Beta 09 Changes (Audit Fixes):
+#   F-20 — Added HTTP security headers (X-Frame-Options, X-Content-Type-Options,
+#           Referrer-Policy, Permissions-Policy, Content-Security-Policy).
+#           Previously none of these headers were sent, making the app
+#           vulnerable to clickjacking and MIME-sniffing attacks.
+#
+# @author  macweb.ca
+# @version 9.0.0 (NorthPoint Beta 09)
+# =============================================================================
+
+# ── Rewrite Engine (Front Controller routing) ─────────────────────────────────
+Options -Indexes
+RewriteEngine On
+
+# Route all requests to index.php unless the file/directory physically exists
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?page=$1 [QSA,L]
+
+# ── HTTP Security Headers (F-20) ─────────────────────────────────────────────
+<IfModule mod_headers.c>
+
+    # Prevent clickjacking — page cannot be embedded in an iframe from another origin
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # Prevent MIME-type sniffing — browsers must honour the Content-Type header
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Control referrer information sent to external sites
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Restrict access to browser features not needed by this app
+    Header always set Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=()"
+
+    # Content Security Policy
+    # - default-src 'self'                 : only load resources from this origin by default
+    # - script-src 'self' 'unsafe-inline'  : inline scripts needed by Tailwind CDN config;
+    #                                        tighten to a nonce-based policy when Tailwind
+    #                                        is moved off CDN (pre-built CSS)
+    # - style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+    #                                      : Tailwind inline styles + Google Fonts CSS
+    # - font-src 'self' https://fonts.gstatic.com
+    #                                      : Google Fonts font files
+    # - img-src 'self' data:               : local images + base64 data URIs
+    # - connect-src 'self'                 : AJAX calls to this origin only
+    # - frame-ancestors 'none'             : redundant with X-Frame-Options but belt-and-braces
+    Header always set Content-Security-Policy "\
+        default-src 'self'; \
+        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; \
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; \
+        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; \
+        img-src 'self' data:; \
+        connect-src 'self'; \
+        frame-ancestors 'none';"
+
+    # Remove the server signature header to avoid version fingerprinting
+    Header always unset X-Powered-By
+    Header unset X-Powered-By
+
+</IfModule>
+
+# ── PHP execution hardening ───────────────────────────────────────────────────
+# Disable server-side includes which are not used
+Options -Includes

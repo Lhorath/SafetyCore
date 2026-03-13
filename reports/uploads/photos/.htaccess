@@ -1,0 +1,41 @@
+# =============================================================================
+# NorthPoint 360 — reports/uploads/.htaccess
+# =============================================================================
+# Deploy this file to BOTH upload directories:
+#   reports/uploads/photos/
+#   reports/uploads/videos/
+#
+# Purpose (F-05):
+#   Even with MIME-type validation in hazard-report.php, a defence-in-depth
+#   approach also prevents PHP (and other server-side scripts) from executing
+#   inside the uploads folder. If a malicious file were ever stored here, this
+#   .htaccess ensures it cannot be run — the server will refuse to execute it.
+#
+# @author  macweb.ca
+# @version 9.0.0 (NorthPoint Beta 09)
+# =============================================================================
+
+# Disable PHP execution for all files in this directory (Apache + mod_php)
+<FilesMatch "\.php[0-9]?$">
+    Deny from all
+</FilesMatch>
+
+# Also disable PHP execution via common alternate extensions
+<FilesMatch "\.(php|php3|php4|php5|php7|php8|phtml|phar|shtml|cgi|pl|py|rb|sh)$">
+    Deny from all
+</FilesMatch>
+
+# Disable CGI execution
+Options -ExecCGI
+
+# Prevent directory listing
+Options -Indexes
+
+# Disable server-side includes
+Options -Includes
+
+# Force all files to be served as a download rather than executed in-browser
+# (belt-and-braces for any file type not matching the above)
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>

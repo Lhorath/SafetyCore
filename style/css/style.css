@@ -1,0 +1,85 @@
+/*
+ * Main Stylesheet - style/css/style.css
+ *
+ * As of "NorthPoint Beta 01", the application utilizes the Tailwind CSS framework 
+ * for all primary styling, layout, and responsive design.
+ *
+ * ARCHITECTURE NOTES:
+ * 1. Utility Classes: Most styling is applied directly in HTML/PHP files (e.g., class="bg-primary p-6").
+ * 2. Components: Reusable classes (like .btn, .card, .form-input) are defined in the 
+ * <style type="text/tailwindcss"> block within 'includes/header.php'.
+ * 3. Configuration: Brand colors (Primary Blue, Safety Red, etc.) and fonts are configured 
+ * in the Tailwind script setup located in 'includes/header.php'.
+ *
+ * PURPOSE OF THIS FILE:
+ * This file is reserved for non-Tailwind CSS overrides, complex keyframe animations, 
+ * or styles required by third-party JavaScript libraries (e.g., date pickers, chart legends) 
+ * that are not easily styled via utility classes.
+ *
+ * @package   NorthPoint360
+ * @author    macweb.ca
+ * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
+ * @version   4.0.0 (NorthPoint Beta 01)
+ */
+
+/* * ----------------------------------------------------------------------------
+ * Custom CSS Overrides
+ * ----------------------------------------------------------------------------
+ * Add specific standard CSS rules below this line only if they cannot be 
+ * achieved using the Tailwind utility framework.
+ */
+
+/* Example: Custom scrollbar styling for the report list container */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9; /* Tailwind gray-100 */
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* Tailwind gray-300 */
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* Tailwind gray-400 */
+}
+
+/* Example: Custom animation for specific dashboard interactions */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 0.3s ease-out forwards;
+}
+
+/* Print Styles (Ensure reports print cleanly) */
+@media print {
+    .no-print, 
+    nav, 
+    footer, 
+    .btn {
+        display: none !important;
+    }
+
+    body {
+        background-color: white;
+        color: black;
+    }
+
+    .card {
+        border: 1px solid #ccc;
+        box-shadow: none;
+    }
+}
