@@ -252,17 +252,3 @@ $csrfToken = generate_csrf_token();
         loadInventory();
     });
 </script>
-```
-
----
-
-### 4. Integration Updates
-
-**1. Update `index.php`**
-Add the new route to the `allowedPages` array:
-```php
-    // Training & Certifications
-    'training-matrix',
-    
-    // Equipment Management [NEW]
-    'equipment-management',
