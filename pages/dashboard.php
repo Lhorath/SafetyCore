@@ -38,8 +38,8 @@ $isManagement = in_array($userRole, $managementRoles);
 $myHazardCount = 0;
 $myOpenFlhaCount = 0;
 
-// Fetch total hazard reports submitted by this user
-$hazardSql = "SELECT COUNT(*) as total FROM reports WHERE user_id = ?";
+// Fetch total hazard reports submitted by this user (Corrected column name to reporter_user_id)
+$hazardSql = "SELECT COUNT(*) as total FROM reports WHERE reporter_user_id = ?";
 if ($stmt = $conn->prepare($hazardSql)) {
     $stmt->bind_param("i", $userId);
     $stmt->execute();
@@ -65,7 +65,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
 
 <div class="max-w-7xl mx-auto py-8">
     
-    <!-- Welcome Header & Stats -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-10 gap-6 border-b-2 border-primary pb-6">
         <div>
             <h1 class="text-3xl lg:text-4xl font-extrabold text-primary mb-2 tracking-tight">
@@ -80,7 +79,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
             </p>
         </div>
         
-        <!-- Personal Quick Stats -->
         <div class="flex gap-4 w-full lg:w-auto">
             <div class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm flex items-center flex-1 lg:flex-none">
                 <div class="w-12 h-12 rounded-full bg-blue-50 text-secondary flex items-center justify-center text-xl mr-4">
@@ -104,9 +102,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
         </div>
     </div>
 
-    <!-- ==========================================
-         FIELD WORKER TOOLS (Visible to Everyone)
-         ========================================== -->
     <div class="mb-12">
         <h2 class="text-lg font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center">
             <i class="fas fa-toolbox mr-3 text-gray-300"></i> Field & Operational Tools
@@ -114,7 +109,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
-            <!-- TILE: Field Level Hazard Assessment -->
             <div class="card bg-white border border-gray-100 hover:shadow-xl hover:border-blue-200 transition-all duration-300 flex flex-col items-center text-center p-8 group relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -z-10 transition-transform group-hover:scale-150"></div>
                 <div class="h-16 w-16 bg-blue-100 text-secondary rounded-2xl flex items-center justify-center text-3xl mb-5 shadow-sm group-hover:-translate-y-1 transition-transform duration-300">
@@ -128,7 +122,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
                 </div>
             </div>
 
-            <!-- TILE: Report Hazard -->
             <div class="card bg-white border border-gray-100 hover:shadow-xl hover:border-orange-200 transition-all duration-300 flex flex-col items-center text-center p-8 group relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-16 h-16 bg-orange-50 rounded-bl-full -z-10 transition-transform group-hover:scale-150"></div>
                 <div class="h-16 w-16 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center text-3xl mb-5 shadow-sm group-hover:-translate-y-1 transition-transform duration-300">
@@ -142,7 +135,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
                 </div>
             </div>
             
-            <!-- TILE: Incident Report -->
             <div class="card bg-white border border-gray-100 hover:shadow-xl hover:border-red-200 transition-all duration-300 flex flex-col items-center text-center p-8 group relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-16 h-16 bg-red-50 rounded-bl-full -z-10 transition-transform group-hover:scale-150"></div>
                 <div class="h-16 w-16 bg-red-100 text-accent-red rounded-2xl flex items-center justify-center text-3xl mb-5 shadow-sm group-hover:-translate-y-1 transition-transform duration-300">
@@ -153,7 +145,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
                 <a href="/incident-report" class="btn bg-accent-red text-white hover:bg-red-700 w-full group-hover:-translate-y-0.5 transform transition-all shadow-sm font-bold"><i class="fas fa-notes-medical mr-2"></i> File Report</a>
             </div>
 
-            <!-- TILE: My Profile -->
             <div class="card bg-white border border-gray-100 hover:shadow-xl hover:border-gray-300 transition-all duration-300 flex flex-col items-center text-center p-8 group relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-16 h-16 bg-gray-50 rounded-bl-full -z-10 transition-transform group-hover:scale-150"></div>
                 <div class="h-16 w-16 bg-gray-100 text-gray-600 rounded-2xl flex items-center justify-center text-3xl mb-5 shadow-sm group-hover:-translate-y-1 transition-transform duration-300">
@@ -166,12 +157,8 @@ if ($stmt = $conn->prepare($flhaSql)) {
         </div>
     </div>
 
-    <!-- ==========================================
-         MANAGEMENT TOOLS (RBAC Restricted)
-         ========================================== -->
     <?php if ($isManagement): ?>
     <div class="bg-slate-50 border border-slate-200 p-8 rounded-2xl shadow-inner relative overflow-hidden">
-        <!-- Decorative Management Background Icon -->
         <i class="fas fa-shield-alt absolute -right-10 -bottom-10 text-9xl text-slate-200 opacity-50 transform -rotate-12 pointer-events-none"></i>
         
         <h2 class="text-lg font-bold text-slate-500 uppercase tracking-widest mb-6 flex items-center relative z-10">
@@ -180,7 +167,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
             
-            <!-- TILE: Branch Hazard Review -->
             <div class="card bg-white border border-slate-200 hover:border-secondary hover:shadow-xl transition duration-300 flex flex-col items-center text-center p-6 group">
                 <div class="h-14 w-14 bg-blue-50 text-secondary rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
                     <i class="fas fa-search-location"></i>
@@ -190,7 +176,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
                 <a href="/store-reports" class="btn btn-primary w-full shadow-sm text-sm py-2">Open Review</a>
             </div>
 
-            <!-- TILE: Recordable Incidents -->
             <div class="card bg-white border border-slate-200 hover:border-accent-red hover:shadow-xl transition duration-300 flex flex-col items-center text-center p-6 group">
                 <div class="h-14 w-14 bg-red-50 text-accent-red rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
                     <i class="fas fa-file-medical-alt"></i>
@@ -200,7 +185,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
                 <a href="/store-incidents" class="btn bg-red-100 text-red-800 hover:bg-red-200 w-full shadow-sm font-bold text-sm py-2 border border-red-200">View Log</a>
             </div>
 
-            <!-- TILE: Safety Meetings -->
             <div class="card bg-white border border-slate-200 hover:border-teal-400 hover:shadow-xl transition duration-300 flex flex-col items-center text-center p-6 group">
                 <div class="h-14 w-14 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
                     <i class="fas fa-users-class"></i>
@@ -210,7 +194,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
                 <a href="/meetings-list" class="btn bg-teal-100 text-teal-800 hover:bg-teal-200 w-full shadow-sm font-bold text-sm py-2 border border-teal-200">Host / View</a>
             </div>
 
-            <!-- TILE: Training Matrix [NEW] -->
             <div class="card bg-white border border-slate-200 hover:border-purple-400 hover:shadow-xl transition duration-300 flex flex-col items-center text-center p-6 group">
                 <div class="h-14 w-14 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
                     <i class="fas fa-certificate"></i>
@@ -222,7 +205,6 @@ if ($stmt = $conn->prepare($flhaSql)) {
             
         </div>
         
-        <!-- Deep Admin Links (Only for highly privileged roles) -->
         <?php if (in_array($userRole, ['Admin', 'Owner / CEO'])): ?>
             <div class="mt-8 pt-6 border-t border-slate-200 flex justify-end relative z-10">
                 <a href="/admin" class="text-sm font-bold text-slate-500 hover:text-primary transition-colors flex items-center bg-white px-4 py-2 rounded-lg border border-slate-300 shadow-sm">
