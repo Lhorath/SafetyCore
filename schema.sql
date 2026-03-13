@@ -48,9 +48,11 @@ CREATE TABLE IF NOT EXISTS `checklist_responses` (
   KEY `item_id` (`item_id`),
   CONSTRAINT `checklist_responses_ibfk_1` FOREIGN KEY (`submission_id`) REFERENCES `checklist_submissions` (`id`) ON DELETE CASCADE,
   CONSTRAINT `checklist_responses_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `checklist_items` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table u971098166_safetysite.checklist_responses: ~0 rows (approximately)
+REPLACE INTO `checklist_responses` (`id`, `submission_id`, `item_id`, `response_value`, `notes`) VALUES
+	(1, 1, 1, 'Pass', '');
 
 -- Dumping structure for table u971098166_safetysite.checklist_submissions
 CREATE TABLE IF NOT EXISTS `checklist_submissions` (
@@ -71,9 +73,11 @@ CREATE TABLE IF NOT EXISTS `checklist_submissions` (
   CONSTRAINT `checklist_submissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `checklist_submissions_ibfk_2` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE,
   CONSTRAINT `checklist_submissions_ibfk_3` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table u971098166_safetysite.checklist_submissions: ~0 rows (approximately)
+REPLACE INTO `checklist_submissions` (`id`, `company_id`, `user_id`, `equipment_id`, `template_id`, `shift_date`, `meter_reading`, `overall_status`, `general_comments`, `created_at`) VALUES
+	(1, 1, 1, 2, 1, '2026-03-13', NULL, 'Safe', '', '2026-03-13 04:20:03');
 
 -- Dumping structure for table u971098166_safetysite.checklist_templates
 CREATE TABLE IF NOT EXISTS `checklist_templates` (
@@ -154,7 +158,7 @@ CREATE TABLE IF NOT EXISTS `equipment` (
 
 -- Dumping data for table u971098166_safetysite.equipment: ~1 rows (approximately)
 REPLACE INTO `equipment` (`id`, `company_id`, `name`, `category`, `checklist_template_id`, `serial_number`, `status`, `next_inspection_date`, `notes`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'Linde 30', 'Heavy Machinery', NULL, '123231', 'Active', '2026-03-12', NULL, '2026-03-13 02:27:08', '2026-03-13 02:27:08'),
+	(1, 1, 'Linde 30', 'Heavy Machinery', 1, '123231', 'Active', '2026-03-12', NULL, '2026-03-13 02:27:08', '2026-03-13 04:19:56'),
 	(2, 1, 'a', 'Heavy Machinery', 1, 'w', 'Active', NULL, NULL, '2026-03-13 03:09:24', '2026-03-13 03:09:24');
 
 -- Dumping structure for table u971098166_safetysite.equipment_inspections

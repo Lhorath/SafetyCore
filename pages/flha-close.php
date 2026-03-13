@@ -6,10 +6,15 @@
  * It ensures field workers confirm that the work area is safe, permits are closed, 
  * and requires explicit documentation if hazards remain or an incident occurred.
  *
+ * Updates in Beta 05:
+ * - Initial implementation of the FLHA Close Out workflow.
+ * - Added strict client-side validation for conditional text areas.
+ * - Enhanced UI with clear warnings about the permanent nature of the closure.
+ *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   5.0.0 (NorthPoint Beta 05)
  */
 
 // --- 1. Security & Authentication ---

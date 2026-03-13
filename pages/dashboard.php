@@ -8,7 +8,7 @@
  *
  * @package   NorthPoint360
  * @author    macweb.ca
- * @version   10.0.0
+ * @version   1.0.0
  */
 
 // --- 1. Security & Authentication ---

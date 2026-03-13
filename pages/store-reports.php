@@ -6,10 +6,15 @@
  * (Admins, Managers, Safety Leaders) to view, filter, inspect, and close 
  * safety hazard reports for a specific store location.
  *
+ * Updates in Beta 04:
+ * - Expanded main container to max-w-7xl for improved dual-pane viewing.
+ * - Solidified the Close Report modal structure and UX flow.
+ * - Confirmed RBAC permissions list for management actions.
+ *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   2.5.0 (NorthPoint Beta 04)
  */
 
 // --- 1. Security & Access Control ---

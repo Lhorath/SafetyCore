@@ -14,7 +14,7 @@
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   2.0.0 (NorthPoint Beta 01)
  */
 ?>
 <div class="flex flex-col items-center justify-center min-h-[60vh] py-12 text-center">

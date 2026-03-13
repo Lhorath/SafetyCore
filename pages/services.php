@@ -1,158 +1,201 @@
 <?php
 /**
- * Public Solutions/Services Page - pages/services.php
+ * Solutions / Services Page - pages/services.php
  *
- * Details the specific modules available in NorthPoint 360 and
- * outlines the development roadmap.
+ * Details the core modules and capabilities of the NorthPoint 360 platform.
  *
  * @package   NorthPoint360
- * @author    macweb.ca
- * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
  */
 ?>
 
-<!-- Header -->
-<div class="bg-primary text-white py-16 border-b-4 border-secondary">
-    <div class="max-w-7xl mx-auto px-6 text-center">
-        <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Platform Solutions</h1>
-        <p class="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">Explore the modules that make NorthPoint 360 the ultimate Environment, Health, and Safety (EHS) platform.</p>
+<!-- ==========================================
+     PAGE HEADER
+     ========================================== -->
+<div class="relative bg-slate-900 py-24 border-b border-slate-800 overflow-hidden">
+    <!-- Subtle Background Elements -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent z-0"></div>
+    <div class="absolute right-0 bottom-0 opacity-10 transform translate-x-1/4 translate-y-1/4">
+        <i class="fas fa-shield-alt text-[250px] text-white"></i>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <span class="inline-block py-1 px-3 rounded-full bg-blue-600/20 text-blue-400 text-sm font-bold tracking-widest uppercase mb-4 border border-blue-500/30">
+            Platform Capabilities
+        </span>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">
+            Comprehensive <span class="text-blue-500">EHS Solutions</span>
+        </h1>
+        <p class="text-lg md:text-xl text-gray-300 font-light max-w-3xl mx-auto leading-relaxed">
+            Replace fragmented paper trails with a unified, cloud-based safety ecosystem. NorthPoint 360 connects your field operators with management in real-time.
+        </p>
     </div>
 </div>
 
-<div class="max-w-7xl mx-auto px-6 py-16 space-y-24">
-
-    <!-- Module 1: Hazard Lifecycle -->
-    <div class="flex flex-col md:flex-row items-center gap-12">
-        <div class="md:w-1/2">
-            <div class="text-orange-500 text-5xl mb-6 shadow-sm inline-block bg-orange-50 p-4 rounded-2xl"><i class="fas fa-shield-alt"></i></div>
-            <h2 class="text-3xl font-bold text-primary mb-4 tracking-tight">Proactive Hazard Lifecycle</h2>
-            <p class="text-gray-600 mb-6 text-lg leading-relaxed">
-                Safety starts with observation. Our core hazard reporting module allows any employee to quickly document unsafe conditions, near misses, or active risks using a simplified, mobile-friendly interface.
-            </p>
-            <ul class="space-y-3 text-base font-medium text-gray-700">
-                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> Attach Photo & Video evidence directly from mobile devices.</li>
-                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> Assign precise risk levels and custom store locations.</li>
-                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> Track equipment lockout and tagout statuses securely.</li>
-                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> Managers log resolution details for a complete, closed-loop audit trail.</li>
-            </ul>
-        </div>
-        <div class="md:w-1/2 bg-gray-50 rounded-2xl p-8 border border-gray-200 shadow-inner flex items-center justify-center min-h-[300px]">
-            <!-- Abstract UI Representation -->
-            <div class="w-full max-w-sm bg-white rounded-xl shadow-md border border-gray-100 p-4 space-y-3">
-                <div class="flex justify-between items-center mb-2">
-                    <div class="h-4 bg-gray-200 rounded w-1/3"></div>
-                    <div class="h-4 bg-orange-200 rounded w-1/4"></div>
-                </div>
-                <div class="h-20 bg-gray-100 rounded w-full"></div>
-                <div class="flex gap-2">
-                    <div class="h-8 bg-secondary rounded w-1/2 opacity-80"></div>
-                    <div class="h-8 bg-gray-200 rounded w-1/2"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <hr class="border-gray-200">
-
-    <!-- Module 2: FLHA -->
-    <div class="flex flex-col md:flex-row-reverse items-center gap-12">
-        <div class="md:w-1/2">
-            <div class="text-green-600 text-5xl mb-6 shadow-sm inline-block bg-green-50 p-4 rounded-2xl"><i class="fas fa-clipboard-list"></i></div>
-            <h2 class="text-3xl font-bold text-primary mb-4 tracking-tight">Field Level Hazard Assessments (FLHA)</h2>
-            <p class="text-gray-600 mb-6 text-lg leading-relaxed">
-                Designed specifically for construction and remote job sites, the FLHA module ensures crews systematically assess their environment before work begins. It replaces fragile paper forms with a robust digital wizard.
-            </p>
-            <ul class="space-y-3 text-base font-medium text-gray-700">
-                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> Multi-step wizard: Identify hazards, define tasks, and confirm PPE.</li>
-                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> Dynamically add daily task steps and specific mitigation plans.</li>
-                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> Record "Working Alone" procedures and assign co-workers dynamically.</li>
-                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-3"></i> Mandatory End-of-Shift close-outs for permit and incident tracking.</li>
-            </ul>
-        </div>
-        <div class="md:w-1/2 bg-gray-50 rounded-2xl p-8 border border-gray-200 shadow-inner flex items-center justify-center min-h-[300px]">
-             <!-- Abstract UI Representation -->
-            <div class="w-full max-w-sm space-y-3">
-                <div class="h-4 bg-green-200 rounded w-1/4 mb-4"></div>
-                <div class="h-12 bg-white border border-gray-200 shadow-sm rounded-lg w-full flex items-center px-4"><div class="w-4 h-4 rounded-full border-2 border-green-500 mr-3"></div><div class="h-3 bg-gray-200 rounded w-1/2"></div></div>
-                <div class="h-12 bg-white border border-gray-200 shadow-sm rounded-lg w-full flex items-center px-4"><div class="w-4 h-4 rounded-full border-2 border-gray-300 mr-3"></div><div class="h-3 bg-gray-200 rounded w-2/3"></div></div>
-                <div class="h-12 bg-white border border-gray-200 shadow-sm rounded-lg w-3/4 flex items-center px-4"><div class="w-4 h-4 rounded-full border-2 border-gray-300 mr-3"></div><div class="h-3 bg-gray-200 rounded w-1/3"></div></div>
-            </div>
-        </div>
-    </div>
-
-    <hr class="border-gray-200">
-
-    <!-- Module 3: Incidents & Meetings (Grid) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-        <!-- Incident Management -->
-        <div class="card shadow-md hover:shadow-lg transition duration-300 border-t-4 border-t-accent-red p-8">
-            <div class="text-accent-red text-4xl mb-6 bg-red-50 w-16 h-16 rounded-xl flex items-center justify-center"><i class="fas fa-ambulance"></i></div>
-            <h3 class="text-2xl font-bold text-primary mb-3">Incident Management</h3>
-            <p class="text-gray-600 text-base mb-6 leading-relaxed">
-                When accidents happen, rapid documentation is legally required. Our incident module handles employee injuries, customer incidents, and property damage seamlessly.
-            </p>
-            <p class="text-sm font-bold text-red-800 bg-red-50 p-4 rounded-lg border border-red-100 shadow-sm">
-                Management can securely classify reports as OSHA/WCB Recordable or Lost-Time incidents to ensure regulatory reporting accuracy.
-            </p>
-        </div>
+<!-- ==========================================
+     CORE MODULES SECTION
+     ========================================== -->
+<div class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <!-- Safety Meetings -->
-        <div class="card shadow-md hover:shadow-lg transition duration-300 border-t-4 border-t-secondary p-8">
-            <div class="text-secondary text-4xl mb-6 bg-blue-50 w-16 h-16 rounded-xl flex items-center justify-center"><i class="fas fa-users-class"></i></div>
-            <h3 class="text-2xl font-bold text-primary mb-3">Safety Meetings & Talks</h3>
-            <p class="text-gray-600 text-base mb-6 leading-relaxed">
-                A proactive safety culture requires constant communication. Host digital Toolbox Talks or Tailgate Meetings from any branch or job site.
-            </p>
-            <p class="text-sm font-bold text-blue-800 bg-blue-50 p-4 rounded-lg border border-blue-100 shadow-sm">
-                Select topics, document discussion notes, and dynamically check off employee attendance to maintain rigorous compliance training records.
-            </p>
+        <div class="mb-16 text-center">
+            <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Core Modules</h2>
+            <div class="w-24 h-1 bg-blue-500 mx-auto mt-4 rounded-full"></div>
         </div>
-    </div>
 
-    <hr class="border-gray-200">
-
-    <!-- Roadmap Section -->
-    <div class="bg-primary rounded-3xl p-8 md:p-14 text-white shadow-2xl relative overflow-hidden mb-8">
-        <!-- Decorative Elements -->
-        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-slate-800 rounded-full transform translate-x-1/2 -translate-y-1/2 opacity-50 pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary rounded-full transform -translate-x-1/2 translate-y-1/2 opacity-20 pointer-events-none"></div>
-        
-        <h2 class="text-3xl md:text-4xl font-extrabold mb-10 relative z-10 tracking-tight">Development Roadmap</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-16 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             
-            <!-- Currently Implemented (Beta 05) -->
-            <div class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700 backdrop-blur-sm">
-                <h3 class="text-xl font-bold text-secondary mb-6 flex items-center border-b border-slate-600 pb-3">
-                    <i class="fas fa-check-circle mr-3 text-2xl"></i> Current Capabilities (Beta 05)
-                </h3>
-                <ul class="space-y-4 text-sm md:text-base text-gray-300">
-                    <li class="flex items-start"><i class="fas fa-check text-secondary mt-1 mr-3"></i> <span><strong>Multi-Tenant Architecture:</strong> Branch segregation and global Role-Based Access Control (RBAC).</span></li>
-                    <li class="flex items-start"><i class="fas fa-check text-secondary mt-1 mr-3"></i> <span><strong>Hazard Lifecycle:</strong> Full CRUD operations, from open reporting to management resolution.</span></li>
-                    <li class="flex items-start"><i class="fas fa-check text-secondary mt-1 mr-3"></i> <span><strong>Digital FLHAs:</strong> Comprehensive remote site assessments and shift close-outs.</span></li>
-                    <li class="flex items-start"><i class="fas fa-check text-secondary mt-1 mr-3"></i> <span><strong>Incident Classification:</strong> Dedicated lost-time and recordable compliance tracking.</span></li>
-                    <li class="flex items-start"><i class="fas fa-check text-secondary mt-1 mr-3"></i> <span><strong>Meeting Attendance:</strong> Digital toolbox talk logging and attendee verification.</span></li>
-                    <li class="flex items-start"><i class="fas fa-check text-secondary mt-1 mr-3"></i> <span><strong>Executive Metrics:</strong> Dynamic visual dashboards and cross-branch KPI aggregation.</span></li>
-                    <li class="flex items-start"><i class="fas fa-check text-secondary mt-1 mr-3"></i> <span><strong>Dynamic SEO:</strong> Database-driven meta tags and OpenGraph rendering engine.</span></li>
+            <!-- Digital FLHA -->
+            <div class="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:border-blue-200 transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-blue-100 rounded-bl-full -z-10 transition-transform group-hover:scale-150 opacity-50"></div>
+                <div class="w-14 h-14 bg-white shadow-sm border border-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:-translate-y-1 transition-transform">
+                    <i class="fas fa-clipboard-list text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">Field Level Hazard Assessments</h3>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Digitize your daily FLHAs. Guide workers through task identification, hazard recognition, and mandatory PPE selection before work begins. 
+                </p>
+                <ul class="text-sm text-gray-500 space-y-2 font-medium">
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> Custom job steps & hazard tagging</li>
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> Supervisor review workflows</li>
+                    <li><i class="fas fa-check text-blue-500 mr-2"></i> End-of-shift closeouts</li>
                 </ul>
             </div>
 
-            <!-- Coming Soon (V1.0) -->
-            <div class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700 backdrop-blur-sm">
-                <h3 class="text-xl font-bold text-orange-400 mb-6 flex items-center border-b border-slate-600 pb-3">
-                    <i class="fas fa-rocket mr-3 text-2xl"></i> Coming Soon (V1.0 Release)
-                </h3>
-                <ul class="space-y-4 text-sm md:text-base text-gray-300">
-                    <li class="flex items-start"><i class="fas fa-circle text-orange-400/50 mt-1.5 mr-3 text-[10px]"></i> <span><strong>Automated Notifications:</strong> Email and SMS alerts for critical incidents and overdue FLHA close-outs.</span></li>
-                    <li class="flex items-start"><i class="fas fa-circle text-orange-400/50 mt-1.5 mr-3 text-[10px]"></i> <span><strong>Export & Reporting:</strong> Generate formal, branded PDF reports for external audits and WCB claims.</span></li>
-                    <li class="flex items-start"><i class="fas fa-circle text-orange-400/50 mt-1.5 mr-3 text-[10px]"></i> <span><strong>Equipment Management:</strong> Digital maintenance logs and mandatory pre-use equipment inspections.</span></li>
-                    <li class="flex items-start"><i class="fas fa-circle text-orange-400/50 mt-1.5 mr-3 text-[10px]"></i> <span><strong>Training Matrix:</strong> Track individual employee certifications, expiry dates, and required retraining intervals.</span></li>
-                    <li class="flex items-start"><i class="fas fa-circle text-orange-400/50 mt-1.5 mr-3 text-[10px]"></i> <span><strong>Progressive Web App (PWA):</strong> True offline mode capabilities with background syncing for extremely remote job sites.</span></li>
+            <!-- Dynamic Equipment Hub -->
+            <div class="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-100 rounded-bl-full -z-10 transition-transform group-hover:scale-150 opacity-50"></div>
+                <div class="w-14 h-14 bg-white shadow-sm border border-emerald-100 rounded-xl flex items-center justify-center mb-6 group-hover:-translate-y-1 transition-transform">
+                    <i class="fas fa-truck-pickup text-2xl text-emerald-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">Equipment Management</h3>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Maintain a real-time asset inventory and enforce compliance with dynamic, custom-built pre-shift inspection checklists.
+                </p>
+                <ul class="text-sm text-gray-500 space-y-2 font-medium">
+                    <li><i class="fas fa-check text-emerald-500 mr-2"></i> Custom Checklist Builder</li>
+                    <li><i class="fas fa-check text-emerald-500 mr-2"></i> Daily Pre-Shift Logs</li>
+                    <li><i class="fas fa-check text-emerald-500 mr-2"></i> Auto-Out-Of-Service on failure</li>
                 </ul>
             </div>
-            
+
+            <!-- Training Matrix -->
+            <div class="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:border-purple-200 transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-purple-100 rounded-bl-full -z-10 transition-transform group-hover:scale-150 opacity-50"></div>
+                <div class="w-14 h-14 bg-white shadow-sm border border-purple-100 rounded-xl flex items-center justify-center mb-6 group-hover:-translate-y-1 transition-transform">
+                    <i class="fas fa-certificate text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">Training Matrix</h3>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Never let a certification lapse again. Track employee training records, manage expiry dates, and ensure your workforce is qualified.
+                </p>
+                <ul class="text-sm text-gray-500 space-y-2 font-medium">
+                    <li><i class="fas fa-check text-purple-500 mr-2"></i> Expiry date tracking</li>
+                    <li><i class="fas fa-check text-purple-500 mr-2"></i> Custom training categories</li>
+                    <li><i class="fas fa-check text-purple-500 mr-2"></i> Visual compliance grid</li>
+                </ul>
+            </div>
+
+            <!-- Hazard & Near Miss Reporting -->
+            <div class="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:border-orange-200 transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-orange-100 rounded-bl-full -z-10 transition-transform group-hover:scale-150 opacity-50"></div>
+                <div class="w-14 h-14 bg-white shadow-sm border border-orange-100 rounded-xl flex items-center justify-center mb-6 group-hover:-translate-y-1 transition-transform">
+                    <i class="fas fa-exclamation-triangle text-2xl text-orange-500"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">Hazard Reporting</h3>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Empower your team to report unsafe conditions and near-misses instantly from the field. Turn observations into actionable insights.
+                </p>
+                <ul class="text-sm text-gray-500 space-y-2 font-medium">
+                    <li><i class="fas fa-check text-orange-500 mr-2"></i> Photo & video evidence uploads</li>
+                    <li><i class="fas fa-check text-orange-500 mr-2"></i> Risk matrix categorization</li>
+                    <li><i class="fas fa-check text-orange-500 mr-2"></i> Manager review workflows</li>
+                </ul>
+            </div>
+
+            <!-- Incident Management -->
+            <div class="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:border-red-200 transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-red-100 rounded-bl-full -z-10 transition-transform group-hover:scale-150 opacity-50"></div>
+                <div class="w-14 h-14 bg-white shadow-sm border border-red-100 rounded-xl flex items-center justify-center mb-6 group-hover:-translate-y-1 transition-transform">
+                    <i class="fas fa-ambulance text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">Incident Management</h3>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    When accidents happen, collect vital data immediately. Log injuries, property damage, and first-aid interventions securely.
+                </p>
+                <ul class="text-sm text-gray-500 space-y-2 font-medium">
+                    <li><i class="fas fa-check text-red-500 mr-2"></i> OSHA/WCB compliance tracking</li>
+                    <li><i class="fas fa-check text-red-500 mr-2"></i> Body-part injury mapping</li>
+                    <li><i class="fas fa-check text-red-500 mr-2"></i> Immediate notification triggers</li>
+                </ul>
+            </div>
+
+            <!-- Safety Meetings -->
+            <div class="bg-slate-50 rounded-2xl p-8 border border-slate-100 hover:shadow-xl hover:border-teal-200 transition-all duration-300 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-teal-100 rounded-bl-full -z-10 transition-transform group-hover:scale-150 opacity-50"></div>
+                <div class="w-14 h-14 bg-white shadow-sm border border-teal-100 rounded-xl flex items-center justify-center mb-6 group-hover:-translate-y-1 transition-transform">
+                    <i class="fas fa-users-class text-2xl text-teal-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">Toolbox Talks & Meetings</h3>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    Host safety meetings digitally. Document discussed topics and generate verified attendance logs to prove compliance during audits.
+                </p>
+                <ul class="text-sm text-gray-500 space-y-2 font-medium">
+                    <li><i class="fas fa-check text-teal-500 mr-2"></i> Digital sign-in sheets</li>
+                    <li><i class="fas fa-check text-teal-500 mr-2"></i> Centralized meeting archive</li>
+                    <li><i class="fas fa-check text-teal-500 mr-2"></i> Attach presentation materials</li>
+                </ul>
+            </div>
+
         </div>
     </div>
+</div>
 
+<!-- ==========================================
+     WHY CHOOSE US / STATS SECTION
+     ========================================== -->
+<div class="bg-slate-800 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-slate-700">
+            
+            <div class="py-4 md:py-0">
+                <div class="text-blue-400 mb-3"><i class="fas fa-leaf text-4xl"></i></div>
+                <h4 class="text-white font-bold text-xl mb-2">100% Paperless</h4>
+                <p class="text-slate-400 text-sm max-w-xs mx-auto">Eliminate lost forms, smudged ink, and filing cabinets. Everything is stored securely in the cloud.</p>
+            </div>
+            
+            <div class="py-4 md:py-0">
+                <div class="text-blue-400 mb-3"><i class="fas fa-bolt text-4xl"></i></div>
+                <h4 class="text-white font-bold text-xl mb-2">Real-Time Sync</h4>
+                <p class="text-slate-400 text-sm max-w-xs mx-auto">As soon as a worker submits an FLHA or reports a hazard, management sees it on their dashboard.</p>
+            </div>
+            
+            <div class="py-4 md:py-0">
+                <div class="text-blue-400 mb-3"><i class="fas fa-shield-check text-4xl"></i></div>
+                <h4 class="text-white font-bold text-xl mb-2">Audit-Ready</h4>
+                <p class="text-slate-400 text-sm max-w-xs mx-auto">Export beautifully formatted PDFs of incident reports and training matrices for external safety auditors instantly.</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     CALL TO ACTION
+     ========================================== -->
+<div class="bg-gray-50 py-20 text-center">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <i class="fas fa-hard-hat text-5xl text-blue-300 mb-6 block"></i>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4 tracking-tight">Protect your most valuable assets.</h2>
+        <p class="text-lg text-gray-500 mb-8">
+            Safety isn't just a compliance requirement—it's a culture. Give your team the tools they need to build that culture today.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <a href="/login" class="inline-flex justify-center items-center bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg text-lg transition-all shadow-md w-full sm:w-auto">
+                Go to Dashboard
+            </a>
+            <a href="/contact" class="inline-flex justify-center items-center bg-white border border-gray-300 hover:bg-gray-50 text-slate-700 font-bold py-3 px-8 rounded-lg text-lg transition-all shadow-sm w-full sm:w-auto">
+                Contact Sales
+            </a>
+        </div>
+    </div>
 </div>

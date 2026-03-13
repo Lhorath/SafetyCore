@@ -2,13 +2,23 @@
 /**
  * Admin View: Manage Users - pages/admin-views/manage-users.php
  *
+ * Beta 09 Changes (Audit Fixes):
+ *   F-22 — Platform admins now see a Company filter dropdown at the top of
+ *           the table. When no company is selected the query returns all users
+ *           (intentional for platform admins — they need a global view), but
+ *           the UI makes this visible and deliberate rather than invisible.
+ *           Selecting a company scopes the results to that tenant only.
+ *           This addresses the concern that the "all tenants" view was
+ *           invisibly dangerous — it's now an explicit, labelled choice.
+ *   F-02 — Read-only view; no state change here, CSRF not required.
+ *
  * This file is only reachable after admin.php's is_platform_admin() gate,
  * so we can safely reference platform-admin context here.
  *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   9.0.0 (NorthPoint Beta 09)
  */
 
 $loggedInUserRole = $_SESSION['user']['role_name'];

@@ -6,10 +6,18 @@
  * - Multi-Location: lists and adds permanent stores/branches.
  * - Job-Based: lists and adds temporary job sites.
  *
+ * The view is fully driven by $companyCtx (from get_company_context()).
+ * No hardcoded "store" references remain — all labels are dynamic.
+ *
+ * Beta 06 Changes:
+ * - Reads company_type from session to branch UI and form logic.
+ * - Adds job site creation form for job-based companies.
+ * - Audit F-08 fix: all location queries scoped to company_id.
+ *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   6.0.0 (NorthPoint Beta 06)
  */
 
 require_once __DIR__ . '/../../includes/company_context.php';

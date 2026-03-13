@@ -1,12 +1,21 @@
 <?php
 /**
  * Meetings & Talks API - api/meetings.php
- * Handles backend processing for safety meetings and talks, including meeting creation and attendee management.
+ *
+ * Beta 09 Changes (Audit Fixes):
+ *   F-09 — save_meeting now validates that the supplied store_id belongs to
+ *           the calling user's company before inserting. Previously a user
+ *           could POST any store_id and assign the meeting to another tenant's
+ *           location.
+ *           get_store_employees also scoped to company_id via JOIN to prevent
+ *           a user fetching another tenant's staff list by guessing store IDs.
+ *   F-02 — csrf_verify_or_die() added to save_meeting (state-changing POST).
+ *   F-17 — 'JHSC Leader' added to $allowedRoles.
  *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 09)
+ * @version   9.0.0 (NorthPoint Beta 09)
  */
 
 session_start();

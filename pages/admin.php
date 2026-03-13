@@ -1,12 +1,23 @@
 <?php
 /**
  * Admin Control Panel - pages/admin.php
- * This page serves as the central hub for platform administrators to manage users, stores, and company settings.
+ *
+ * Beta 09 Changes (Audit Fixes):
+ *   F-06 — Replaced the broad role-name gate ('Admin','Manager','Owner / CEO')
+ *           with is_platform_admin() from permissions.php.
+ *           Previously a tenant Manager could navigate directly to /admin and
+ *           access the platform admin panel. Now only platform administrators
+ *           (role = Admin AND is_system company) are permitted.
+ *
+ *           NOTE: Company-level user management has been moved to
+ *           pages/company-admin.php (Beta 08). This page (admin.php) is now
+ *           strictly the platform-admin panel and should only be reachable by
+ *           the system company's Admin account.
  *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   9.0.0 (NorthPoint Beta 09)
  */
 
 // ── 1. Security & Access Control ─────────────────────────────────────────────

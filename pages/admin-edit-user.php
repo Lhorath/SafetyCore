@@ -1,8 +1,17 @@
 <?php
 /**
  * Admin Edit User Page - pages/admin-edit-user.php
- * This page allows platform and company administrators to edit user profiles, including their personal information, role, and location assignment (store or job site).
- * 
+ *
+ * Beta 09 Changes (Audit Fixes):
+ *   F-10 — Added company_id scope to both the GET fetch and the POST update.
+ *           Previously the page accepted any ?id= and would expose or modify
+ *           users belonging to other tenants.
+ *           - GET fetch: WHERE u.id = ? AND u.id IN (users belonging to this company)
+ *           - POST update: WHERE id = ? AND id IN (same company check)
+ *           - Roles dropdown: now uses get_allowed_roles_for_company() which
+ *             excludes platform-level roles from the picker.
+ *   F-02 — CSRF token verified on POST submission.
+ *
  * Company membership is verified by checking user_stores OR user_job_sites
  * depending on the company_type, matching the same dual-path logic used in
  * company-admin.php from Beta 08.
@@ -10,7 +19,7 @@
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   9.0.0 (NorthPoint Beta 09)
  */
 
 require_once 'includes/permissions.php';

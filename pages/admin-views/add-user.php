@@ -6,10 +6,16 @@
  * It is included by the main Admin Controller (pages/admin.php) and relies on variables
  * ($stores, $roles, $successMessage, $errorMessage) defined in the parent scope.
  *
+ * Features:
+ * - Tailwind CSS styling consistent with NorthPoint 360 branding.
+ * - Password field for initial credential setup (added in Revision 11).
+ * - Dropdowns for Store and Role assignment.
+ * - Responsive Card layout.
+ *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   2.1.0 (NorthPoint Beta 01)
  */
 ?>
 

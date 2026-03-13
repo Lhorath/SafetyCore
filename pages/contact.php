@@ -3,19 +3,25 @@
  * Contact Page - pages/contact.php
  *
  * This file displays the public contact form for NorthPoint 360.
- * It handles form submission, input validation, and sends inquiries directly
- * to the administration via email using the PHP mail() function.
+ * It handles form submission, input validation, custom math CAPTCHA, and sends 
+ * inquiries directly to the administration via email using the PHP mail() function.
  *
  * Features:
- * - Tailwind CSS styling consistent with the brand.
+ * - Tailwind CSS styling consistent with the brand's modern aesthetic.
  * - Auto-population of Name/Email if the user is logged in.
  * - Secure email transmission with proper headers.
+ * - Custom Math CAPTCHA to prevent automated spam without third-party dependencies.
  *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   3.0.0 (NorthPoint Beta 10)
  */
+
+// Ensure session is started for CAPTCHA tracking
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $successMessage = '';
 $errorMessage = '';
@@ -27,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email   = trim($_POST['email'] ?? '');
     $subject = trim($_POST['subject'] ?? '');
     $message = trim($_POST['message'] ?? '');
+    $captcha_answer = trim($_POST['captcha_answer'] ?? '');
     
     // Determine context: Is the sender a logged-in user or a guest?
     $loggedInInfo = isset($_SESSION['user']) 
@@ -34,10 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         : "Guest User";
 
     // --- Validation ---
-    if (empty($name) || empty($email) || empty($subject) || empty($message)) {
-        $errorMessage = "Please fill out all fields.";
+    if (empty($name) || empty($email) || empty($subject) || empty($message) || empty($captcha_answer)) {
+        $errorMessage = "Please fill out all fields, including the security question.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errorMessage = "Please enter a valid email address.";
+    } elseif (!isset($_SESSION['captcha_result']) || (int)$captcha_answer !== $_SESSION['captcha_result']) {
+        $errorMessage = "Incorrect security answer. Please try again.";
     } else {
         // --- Email Configuration ---
         $to = 'support@macweb.ca'; 
@@ -66,140 +75,189 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $successMessage = "Thank you! Your message has been sent. We will get back to you shortly.";
             // Clear form fields on success so the user can't double-submit easily
             $name = $email = $subject = $message = '';
+            // Clear CAPTCHA result
+            unset($_SESSION['captcha_result']);
         } else {
             $errorMessage = "An error occurred while sending your message. Please try again later.";
         }
     }
 }
+
+// --- Generate New CAPTCHA on page load ---
+$num1 = rand(1, 9);
+$num2 = rand(1, 9);
+$_SESSION['captcha_result'] = $num1 + $num2;
+$captcha_question = "What is $num1 + $num2?";
 ?>
 
-<div class="max-w-4xl mx-auto">
+<!-- ==========================================
+     PAGE HEADER
+     ========================================== -->
+<div class="relative bg-slate-900 py-16 border-b border-slate-800 overflow-hidden">
+    <!-- Subtle Background Elements -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent z-0"></div>
     
-    <!-- Header Section -->
-    <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-primary mb-4">Contact Us</h2>
-        <p class="text-gray-500 max-w-lg mx-auto">
-            Interested in NorthPoint 360 for your business? Have a question or need support? Send us a message below.
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
+            Contact <span class="text-blue-500">Support</span>
+        </h1>
+        <p class="text-lg text-gray-300 font-light max-w-2xl mx-auto">
+            Interested in NorthPoint 360 for your business? Have a question or need technical assistance? Send us a message below.
         </p>
     </div>
+</div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- ==========================================
+     MAIN CONTENT
+     ========================================== -->
+<div class="py-16 bg-gray-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <!-- Sidebar: Contact Information -->
-        <div class="col-span-1 space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
             
-            <!-- Contact Details Card -->
-            <div class="card">
-                <h3 class="text-lg font-bold text-primary mb-4 border-b border-gray-200 pb-2">Get in Touch</h3>
+            <!-- Sidebar: Contact Information -->
+            <div class="lg:col-span-1 space-y-6">
                 
-                <div class="space-y-4">
-                    <!-- Address -->
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 w-8">
-                            <i class="fas fa-map-marker-alt text-secondary mt-1 text-lg"></i>
+                <!-- Contact Details Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6 border-b border-gray-100 pb-3">Get in Touch</h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Address -->
+                        <div class="flex items-start group">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-map-marker-alt text-blue-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-800 mb-1">Head Office</p>
+                                <p class="text-sm text-gray-500 leading-relaxed">Moncton, NB<br>Canada</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm font-bold text-gray-700">Head Office</p>
-                            <p class="text-sm text-gray-500">Moncton, NB<br>Canada</p>
-                        </div>
-                    </div>
 
-                    <!-- Email -->
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 w-8">
-                            <i class="fas fa-envelope text-secondary mt-1 text-lg"></i>
+                        <!-- Email -->
+                        <div class="flex items-start group">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-envelope text-blue-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-800 mb-1">Email</p>
+                                <a href="mailto:support@macweb.ca" class="text-sm text-gray-500 hover:text-blue-600 transition-colors">support@macweb.ca</a>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm font-bold text-gray-700">Email</p>
-                            <p class="text-sm text-gray-500">support@macweb.ca</p>
-                        </div>
-                    </div>
 
-                    <!-- Phone -->
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 w-8">
-                            <i class="fas fa-phone text-secondary mt-1 text-lg"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-gray-700">Sales & Support</p>
-                            <p class="text-sm text-gray-500">(902) 754 1070</p>
+                        <!-- Phone -->
+                        <div class="flex items-start group">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-phone text-blue-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-800 mb-1">Sales & Support</p>
+                                <p class="text-sm text-gray-500">(902) 754 1070</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Demo Callout Box -->
-            <div class="bg-blue-50 border border-blue-100 rounded-xl p-6 shadow-sm">
-                <h3 class="text-sm font-bold text-primary uppercase tracking-wide mb-2">Looking for a demo?</h3>
-                <p class="text-xs text-gray-600 leading-relaxed">
-                    Our team is happy to walk you through the platform. Select <strong>"Sales / Demo Request"</strong> in the subject line.
-                </p>
-            </div>
-        </div>
-
-        <!-- Main Content: Contact Form -->
-        <div class="col-span-1 md:col-span-2">
-            <div class="card">
                 
-                <!-- Success Alert -->
-                <?php if (!empty($successMessage)): ?>
-                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm">
-                        <p class="font-bold">Success</p>
-                        <p><?php echo htmlspecialchars($successMessage); ?></p>
-                    </div>
-                <?php endif; ?>
-                
-                <!-- Error Alert -->
-                <?php if (!empty($errorMessage)): ?>
-                    <div class="bg-red-100 border-l-4 border-accent-red text-red-700 p-4 mb-6 rounded shadow-sm">
-                        <p class="font-bold">Error</p>
-                        <p><?php echo htmlspecialchars($errorMessage); ?></p>
-                    </div>
-                <?php endif; ?>
-
-                <form action="/contact" method="POST" class="space-y-6">
+                <!-- Demo Callout Box -->
+                <div class="bg-gradient-to-br from-slate-800 to-primary rounded-2xl p-8 shadow-md text-white relative overflow-hidden">
+                    <!-- Decorative Icon -->
+                    <i class="fas fa-desktop absolute -right-4 -bottom-4 text-6xl text-white opacity-5 transform -rotate-12"></i>
                     
-                    <!-- Row: Name & Email -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="name" class="form-label">Your Name</label>
-                            <!-- Auto-fill logic: Checks POST data first (validation error), then Session data -->
-                            <input type="text" id="name" name="name" required class="form-input" 
-                                   value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : (isset($_SESSION['user']) ? htmlspecialchars($_SESSION['user']['first_name']) : ''); ?>">
-                        </div>
-                        <div>
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" id="email" name="email" required class="form-input" 
-                                   value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
-                        </div>
-                    </div>
-                    
-                    <!-- Row: Subject -->
-                    <div>
-                        <label for="subject" class="form-label">Subject</label>
-                        <select id="subject" name="subject" class="form-input">
-                            <option value="General Inquiry">General Inquiry</option>
-                            <option value="Sales / Demo Request">Sales / Demo Request</option>
-                            <option value="Technical Support">Technical Support</option>
-                            <option value="Partnership">Partnership Opportunity</option>
-                        </select>
-                    </div>
-
-                    <!-- Row: Message -->
-                    <div>
-                        <label for="message" class="form-label">Message</label>
-                        <textarea id="message" name="message" required class="form-input min-h-[150px]" placeholder="How can we help you?"><?php echo isset($_POST['message']) ? htmlspecialchars($_POST['message']) : ''; ?></textarea>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="text-right">
-                        <button type="submit" class="btn btn-primary shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
-                            Send Message <i class="fas fa-paper-plane ml-2"></i>
-                        </button>
-                    </div>
-                </form>
+                    <h3 class="text-lg font-bold mb-3 flex items-center relative z-10">
+                        <i class="fas fa-rocket text-blue-400 mr-2"></i> Request a Demo
+                    </h3>
+                    <p class="text-sm text-gray-300 leading-relaxed relative z-10">
+                        Our team is happy to walk you through the platform's capabilities. Select <strong>"Sales / Demo Request"</strong> in the subject line.
+                    </p>
+                </div>
             </div>
-        </div>
 
+            <!-- Main Content: Contact Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-10">
+                    
+                    <h2 class="text-2xl font-bold text-slate-800 mb-8 border-b border-gray-100 pb-4">Send a Message</h2>
+
+                    <!-- Success Alert -->
+                    <?php if (!empty($successMessage)): ?>
+                        <div class="bg-green-50 border border-green-200 text-green-800 p-4 mb-8 rounded-xl flex items-start">
+                            <i class="fas fa-check-circle mt-0.5 mr-3 text-green-500 text-lg flex-shrink-0"></i>
+                            <div>
+                                <p class="font-bold text-sm">Success</p>
+                                <p class="text-sm mt-1"><?php echo htmlspecialchars($successMessage); ?></p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <!-- Error Alert -->
+                    <?php if (!empty($errorMessage)): ?>
+                        <div class="bg-red-50 border border-red-200 text-red-800 p-4 mb-8 rounded-xl flex items-start">
+                            <i class="fas fa-exclamation-triangle mt-0.5 mr-3 text-accent-red text-lg flex-shrink-0"></i>
+                            <div>
+                                <p class="font-bold text-sm">Error</p>
+                                <p class="text-sm mt-1"><?php echo htmlspecialchars($errorMessage); ?></p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <form action="/contact" method="POST" class="space-y-6">
+                        
+                        <!-- Row: Name & Email -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="form-label text-slate-700">Your Name <span class="text-accent-red">*</span></label>
+                                <!-- Auto-fill logic: Safely handles missing session keys -->
+                                <input type="text" id="name" name="name" required class="form-input shadow-sm bg-gray-50 focus:bg-white" 
+                                       value="<?php echo htmlspecialchars($_POST['name'] ?? (isset($_SESSION['user']['first_name']) ? trim($_SESSION['user']['first_name'] . ' ' . ($_SESSION['user']['last_name'] ?? '')) : '')); ?>">
+                            </div>
+                            <div>
+                                <label for="email" class="form-label text-slate-700">Email Address <span class="text-accent-red">*</span></label>
+                                <input type="email" id="email" name="email" required class="form-input shadow-sm bg-gray-50 focus:bg-white" 
+                                       value="<?php echo htmlspecialchars($_POST['email'] ?? ($_SESSION['user']['email'] ?? '')); ?>">
+                            </div>
+                        </div>
+                        
+                        <!-- Row: Subject -->
+                        <div>
+                            <label for="subject" class="form-label text-slate-700">Subject <span class="text-accent-red">*</span></label>
+                            <select id="subject" name="subject" required class="form-input shadow-sm cursor-pointer bg-gray-50 focus:bg-white">
+                                <option value="General Inquiry" <?php echo (isset($_POST['subject']) && $_POST['subject'] === 'General Inquiry') ? 'selected' : ''; ?>>General Inquiry</option>
+                                <option value="Sales / Demo Request" <?php echo (isset($_POST['subject']) && $_POST['subject'] === 'Sales / Demo Request') ? 'selected' : ''; ?>>Sales / Demo Request</option>
+                                <option value="Technical Support" <?php echo (isset($_POST['subject']) && $_POST['subject'] === 'Technical Support') ? 'selected' : ''; ?>>Technical Support</option>
+                                <option value="Partnership" <?php echo (isset($_POST['subject']) && $_POST['subject'] === 'Partnership') ? 'selected' : ''; ?>>Partnership Opportunity</option>
+                            </select>
+                        </div>
+
+                        <!-- Row: Message -->
+                        <div>
+                            <label for="message" class="form-label text-slate-700">Message <span class="text-accent-red">*</span></label>
+                            <textarea id="message" name="message" required class="form-input shadow-sm min-h-[160px] bg-gray-50 focus:bg-white" placeholder="How can we help you?"><?php echo isset($_POST['message']) ? htmlspecialchars($_POST['message']) : ''; ?></textarea>
+                        </div>
+
+                        <!-- Custom Math CAPTCHA -->
+                        <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <label for="captcha_answer" class="form-label text-slate-700 mb-1 flex items-center">
+                                    <i class="fas fa-shield-alt text-blue-500 mr-2"></i> Security Check <span class="text-accent-red ml-1">*</span>
+                                </label>
+                                <p class="text-sm font-bold text-primary"><?php echo $captcha_question; ?></p>
+                                <p class="text-xs text-gray-500 mt-1">Please solve the math problem to prove you are human.</p>
+                            </div>
+                            <div class="w-full sm:w-32">
+                                <input type="number" id="captcha_answer" name="captcha_answer" required class="form-input shadow-sm text-center font-bold text-lg" placeholder="=">
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-right pt-4">
+                            <button type="submit" class="btn bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg px-10 shadow-lg transform hover:-translate-y-1 transition-all w-full sm:w-auto">
+                                Send Message <i class="fas fa-paper-plane ml-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>

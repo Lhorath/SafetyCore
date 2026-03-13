@@ -5,11 +5,15 @@
  * This view provides a robust, 4-step interactive wizard for field workers to 
  * complete their mandatory Field Level Hazard Assessments before starting a shift.
  * It gathers situational hazards, task details, dynamic job steps, and PPE confirmations.
+ * * Updates in Beta 05:
+ * - Initial creation of the FLHA Wizard.
+ * - Integrated dynamic API fetching for co-workers.
+ * - Added client-side validation and secure JSON payload assembly.
  *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   5.0.0 (NorthPoint Beta 05)
  */
 
 // --- 1. Security & Authentication ---

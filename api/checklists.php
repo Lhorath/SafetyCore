@@ -1,19 +1,7 @@
 <?php
 /**
  * Dynamic Checklist API - api/checklists.php
- * This API handles all AJAX requests related to the dynamic checklist feature, including:
- *   - Creating and managing checklist templates
- *   - Adding and editing checklist items
- *   - Fetching checklists for equipment
- *
- * @package   NorthPoint360
- * @author    macweb.ca
- * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
  */
-?>
-<?php
-
 session_start();
 header('Content-Type: application/json');
 

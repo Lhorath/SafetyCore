@@ -6,10 +6,15 @@
  * clean, read-only format. It aggregates data from multiple tables to show 
  * roles and assigned store locations.
  *
+ * Features:
+ * - Secure session validation.
+ * - Multi-Store Support: Uses GROUP_CONCAT to list all assigned branches from the `user_stores` table.
+ * - Tailwind CSS styling consistent with the NorthPoint 360 brand.
+ *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   2.1.0 (NorthPoint Beta 01)
  */
 
 // --- 1. Security & Access Control ---

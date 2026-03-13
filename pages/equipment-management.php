@@ -2,15 +2,8 @@
 /**
  * Equipment Management Dashboard - pages/equipment-management.php
  *
- * 
- *
  * @package   NorthPoint360
- * @author    macweb.ca
- * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
  */
-?>
-<?php
 
 if (!isset($_SESSION['user'])) { header('Location: /login'); exit(); }
 require_once 'includes/csrf.php';
@@ -33,9 +26,9 @@ $csrfToken = generate_csrf_token();
             <p class="text-base text-gray-500 mt-2 font-medium">Log daily pre-shift inspections, track maintenance, and manage inventory.</p>
         </div>
         <div class="flex flex-wrap gap-3 w-full md:w-auto">
-            <button onclick="openInspectionModal('Pre-Shift')" class="btn bg-green-500 text-white hover:bg-green-600 flex-1 md:flex-none !px-4 !py-2 text-sm shadow-sm flex items-center justify-center font-bold">
+            <a href="/preshift-checklist" class="btn bg-green-500 text-white hover:bg-green-600 flex-1 md:flex-none !px-4 !py-2 text-sm shadow-sm flex items-center justify-center font-bold">
                 <i class="fas fa-clipboard-check mr-2"></i> Daily Pre-Shift
-            </button>
+            </a>
             <button onclick="openInspectionModal('Maintenance')" class="btn bg-orange-500 text-white hover:bg-orange-600 flex-1 md:flex-none !px-4 !py-2 text-sm shadow-sm flex items-center justify-center font-bold">
                 <i class="fas fa-wrench mr-2"></i> Log Repair
             </button>
@@ -82,30 +75,19 @@ $csrfToken = generate_csrf_token();
 
 <!-- ================= MODALS ================= -->
 
-<!-- 1. Universal Log Inspection Modal (Dynamic for Pre-Shift vs Maintenance) -->
+<!-- 1. Maintenance / Repair Log Modal -->
 <div id="logInspectionModal" class="modal hidden">
-    <div class="modal-content border-t-4 border-green-500" id="modalTopBorder">
+    <div class="modal-content border-t-4 border-orange-500" id="modalTopBorder">
         <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-3">
             <h3 class="text-xl font-bold text-primary flex items-center" id="inspectionModalTitle">
-                <i class="fas fa-clipboard-check text-green-500 mr-2"></i> Pre-Use Inspection
+                <i class="fas fa-wrench text-orange-500 mr-2"></i> Maintenance & Repair Log
             </h3>
             <button type="button" onclick="toggleModal('logInspectionModal')" class="text-gray-400 hover:text-accent-red transition-colors focus:outline-none"><i class="fas fa-times text-xl"></i></button>
         </div>
         
         <form id="logInspectionForm" class="space-y-5">
             <input type="hidden" id="insp_csrf" value="<?php echo htmlspecialchars($csrfToken); ?>">
-            <input type="hidden" id="inspType" value="Pre-Shift">
-            
-            <!-- Dynamic Checklist Reminders -->
-            <div id="preShiftChecklist" class="bg-blue-50 p-4 rounded-lg text-sm text-blue-800 border border-blue-100 shadow-sm">
-                <p class="font-bold mb-2"><i class="fas fa-list-ul mr-1"></i> Standard Pre-Shift Checklist:</p>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li>Check fluid levels (oil, coolant, hydraulics) for leaks.</li>
-                    <li>Inspect tires, tracks, or undercarriage.</li>
-                    <li>Test brakes, steering, and emergency stop controls.</li>
-                    <li>Verify safety devices (lights, horns, seatbelts, alarms).</li>
-                </ul>
-            </div>
+            <input type="hidden" id="inspType" value="Maintenance">
 
             <div>
                 <label class="form-label">Select Equipment <span class="text-accent-red">*</span></label>
@@ -113,23 +95,23 @@ $csrfToken = generate_csrf_token();
             </div>
             
             <div>
-                <label class="form-label">Result / Status Update <span class="text-accent-red">*</span></label>
+                <label class="form-label">Maintenance Outcome <span class="text-accent-red">*</span></label>
                 <select id="inspResult" required class="form-input shadow-sm cursor-pointer">
                     <option value="" disabled selected>-- Select Result --</option>
-                    <option value="Pass">Pass (Safe / Restored to Active)</option>
-                    <option value="Needs Repair">Needs Repair (Minor issues, flag for maintenance)</option>
-                    <option value="Fail">Fail (Do NOT use - Pull Out of Service)</option>
+                    <option value="Pass">Repaired & Cleared (Restores to Active)</option>
+                    <option value="Needs Repair">Inspected but Needs Parts</option>
+                    <option value="Fail">Failed (Pulled Out of Service)</option>
                 </select>
             </div>
             
             <div>
-                <label class="form-label">Notes / Discovered Issues <span class="text-gray-400 font-normal normal-case">(Required if Failed)</span></label>
-                <textarea id="inspComments" rows="3" class="form-input shadow-sm" placeholder="Describe any defects, work performed, or damages..."></textarea>
+                <label class="form-label">Mechanic Notes / Work Done</label>
+                <textarea id="inspComments" rows="3" class="form-input shadow-sm" placeholder="Describe work performed..."></textarea>
             </div>
             
             <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
                 <button type="button" onclick="toggleModal('logInspectionModal')" class="btn btn-secondary !px-5 !py-2.5">Cancel</button>
-                <button type="submit" id="btnSaveInsp" class="btn bg-green-500 text-white hover:bg-green-600 !px-6 !py-2.5 flex items-center shadow-md font-bold transition-colors">
+                <button type="submit" id="btnSaveInsp" class="btn bg-orange-500 text-white hover:bg-orange-600 !px-6 !py-2.5 flex items-center shadow-md font-bold transition-colors">
                     <i class="fas fa-save mr-2"></i> Submit Log
                 </button>
             </div>
@@ -138,7 +120,7 @@ $csrfToken = generate_csrf_token();
 </div>
 
 <?php if($isManager): ?>
-<!-- 2. Add Equipment Modal (Managers Only) -->
+<!-- 2. Add Equipment Modal -->
 <div id="addEquipmentModal" class="modal hidden">
     <div class="modal-content">
         <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-3">
@@ -239,29 +221,11 @@ $csrfToken = generate_csrf_token();
             document.getElementById(id).classList.toggle('hidden');
         };
 
-        // Open Modal dynamically configuring it for Pre-Shift OR Maintenance
         window.openInspectionModal = function(type) {
             document.getElementById('inspType').value = type;
-            const titleObj = document.getElementById('inspectionModalTitle');
-            const chkList = document.getElementById('preShiftChecklist');
-            const submitBtn = document.getElementById('btnSaveInsp');
-            const topBorder = document.getElementById('modalTopBorder');
-
-            if(type === 'Pre-Shift') {
-                titleObj.innerHTML = '<i class="fas fa-clipboard-check text-green-500 mr-2"></i> Standard Pre-Use Inspection';
-                chkList.classList.remove('hidden');
-                submitBtn.className = "btn bg-green-500 text-white hover:bg-green-600 !px-6 !py-2.5 flex items-center shadow-md font-bold transition-colors";
-                topBorder.className = "modal-content border-t-4 border-green-500";
-            } else {
-                titleObj.innerHTML = '<i class="fas fa-wrench text-orange-500 mr-2"></i> Maintenance & Repair Log';
-                chkList.classList.add('hidden');
-                submitBtn.className = "btn bg-orange-500 text-white hover:bg-orange-600 !px-6 !py-2.5 flex items-center shadow-md font-bold transition-colors";
-                topBorder.className = "modal-content border-t-4 border-orange-500";
-            }
             toggleModal('logInspectionModal');
         };
 
-        // Open Assign Template Modal
         window.openAssignModal = function(equipId, equipName, currentTemplateId) {
             document.getElementById('assignEquipId').value = equipId;
             document.getElementById('assignEquipName').innerText = equipName;
@@ -279,13 +243,13 @@ $csrfToken = generate_csrf_token();
         }
 
         function getResultBadge(result) {
-            if (result === 'Pass') return '<span class="text-green-600 font-bold text-xs"><i class="fas fa-check-circle"></i> Pass</span>';
+            if (result === 'Pass' || result === 'Safe') return '<span class="text-green-600 font-bold text-xs"><i class="fas fa-check-circle"></i> Safe</span>';
             if (result === 'Needs Repair') return '<span class="text-orange-500 font-bold text-xs"><i class="fas fa-exclamation-circle"></i> Needs Repair</span>';
-            if (result === 'Fail') return '<span class="text-red-600 font-bold text-xs"><i class="fas fa-times-circle"></i> Fail</span>';
+            if (result === 'Fail' || result === 'Unsafe') return '<span class="text-red-600 font-bold text-xs"><i class="fas fa-times-circle"></i> Out of Service</span>';
             return result;
         }
 
-        // Fetch Checklist Templates for Dropdowns
+        // Hardened Fetch Logic
         function loadTemplates() {
             if (!isManager) return;
             fetch('/api/equipment.php?action=get_templates')
@@ -295,17 +259,15 @@ $csrfToken = generate_csrf_token();
                         availableTemplates = res.data;
                         const dropdowns = document.querySelectorAll('.template-dropdown');
                         dropdowns.forEach(dd => {
-                            // Keep the default empty option, clear others
                             dd.innerHTML = '<option value="">-- No Checklist Assigned --</option>';
-                            availableTemplates.forEach(t => {
-                                dd.add(new Option(t.name, t.id));
-                            });
+                            availableTemplates.forEach(t => dd.add(new Option(t.name, t.id)));
                         });
+                    } else {
+                        console.error("API Template Error:", res.message);
                     }
-                });
+                }).catch(err => console.error("Template Network Error:", err));
         }
 
-        // Fetch & Build Today's Logs
         function loadDailyLogs() {
             fetch('/api/equipment.php?action=get_daily_logs')
                 .then(res => res.json())
@@ -316,7 +278,7 @@ $csrfToken = generate_csrf_token();
                         res.data.forEach(log => {
                             const timeStr = new Date(log.inspection_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                             html += `
-                                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2 relative overflow-hidden group hover:border-blue-300 transition-colors">
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col gap-2 relative overflow-hidden hover:border-blue-300 transition-colors">
                                     <div class="flex justify-between items-start">
                                         <div class="flex flex-col">
                                             <span class="font-extrabold text-primary">${log.equipment_name}</span>
@@ -331,15 +293,17 @@ $csrfToken = generate_csrf_token();
                                 </div>`;
                         });
                         container.innerHTML = html;
+                    } else if (!res.success) {
+                        container.innerHTML = `<div class="text-center text-red-500 py-4 font-bold"><i class="fas fa-exclamation-triangle"></i> Error: ${res.message}</div>`;
                     } else {
                         container.innerHTML = `<div class="text-center text-gray-400 py-8"><i class="fas fa-clipboard-check text-4xl mb-3 text-slate-200 block"></i><p class="text-sm font-medium">No pre-shift logs completed today yet.</p></div>`;
                     }
-                });
+                }).catch(err => console.error("Logs Network Error:", err));
         }
 
-        // Fetch & Build Inventory Table
         function loadInventory() {
-            document.getElementById('inventoryContainer').innerHTML = `<div class="p-12 text-center text-gray-400"><i class="fas fa-circle-notch fa-spin text-4xl mb-3 text-secondary"></i><p class="font-bold">Syncing Inventory...</p></div>`;
+            const container = document.getElementById('inventoryContainer');
+            container.innerHTML = `<div class="p-12 text-center text-gray-400"><i class="fas fa-circle-notch fa-spin text-4xl mb-3 text-secondary"></i><p class="font-bold">Syncing Inventory...</p></div>`;
 
             fetch('/api/equipment.php?action=get_inventory')
                 .then(res => res.json())
@@ -350,7 +314,7 @@ $csrfToken = generate_csrf_token();
                         equipSel.innerHTML = '<option value="" disabled selected>-- Select Equipment --</option>';
 
                         if (data.length === 0) {
-                            document.getElementById('inventoryContainer').innerHTML = `<div class="p-16 text-center text-gray-400"><i class="fas fa-truck-loading text-5xl mb-4 text-gray-300 block"></i><span class="font-bold text-lg text-gray-500">No equipment found.</span></div>`;
+                            container.innerHTML = `<div class="p-16 text-center text-gray-400"><i class="fas fa-truck-loading text-5xl mb-4 text-gray-300 block"></i><span class="font-bold text-lg text-gray-500">No equipment found.</span></div>`;
                             return;
                         }
 
@@ -363,12 +327,13 @@ $csrfToken = generate_csrf_token();
                             const lastInsp = e.last_inspection ? new Date(e.last_inspection).toLocaleDateString() : '<span class="text-gray-400 italic">Never</span>';
                             const rowClass = e.status === 'Out of Service' ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-blue-50';
                             
-                            // Badge and Link for Templates
                             const tplBadge = e.template_name 
                                 ? `<span class="bg-indigo-50 text-indigo-700 px-2 py-1 rounded text-xs font-bold border border-indigo-200"><i class="fas fa-clipboard-list mr-1"></i> ${e.template_name}</span>`
                                 : `<span class="bg-gray-100 text-gray-500 px-2 py-1 rounded text-xs font-bold border border-gray-200"><i class="fas fa-exclamation-circle mr-1"></i> Unassigned</span>`;
                             
-                            const assignAction = isManager ? `<button onclick="openAssignModal(${e.id}, '${e.name.replace(/'/g, "\\'")}', ${e.checklist_template_id || 'null'})" class="ml-2 text-blue-500 hover:text-blue-700 transition-colors" title="Change Template"><i class="fas fa-edit"></i></button>` : '';
+                            // Safe String Escaping for HTML rendering
+                            const safeName = e.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                            const assignAction = isManager ? `<button onclick="openAssignModal(${e.id}, '${safeName}', ${e.checklist_template_id || 'null'})" class="ml-2 text-blue-500 hover:text-blue-700 transition-colors" title="Change Template"><i class="fas fa-edit"></i></button>` : '';
 
                             html += `<tr class="${rowClass} transition-colors">
                                         <td class="px-6 py-4">${getStatusBadge(e.status)}</td>
@@ -379,14 +344,19 @@ $csrfToken = generate_csrf_token();
                                      </tr>`;
                         });
                         html += `</tbody></table>`;
-                        document.getElementById('inventoryContainer').innerHTML = html;
+                        container.innerHTML = html;
                     } else {
-                        document.getElementById('inventoryContainer').innerHTML = `<div class="p-8 text-center text-red-500 font-bold">${res.message}</div>`;
+                        // Display DB Errors securely in the UI instead of failing silently
+                        container.innerHTML = `<div class="p-8 text-center text-red-500 font-bold bg-red-50 rounded-xl border border-red-200 shadow-inner">
+                            <i class="fas fa-exclamation-triangle text-3xl mb-2"></i><br>${res.message}</div>`;
                     }
+                }).catch(err => {
+                    container.innerHTML = `<div class="p-8 text-center text-red-500 font-bold">Network/Parse Error: Check Console.</div>`;
+                    console.error(err);
                 });
         }
 
-        // Handle Log Inspection Submission
+        // Submissions
         document.getElementById('logInspectionForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSaveInsp');
@@ -409,7 +379,6 @@ $csrfToken = generate_csrf_token();
             }).finally(() => { btn.innerHTML = origHtml; btn.disabled = false; });
         });
 
-        // Handle Assign Template Submission
         if (document.getElementById('assignTemplateForm')) {
             document.getElementById('assignTemplateForm').addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -431,7 +400,6 @@ $csrfToken = generate_csrf_token();
             });
         }
 
-        // Handle Add Equipment Submission
         if (document.getElementById('addEquipmentForm')) {
             document.getElementById('addEquipmentForm').addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -456,7 +424,7 @@ $csrfToken = generate_csrf_token();
             });
         }
 
-        // Init Data
+        // Init Flow
         loadTemplates();
         loadInventory();
         loadDailyLogs();

@@ -7,10 +7,16 @@
  * It provides visibility into training topics, branch locations, host details, 
  * and verified employee attendance counts for compliance auditing.
  *
+ * Updates in Beta 05:
+ * - Initial creation of the Meetings & Talks module.
+ * - Implemented optimized SQL subqueries for accurate attendance counts.
+ * - Integrated with the max-w-7xl global layout structure.
+ * - Added responsive table design with hover states and empty-state handling.
+ *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   5.0.0 (NorthPoint Beta 05)
  */
 
 // --- 1. Security & Access Control ---

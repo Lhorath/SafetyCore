@@ -24,7 +24,7 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   5.0.0 (NorthPoint Beta 05)
  */
 
 // Establish the database connection.
@@ -109,8 +109,7 @@ $isLoggedIn = isset($_SESSION['user']);
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- External CSS (For custom overrides not handled by Tailwind) -->
-    <link rel="stylesheet" href="style/css/style.css">
+
 
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -196,6 +195,8 @@ $isLoggedIn = isset($_SESSION['user']);
             @apply bg-bg text-accent-gray font-sans;
         }
     </style>
+        <!-- External CSS (For custom overrides not handled by Tailwind) -->
+    <link rel="stylesheet" href="style/css/style.css">
 </head>
 <body class="flex flex-col min-h-screen">
 
