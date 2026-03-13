@@ -19,6 +19,78 @@
 CREATE DATABASE IF NOT EXISTS `u971098166_safetysite` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
 USE `u971098166_safetysite`;
 
+-- Dumping structure for table u971098166_safetysite.checklist_items
+CREATE TABLE IF NOT EXISTS `checklist_items` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `template_id` int(10) unsigned NOT NULL,
+  `label` varchar(255) NOT NULL,
+  `field_type` enum('pass_fail','yes_no','checkbox','text','numeric') NOT NULL DEFAULT 'pass_fail',
+  `is_required` tinyint(1) NOT NULL DEFAULT 1,
+  `order_index` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `template_id` (`template_id`),
+  CONSTRAINT `checklist_items_ibfk_1` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table u971098166_safetysite.checklist_items: ~1 rows (approximately)
+REPLACE INTO `checklist_items` (`id`, `template_id`, `label`, `field_type`, `is_required`, `order_index`) VALUES
+	(1, 1, 'Is good?', 'pass_fail', 1, 0);
+
+-- Dumping structure for table u971098166_safetysite.checklist_responses
+CREATE TABLE IF NOT EXISTS `checklist_responses` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `submission_id` int(10) unsigned NOT NULL,
+  `item_id` int(10) unsigned NOT NULL,
+  `response_value` text DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `submission_id` (`submission_id`),
+  KEY `item_id` (`item_id`),
+  CONSTRAINT `checklist_responses_ibfk_1` FOREIGN KEY (`submission_id`) REFERENCES `checklist_submissions` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `checklist_responses_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `checklist_items` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table u971098166_safetysite.checklist_responses: ~0 rows (approximately)
+
+-- Dumping structure for table u971098166_safetysite.checklist_submissions
+CREATE TABLE IF NOT EXISTS `checklist_submissions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `company_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `equipment_id` int(10) unsigned NOT NULL,
+  `template_id` int(10) unsigned NOT NULL,
+  `shift_date` date NOT NULL,
+  `meter_reading` varchar(100) DEFAULT NULL,
+  `overall_status` enum('Safe','Unsafe') NOT NULL,
+  `general_comments` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `equipment_id` (`equipment_id`),
+  KEY `template_id` (`template_id`),
+  CONSTRAINT `checklist_submissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `checklist_submissions_ibfk_2` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `checklist_submissions_ibfk_3` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table u971098166_safetysite.checklist_submissions: ~0 rows (approximately)
+
+-- Dumping structure for table u971098166_safetysite.checklist_templates
+CREATE TABLE IF NOT EXISTS `checklist_templates` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `company_id` int(10) unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `company_id` (`company_id`),
+  CONSTRAINT `checklist_templates_ibfk_1` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table u971098166_safetysite.checklist_templates: ~1 rows (approximately)
+REPLACE INTO `checklist_templates` (`id`, `company_id`, `name`, `description`, `created_at`) VALUES
+	(1, 1, 'Fork', '1', '2026-03-13 03:00:18');
+
 -- Dumping structure for table u971098166_safetysite.companies
 CREATE TABLE IF NOT EXISTS `companies` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -66,6 +138,7 @@ CREATE TABLE IF NOT EXISTS `equipment` (
   `company_id` int(10) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
   `category` enum('Heavy Machinery','Vehicles','Power Tools','PPE/Harnesses','Other') NOT NULL DEFAULT 'Other',
+  `checklist_template_id` int(10) unsigned DEFAULT NULL,
   `serial_number` varchar(100) DEFAULT NULL,
   `status` enum('Active','Maintenance','Out of Service') NOT NULL DEFAULT 'Active',
   `next_inspection_date` date DEFAULT NULL,
@@ -74,12 +147,15 @@ CREATE TABLE IF NOT EXISTS `equipment` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_company_id` (`company_id`),
-  CONSTRAINT `fk_equip_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `fk_equipment_template` (`checklist_template_id`),
+  CONSTRAINT `fk_equip_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_equipment_template` FOREIGN KEY (`checklist_template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table u971098166_safetysite.equipment: ~1 rows (approximately)
-REPLACE INTO `equipment` (`id`, `company_id`, `name`, `category`, `serial_number`, `status`, `next_inspection_date`, `notes`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'Linde 30', 'Heavy Machinery', '123231', 'Active', '2026-03-12', NULL, '2026-03-13 02:27:08', '2026-03-13 02:27:08');
+REPLACE INTO `equipment` (`id`, `company_id`, `name`, `category`, `checklist_template_id`, `serial_number`, `status`, `next_inspection_date`, `notes`, `created_at`, `updated_at`) VALUES
+	(1, 1, 'Linde 30', 'Heavy Machinery', NULL, '123231', 'Active', '2026-03-12', NULL, '2026-03-13 02:27:08', '2026-03-13 02:27:08'),
+	(2, 1, 'a', 'Heavy Machinery', 1, 'w', 'Active', NULL, NULL, '2026-03-13 03:09:24', '2026-03-13 03:09:24');
 
 -- Dumping structure for table u971098166_safetysite.equipment_inspections
 CREATE TABLE IF NOT EXISTS `equipment_inspections` (
@@ -365,9 +441,9 @@ CREATE TABLE IF NOT EXISTS `page_seo` (
   `requires_login` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 if behind authentication',
   PRIMARY KEY (`id`),
   UNIQUE KEY `page_route` (`page_route`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.page_seo: ~20 rows (approximately)
+-- Dumping data for table u971098166_safetysite.page_seo: ~22 rows (approximately)
 REPLACE INTO `page_seo` (`id`, `page_route`, `meta_title`, `meta_description`, `meta_keywords`, `og_image`, `requires_login`) VALUES
 	(1, 'home', 'Welcome', 'NorthPoint 360 is your central command for workplace safety compliance, hazard reporting, and operational excellence.', 'EHS, safety compliance, hazard reporting, NorthPoint 360', '/style/images/logo.png', 0),
 	(2, 'services', 'Solutions', 'Discover our comprehensive suite of EHS management solutions tailored for modern businesses.', 'EHS solutions, safety software, incident management', '/style/images/logo.png', 0),
@@ -388,7 +464,9 @@ REPLACE INTO `page_seo` (`id`, `page_route`, `meta_title`, `meta_description`, `
 	(17, 'company-admin', 'Company Administration', 'Manage users, roles, and location structure for your organisation.', 'company admin, user management, job sites, branches, NorthPoint 360', '/style/images/logo.png', 1),
 	(18, 'admin-edit-user', 'Edit User', 'Modify an existing user account including role and location assignment.', 'edit user, role assignment, platform admin, NorthPoint 360', '/style/images/logo.png', 1),
 	(19, 'training-matrix', 'Training & Certifications', 'Monitor employee training certifications, manage expiry dates, and ensure compliance.', 'training matrix, certifications, safety compliance', '/style/images/logo.png', 1),
-	(20, 'equipment-management', 'Equipment Management', 'Track equipment inventory, maintenance statuses, and log pre-use inspections.', 'equipment, maintenance, inspection, safety logs', '/style/images/logo.png', 1);
+	(20, 'equipment-management', 'Equipment Management', 'Track equipment inventory, maintenance statuses, and log pre-use inspections.', 'equipment, maintenance, inspection, safety logs', '/style/images/logo.png', 1),
+	(21, 'checklist-builder', 'Checklist Builder', 'Create dynamic pre-shift equipment checklists.', NULL, '/style/images/logo.png', 1),
+	(22, 'preshift-checklist', 'Pre-Shift Checklist', 'Complete daily equipment logs.', NULL, '/style/images/logo.png', 1);
 
 -- Dumping structure for table u971098166_safetysite.permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
