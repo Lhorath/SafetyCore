@@ -6,8 +6,6 @@
  * Enforces RBAC and CSRF protection.
  *
  * @package   NorthPoint360
- * @author    macweb.ca
- * @version   1.0.0
  */
 
 session_start();
@@ -24,9 +22,20 @@ if (!isset($_SESSION['user'])) {
 }
 
 $action = $_GET['action'] ?? '';
-$companyId = $_SESSION['user']['company_id'];
 $userId = $_SESSION['user']['id'];
 $userRole = $_SESSION['user']['role_name'] ?? '';
+
+// Safely derive the user's Company ID based on their store assignments
+$companyId = $_SESSION['user']['company_id'] ?? null;
+if (!$companyId) {
+    $compSql = "SELECT s.company_id FROM user_stores us JOIN stores s ON us.store_id = s.id WHERE us.user_id = ? LIMIT 1";
+    $compStmt = $conn->prepare($compSql);
+    $compStmt->bind_param("i", $userId);
+    $compStmt->execute();
+    $res = $compStmt->get_result()->fetch_assoc();
+    $companyId = $res ? $res['company_id'] : 1; // Fallback to 1
+    $compStmt->close();
+}
 
 $managementRoles = ['Admin', 'Manager', 'Safety Manager', 'Safety Leader', 'Owner / CEO', 'Co-manager', 'JHSC Leader'];
 $isManager = in_array($userRole, $managementRoles);
@@ -52,10 +61,19 @@ switch ($action) {
         $matrix['categories'] = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
-        // 2. Fetch Users & their Records
-        $userSql = "SELECT id, first_name, last_name, employee_position FROM users WHERE company_id = ? ORDER BY first_name ASC";
+        // 2. Fetch Users & their Records (Correctly joining through Stores/Job Sites)
+        $userSql = "
+            SELECT DISTINCT u.id, u.first_name, u.last_name, u.employee_position 
+            FROM users u
+            LEFT JOIN user_stores us ON u.id = us.user_id
+            LEFT JOIN stores s ON us.store_id = s.id
+            LEFT JOIN user_job_sites ujs ON u.id = ujs.user_id
+            LEFT JOIN job_sites js ON ujs.job_site_id = js.id
+            WHERE s.company_id = ? OR js.company_id = ? OR u.is_platform_admin = 1
+            ORDER BY u.first_name ASC
+        ";
         $stmt = $conn->prepare($userSql);
-        $stmt->bind_param("i", $companyId);
+        $stmt->bind_param("ii", $companyId, $companyId);
         $stmt->execute();
         $users = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
