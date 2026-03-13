@@ -12,7 +12,9 @@
  */
 
 // Initialize Session
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Include Core Dependencies
 require_once 'includes/config.php';
@@ -47,8 +49,11 @@ $allowedPages = [
     // Meetings & Toolbox Talks
     'meetings-list', 'host-meeting',
     
-    // Hubs
-    'training-matrix', 'equipment-management',
+    // Training & Certifications
+    'training-matrix',
+    
+    // Equipment Management
+    'equipment-management',
     
     // System Administration
     'admin', 'company-admin'
