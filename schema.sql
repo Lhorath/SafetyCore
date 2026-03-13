@@ -324,9 +324,9 @@ CREATE TABLE IF NOT EXISTS `page_seo` (
   `requires_login` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 if behind authentication',
   PRIMARY KEY (`id`),
   UNIQUE KEY `page_route` (`page_route`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.page_seo: ~18 rows (approximately)
+-- Dumping data for table u971098166_safetysite.page_seo: ~19 rows (approximately)
 REPLACE INTO `page_seo` (`id`, `page_route`, `meta_title`, `meta_description`, `meta_keywords`, `og_image`, `requires_login`) VALUES
 	(1, 'home', 'Welcome', 'NorthPoint 360 is your central command for workplace safety compliance, hazard reporting, and operational excellence.', 'EHS, safety compliance, hazard reporting, NorthPoint 360', '/style/images/logo.png', 0),
 	(2, 'services', 'Solutions', 'Discover our comprehensive suite of EHS management solutions tailored for modern businesses.', 'EHS solutions, safety software, incident management', '/style/images/logo.png', 0),
@@ -345,7 +345,8 @@ REPLACE INTO `page_seo` (`id`, `page_route`, `meta_title`, `meta_description`, `
 	(15, 'meetings-list', 'Meetings & Talks', 'Review safety meetings, toolbox talks, and attendance records.', 'safety meetings, toolbox talks, attendance', '/style/images/logo.png', 1),
 	(16, 'host-meeting', 'Host a Meeting', 'Log a new safety meeting, define topics, and track employee attendance.', 'host meeting, safety talk form', '/style/images/logo.png', 1),
 	(17, 'company-admin', 'Company Administration', 'Manage users, roles, and location structure for your organisation.', 'company admin, user management, job sites, branches, NorthPoint 360', '/style/images/logo.png', 1),
-	(18, 'admin-edit-user', 'Edit User', 'Modify an existing user account including role and location assignment.', 'edit user, role assignment, platform admin, NorthPoint 360', '/style/images/logo.png', 1);
+	(18, 'admin-edit-user', 'Edit User', 'Modify an existing user account including role and location assignment.', 'edit user, role assignment, platform admin, NorthPoint 360', '/style/images/logo.png', 1),
+	(19, 'training-matrix', 'Training & Certifications', 'Monitor employee training certifications, manage expiry dates, and ensure compliance.', 'training matrix, certifications, safety compliance', '/style/images/logo.png', 1);
 
 -- Dumping structure for table u971098166_safetysite.permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -682,7 +683,7 @@ CREATE TABLE IF NOT EXISTS `stores` (
   CONSTRAINT `stores_ibfk_2` FOREIGN KEY (`jhsc_leader_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.stores: ~0 rows (approximately)
+-- Dumping data for table u971098166_safetysite.stores: ~1 rows (approximately)
 REPLACE INTO `stores` (`id`, `company_id`, `store_name`, `store_number`, `location_type`, `address`, `city`, `province_state`, `is_active`, `manager_user_id`, `jhsc_leader_user_id`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'Office', '1', 'store', NULL, NULL, NULL, 1, 3, 6, '2026-02-18 13:05:30', '2026-02-18 13:30:18');
 
