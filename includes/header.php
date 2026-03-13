@@ -1,7 +1,7 @@
 <?php
 // Start a session on every page. This must be the very first line of the file.
 // This enables user authentication state tracking ($isLoggedIn) globally.
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
 /**
  * Header Template - includes/header.php
