@@ -15,7 +15,7 @@
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   2.2.0 (NorthPoint Beta 01)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 // --- 1. Security Check ---

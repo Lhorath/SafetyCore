@@ -3,15 +3,11 @@
  * Public Home Page - pages/home.php
  *
  * This view serves as the public landing page for the NorthPoint 360 platform.
- * * Updates in Beta 05:
- * - Rewrote marketing copy to reflect the full suite of EHS tools available.
- * - Added distinct feature cards for FLHAs, Incident Management, Safety Meetings, and Analytics.
- * - Updated the Hero section to explicitly state the Beta 05 status.
  *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   5.0.0 (NorthPoint Beta 05)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 ?>
 

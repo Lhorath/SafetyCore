@@ -2,8 +2,15 @@
 /**
  * Equipment Management Dashboard - pages/equipment-management.php
  *
+ * 
+ *
  * @package   NorthPoint360
+ * @author    macweb.ca
+ * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
+?>
+<?php
 
 if (!isset($_SESSION['user'])) { header('Location: /login'); exit(); }
 require_once 'includes/csrf.php';

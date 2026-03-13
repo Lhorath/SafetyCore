@@ -6,16 +6,10 @@
  * toolbox talks, and tailgate meetings. It features dynamic location-based 
  * employee fetching to accurately log attendance for compliance and training records.
  *
- * Updates in Beta 05:
- * - Initial creation of the Host Meeting form.
- * - Implemented AJAX-driven employee checklist generation based on branch selection.
- * - Added "Select All" functionality and strict client-side validation.
- * - Styled using the Beta 05 Tailwind component library.
- *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   5.0.0 (NorthPoint Beta 05)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 // --- 1. Security & Access Control ---

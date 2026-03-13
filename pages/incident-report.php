@@ -6,15 +6,10 @@
  * property damage, and severe near misses. Data submitted here feeds directly 
  * into the management-only `store-incidents` dashboard for OSHA/WCB classification.
  *
- * Updates in Beta 05:
- * - Initial creation of the Incident Reporting module.
- * - Implemented secure POST handling with prepared statements.
- * - Styled with the new Beta 05 Tailwind UI component library (accent-red).
- *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   5.0.0 (NorthPoint Beta 05)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 // --- 1. Security & Authentication ---

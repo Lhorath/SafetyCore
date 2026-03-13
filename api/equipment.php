@@ -1,9 +1,15 @@
 <?php
 /**
  * Equipment Management API - api/equipment.php
+ * 
  *
  * @package   NorthPoint360
+ * @author    macweb.ca
+ * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
+?>
+<?php
 
 session_start();
 header('Content-Type: application/json');

@@ -5,15 +5,10 @@
  * Details the specific modules available in NorthPoint 360 and
  * outlines the development roadmap.
  *
- * Updates in Beta 05:
- * - Added comprehensive sections for the new FLHA, Incidents, and Meetings modules.
- * - Updated the "Development Roadmap" to mark Beta 05 milestones as complete.
- * - Outlined the upcoming features targeted for the V1.0 release.
- *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   5.0.0 (NorthPoint Beta 05)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 ?>
 

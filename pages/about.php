@@ -6,15 +6,10 @@
  * the NorthPoint 360 platform. It serves to build trust and authority 
  * with potential clients and users.
  *
- * Features:
- * - Tailwind CSS layout matching the modern brand aesthetic.
- * - Responsive grid for core values.
- * - Context-aware Call to Action (CTA) based on login status.
- *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   2.0.0 (NorthPoint Beta 01)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 ?>
 

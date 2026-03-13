@@ -2,18 +2,13 @@
 /**
  * User Profile Edit Page - pages/profile-edit.php
  *
- * Beta 09 Changes (Audit Fixes):
- *   F-21 — Added server-side minimum password length check (8 characters).
- *           The placeholder text already said "Min. 8 characters" but the
- *           backend never enforced it, so an empty or 1-character password
- *           could be set via a direct POST.
- *   F-02 — CSRF token verified on POST submission.
- *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   9.0.0 (NorthPoint Beta 09)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
+?>
+<?php
 
 require_once 'includes/csrf.php';
 

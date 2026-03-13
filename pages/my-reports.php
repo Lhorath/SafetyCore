@@ -2,20 +2,19 @@
 /**
  * My Reports Page - pages/my-reports.php
  *
+ *
  * This page displays a historical list of hazard reports submitted by the 
  * currently logged-in user. It features a side-by-side master-detail layout,
  * allowing users to quickly filter, sort, and review their submissions.
  *
- * Updates in Beta 04:
- * - Container expanded to max-w-7xl to match the new global layout constraints.
- * - Refined status ribbon and risk badge UI for consistency with the Store Reports dashboard.
- * - Ensured strict compatibility with the updated footer.php JS injector for "Edit Details".
- *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   2.4.0 (NorthPoint Beta 04)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
+?>
+
+<?php
 
 // --- 1. Security & Authentication ---
 

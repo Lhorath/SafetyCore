@@ -17,7 +17,7 @@
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   9.0.0 (NorthPoint Beta 09)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 session_start();

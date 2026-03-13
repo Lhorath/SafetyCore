@@ -1,9 +1,15 @@
 <?php
 /**
  * Training Matrix Dashboard - pages/training-matrix.php
+ * This page provides a comprehensive overview of employee training and certifications.
  *
  * @package   NorthPoint360
+ * @author    macweb.ca
+ * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
+?>
+<?php
 
 if (!isset($_SESSION['user'])) { header('Location: /login'); exit(); }
 require_once 'includes/csrf.php';
