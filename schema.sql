@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `checklist_responses` (
   CONSTRAINT `checklist_responses_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `checklist_items` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.checklist_responses: ~0 rows (approximately)
+-- Dumping data for table u971098166_safetysite.checklist_responses: ~1 rows (approximately)
 REPLACE INTO `checklist_responses` (`id`, `submission_id`, `item_id`, `response_value`, `notes`) VALUES
 	(1, 1, 1, 'Pass', '');
 
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `checklist_submissions` (
   CONSTRAINT `checklist_submissions_ibfk_3` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.checklist_submissions: ~0 rows (approximately)
+-- Dumping data for table u971098166_safetysite.checklist_submissions: ~1 rows (approximately)
 REPLACE INTO `checklist_submissions` (`id`, `company_id`, `user_id`, `equipment_id`, `template_id`, `shift_date`, `meter_reading`, `overall_status`, `general_comments`, `created_at`) VALUES
 	(1, 1, 1, 2, 1, '2026-03-13', NULL, 'Safe', '', '2026-03-13 04:20:03');
 
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `companies` (
 
 -- Dumping data for table u971098166_safetysite.companies: ~3 rows (approximately)
 REPLACE INTO `companies` (`id`, `company_name`, `company_type`, `is_system`, `industry`, `contact_email`, `is_active`, `created_at`, `updated_at`, `company_code`) VALUES
-	(1, 'MacWeb Canada', 'multi_location', 0, NULL, NULL, 1, '2026-02-18 13:00:12', '2026-03-12 12:15:02', '0001'),
+	(1, 'MacWeb Canada', 'multi_location', 1, NULL, NULL, 1, '2026-02-18 13:00:12', '2026-03-13 11:52:38', '0001'),
 	(2, 'Elmwood Group', 'multi_location', 0, 'Hardware Retail', NULL, 1, '2026-03-12 12:08:37', '2026-03-12 12:15:02', '0002'),
 	(3, 'Ridgeline Construction Inc.', 'job_based', 0, 'General Contracting', NULL, 1, '2026-03-12 12:08:37', '2026-03-12 12:15:02', '0003');
 
@@ -156,7 +156,7 @@ CREATE TABLE IF NOT EXISTS `equipment` (
   CONSTRAINT `fk_equipment_template` FOREIGN KEY (`checklist_template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.equipment: ~1 rows (approximately)
+-- Dumping data for table u971098166_safetysite.equipment: ~2 rows (approximately)
 REPLACE INTO `equipment` (`id`, `company_id`, `name`, `category`, `checklist_template_id`, `serial_number`, `status`, `next_inspection_date`, `notes`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'Linde 30', 'Heavy Machinery', 1, '123231', 'Active', '2026-03-12', NULL, '2026-03-13 02:27:08', '2026-03-13 04:19:56'),
 	(2, 1, 'a', 'Heavy Machinery', 1, 'w', 'Active', NULL, NULL, '2026-03-13 03:09:24', '2026-03-13 03:09:24');
@@ -762,7 +762,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
   UNIQUE KEY `role_name` (`role_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.roles: ~14 rows (approximately)
+-- Dumping data for table u971098166_safetysite.roles: ~16 rows (approximately)
 REPLACE INTO `roles` (`id`, `role_name`) VALUES
 	(1, 'Admin'),
 	(2, 'Manager'),
@@ -807,7 +807,7 @@ CREATE TABLE IF NOT EXISTS `stores` (
   CONSTRAINT `stores_ibfk_2` FOREIGN KEY (`jhsc_leader_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.stores: ~0 rows (approximately)
+-- Dumping data for table u971098166_safetysite.stores: ~1 rows (approximately)
 REPLACE INTO `stores` (`id`, `company_id`, `store_name`, `store_number`, `location_type`, `address`, `city`, `province_state`, `is_active`, `manager_user_id`, `jhsc_leader_user_id`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'Office', '1', 'store', NULL, NULL, NULL, 1, 3, 6, '2026-02-18 13:05:30', '2026-02-18 13:30:18');
 
