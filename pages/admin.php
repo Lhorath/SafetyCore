@@ -2,56 +2,29 @@
 /**
  * Admin Control Panel - pages/admin.php
  *
- * Beta 09 Changes (Audit Fixes):
- *   F-06 — Replaced the broad role-name gate ('Admin','Manager','Owner / CEO')
- *           with is_platform_admin() from permissions.php.
- *           Previously a tenant Manager could navigate directly to /admin and
- *           access the platform admin panel. Now only platform administrators
- *           (role = Admin AND is_system company) are permitted.
- *
- *           NOTE: Company-level user management has been moved to
- *           pages/company-admin.php (Beta 08). This page (admin.php) is now
- *           strictly the platform-admin panel and should only be reachable by
- *           the system company's Admin account.
- *
  * @package   NorthPoint360
  * @author    macweb.ca
- * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   9.0.0 (NorthPoint Beta 09)
  */
 
 // ── 1. Security & Access Control ─────────────────────────────────────────────
 
-// --- 1. Security & Access Control ---
-
-// Ensure the user is logged in.
 if (!isset($_SESSION['user'])) {
     echo "<script>window.location.href = '/login';</script>";
     exit();
 }
 
-// Enforce Role-Based Access.
-// Only Admins, Managers, and Company Owners can access the panel.
+// Load permissions helper so child views (like manage-users.php) can use its functions
+require_once 'includes/permissions.php';
+
+// Restored Standard RBAC (Role-Based Access Control)
 $userRole = $_SESSION['user']['role_name'] ?? '';
 $allowedRoles = ['Admin', 'Manager', 'Owner / CEO'];
 
 if (!in_array($userRole, $allowedRoles)) {
-    // Unauthorized access attempts are redirected to the homepage.
-    echo "<script>window.location.href = '/';</script>";
+    // Unauthorized access attempts are redirected to the dashboard.
+    echo "<script>window.location.href = '/dashboard';</script>";
     exit();
 }
-
-// F-06 FIX: use the Beta 08 permissions helper rather than a role-name list.
-// is_platform_admin() requires BOTH role='Admin' AND is_system=true — a tenant
-// manager with role='Manager' can never satisfy this gate even if they know the URL.
-require_once 'includes/permissions.php';
-
-if (!is_platform_admin()) {
-    header('Location: /');
-    exit();
-}
-
-$userRole = $_SESSION['user']['role_name'];
 
 // ── 2. Admin View Routing ─────────────────────────────────────────────────────
 
@@ -70,7 +43,7 @@ $errorMessage   = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // CSRF validation (F-02)
+    // CSRF validation
     require_once 'includes/csrf.php';
     if (!csrf_check($errorMessage)) {
         // Fall through — $errorMessage is set, form re-renders with error banner
