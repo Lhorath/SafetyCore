@@ -60,6 +60,47 @@ CREATE TABLE IF NOT EXISTS `contact_messages` (
 
 -- Dumping data for table u971098166_safetysite.contact_messages: ~0 rows (approximately)
 
+-- Dumping structure for table u971098166_safetysite.equipment
+CREATE TABLE IF NOT EXISTS `equipment` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `company_id` int(10) unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `category` enum('Heavy Machinery','Vehicles','Power Tools','PPE/Harnesses','Other') NOT NULL DEFAULT 'Other',
+  `serial_number` varchar(100) DEFAULT NULL,
+  `status` enum('Active','Maintenance','Out of Service') NOT NULL DEFAULT 'Active',
+  `next_inspection_date` date DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_company_id` (`company_id`),
+  CONSTRAINT `fk_equip_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table u971098166_safetysite.equipment: ~1 rows (approximately)
+REPLACE INTO `equipment` (`id`, `company_id`, `name`, `category`, `serial_number`, `status`, `next_inspection_date`, `notes`, `created_at`, `updated_at`) VALUES
+	(1, 1, 'Linde 30', 'Heavy Machinery', '123231', 'Active', '2026-03-12', NULL, '2026-03-13 02:27:08', '2026-03-13 02:27:08');
+
+-- Dumping structure for table u971098166_safetysite.equipment_inspections
+CREATE TABLE IF NOT EXISTS `equipment_inspections` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `equipment_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL COMMENT 'Worker who performed inspection',
+  `inspection_date` datetime NOT NULL,
+  `result` enum('Pass','Fail','Needs Repair') NOT NULL,
+  `comments` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_equip_id` (`equipment_id`),
+  KEY `idx_user_id` (`user_id`),
+  CONSTRAINT `fk_insp_equip` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_insp_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table u971098166_safetysite.equipment_inspections: ~1 rows (approximately)
+REPLACE INTO `equipment_inspections` (`id`, `equipment_id`, `user_id`, `inspection_date`, `result`, `comments`, `created_at`) VALUES
+	(1, 1, 1, '2026-03-13 03:27:49', 'Pass', 'g', '2026-03-13 02:27:49');
+
 -- Dumping structure for table u971098166_safetysite.flha_checklists
 CREATE TABLE IF NOT EXISTS `flha_checklists` (
   `flha_id` int(10) unsigned NOT NULL,
@@ -324,9 +365,9 @@ CREATE TABLE IF NOT EXISTS `page_seo` (
   `requires_login` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 if behind authentication',
   PRIMARY KEY (`id`),
   UNIQUE KEY `page_route` (`page_route`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.page_seo: ~19 rows (approximately)
+-- Dumping data for table u971098166_safetysite.page_seo: ~20 rows (approximately)
 REPLACE INTO `page_seo` (`id`, `page_route`, `meta_title`, `meta_description`, `meta_keywords`, `og_image`, `requires_login`) VALUES
 	(1, 'home', 'Welcome', 'NorthPoint 360 is your central command for workplace safety compliance, hazard reporting, and operational excellence.', 'EHS, safety compliance, hazard reporting, NorthPoint 360', '/style/images/logo.png', 0),
 	(2, 'services', 'Solutions', 'Discover our comprehensive suite of EHS management solutions tailored for modern businesses.', 'EHS solutions, safety software, incident management', '/style/images/logo.png', 0),
@@ -346,7 +387,8 @@ REPLACE INTO `page_seo` (`id`, `page_route`, `meta_title`, `meta_description`, `
 	(16, 'host-meeting', 'Host a Meeting', 'Log a new safety meeting, define topics, and track employee attendance.', 'host meeting, safety talk form', '/style/images/logo.png', 1),
 	(17, 'company-admin', 'Company Administration', 'Manage users, roles, and location structure for your organisation.', 'company admin, user management, job sites, branches, NorthPoint 360', '/style/images/logo.png', 1),
 	(18, 'admin-edit-user', 'Edit User', 'Modify an existing user account including role and location assignment.', 'edit user, role assignment, platform admin, NorthPoint 360', '/style/images/logo.png', 1),
-	(19, 'training-matrix', 'Training & Certifications', 'Monitor employee training certifications, manage expiry dates, and ensure compliance.', 'training matrix, certifications, safety compliance', '/style/images/logo.png', 1);
+	(19, 'training-matrix', 'Training & Certifications', 'Monitor employee training certifications, manage expiry dates, and ensure compliance.', 'training matrix, certifications, safety compliance', '/style/images/logo.png', 1),
+	(20, 'equipment-management', 'Equipment Management', 'Track equipment inventory, maintenance statuses, and log pre-use inspections.', 'equipment, maintenance, inspection, safety logs', '/style/images/logo.png', 1);
 
 -- Dumping structure for table u971098166_safetysite.permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
