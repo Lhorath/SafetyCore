@@ -1,141 +1,220 @@
-NorthPoint 360
+# 🛡️ NorthPoint 360 (SafetyCore)
 
-Version: 4.0.0 (NorthPoint Beta 01)
+**NorthPoint 360** is a proprietary, enterprise-grade **Environment,
+Health, and Safety (EHS)** management platform. Built for modern
+workforces, it seamlessly connects remote field workers with management
+to ensure regulatory compliance, track incidents, and foster a proactive
+safety culture.
 
-Status: Live Beta / Testing
+------------------------------------------------------------------------
 
-Framework: PHP / MySQL / Tailwind CSS
+## ⚠️ PRIVATE REPOSITORY
 
-🎯 Project Overview
+This codebase is **proprietary and confidential**.\
+It is **not licensed for open-source distribution**.
 
-NorthPoint 360 (formerly Safety Hub) is a comprehensive, cloud-based Environmental, Health, and Safety (EHS) management platform. It is designed to bridge the gap between frontline hazard identification and high-level management oversight, replacing fragmented paper trails with a unified digital ecosystem.
+Unauthorized copying, distribution, or modification is **strictly
+prohibited**.
 
-Built on a Multi-Tenant SaaS Architecture, the platform supports complex organizational hierarchies, allowing multiple companies to operate securely within their own isolated workspaces while maintaining centralized administration.
+------------------------------------------------------------------------
 
-🏢 Organizational Hierarchy
+# 🚀 Core Modules
 
-The system is designed around a hierarchical structure to support organizations of any size:
+## Hazard Reporting Lifecycle
 
-Company: The top-level tenant (e.g., "Elmwood Group").
+A closed-loop system for logging, investigating, and resolving workplace
+hazards and near misses.
 
-Logic: Users authenticate into a specific Company Workspace.
+Features include: - Photo and video evidence tracking - Investigation
+workflows - Resolution tracking
 
-Branch (Store): A physical or logical division (e.g., "Downey's Home Hardware").
+------------------------------------------------------------------------
 
-Logic: Users can be assigned to multiple branches simultaneously.
+## Field Level Hazard Assessments (FLHA)
 
-Location: Specific zones within a branch where hazards occur (e.g., "Lumber Yard", "Paint Aisle").
+A robust digital wizard designed for remote job sites.
 
-Logic: Managed dynamically per store; users can add new locations on the fly.
+Features include: - Dynamic job step creation - Situational hazard
+identification - PPE checklists - Mandatory end-of-shift close-outs
 
-👥 User Roles & Permissions
+------------------------------------------------------------------------
 
-NorthPoint 360 utilizes a strictly enforced Role-Based Access Control (RBAC) system split into two levels.
+## Incident & Accident Management
 
-1. Company Level Roles (Upper Management)
+Secure logging of:
 
-Owner / CEO: Full system access, including company structure management.
+-   Workplace injuries
+-   Property damage
 
-Safety Manager: Oversees compliance and reports across all branches.
+Management can officially classify incidents as:
 
-Training Manager: (Roadmap) Manages training modules and certifications.
+-   **OSHA Recordable**
+-   **WCB Recordable**
+-   **Lost-Time Incidents**
 
-2. Branch Level Roles
+This enables compliance auditing and reporting.
 
-Manager / Co-manager: Oversees daily operations and reports for their specific branch(es).
+------------------------------------------------------------------------
 
-Safety Leader: Can manage branch-specific safety settings and reviews.
+## Safety Meetings & Toolbox Talks
 
-JHSC Member: Joint Health and Safety Committee member (Audit & Review capabilities).
+Tools for management to:
 
-Equipment Operator: (Roadmap) Specific access for pre-op inspections.
+-   Host safety meetings
+-   Document meeting topics
+-   Record verified employee attendance dynamically
 
-Full Time / Part Time Employee: Standard access to submit reports and view personal history.
+------------------------------------------------------------------------
 
-🚀 Key Features
+## Multi-Tenant Architecture
 
-🔐 Authentication & Security
+Scalable hierarchy:
 
-Multi-Tenant Login: Secure entry requiring users to select their Company Workspace.
+Company └── Branch / Store └── User
 
-Session Security: PHP Session-based state management with rigorous role verification.
+Includes strict **Role-Based Access Control (RBAC)** enforcement.
 
-Password Hashing: Industry-standard Bcrypt hashing for all user credentials.
+------------------------------------------------------------------------
 
-📝 Hazard Reporting
+## Dynamic SEO Engine
 
-Dynamic Intake Form: Context-aware form that populates employees and locations based on the selected store.
+Database-driven metadata and **OpenGraph injection** for page routing
+and SEO optimization.
 
-Rich Media Support: Upload up to 5 photos (2MB limit) and 2 videos (200MB limit) per report.
+------------------------------------------------------------------------
 
-Conditional Logic: Smart fields that adapt based on user input (e.g., "Locked Out" status triggers Key Holder prompt).
+# 🛠️ Tech Stack
 
-📊 Management Dashboards
+  Layer      Technology
+  ---------- -----------------------------------------------------
+  Backend    PHP 8.x (Vanilla procedural / modular architecture)
+  Database   MySQL / MariaDB
+  Frontend   HTML5 + Vanilla JavaScript (Fetch API)
+  Styling    Tailwind CSS (CDN) + Custom CSS
+  Icons      FontAwesome 6
 
-Personal History: Employees can track the status of their own submissions via "My Reports".
+------------------------------------------------------------------------
 
-Store Dashboard: Managers have a real-time view of their branch's safety health.
+# 📂 Directory Structure
 
-Live Stats: Counters for reports this month and risk level distribution.
+The application follows a **custom Front Controller pattern**, routing
+all traffic through `index.php`.
 
-Filtering: Client-side filtering by Date Range and Risk Severity.
+SafetyCore/ ├── index.php ├── .htaccess ├── schema.sql ├── api/ │ ├──
+flha.php │ ├── incidents.php │ ├── hazard_reporting.php │ ├──
+meetings.php │ └── job_sites.php ├── includes/ │ ├── config.php │ ├──
+db.php │ ├── header.php │ ├── footer.php │ ├── login_process.php │ └──
+permissions.php ├── pages/ │ ├── admin-views/ │ ├── dashboard.php │ ├──
+flha-form.php │ ├── incident-report.php │ └── ... ├── reports/ │ └──
+uploads/ └── style/ ├── css/style.css └── images/logo.png
 
-Master-Detail View: Inspect full report details and media without leaving the dashboard.
+------------------------------------------------------------------------
 
-⚙️ Administration
+# 💻 Local Development Setup
 
-User Management: Create, edit, and manage user accounts and roles.
+To run **NorthPoint 360 locally**, you need a standard
+LAMP/WAMP/MAMP/XAMPP stack.
 
-Store Management: Add new branches to the company structure.
+## 1. Clone the Repository
 
-Scalable Architecture: "View-based" admin router allows for easy addition of future modules.
+git clone git@github.com:YourOrg/SafetyCore.git cd SafetyCore
 
-🛠 Technical Architecture
+## 2. Database Configuration
 
-Frontend
+Create a database:
 
-Framework: Tailwind CSS (via CDN) for utility-first styling.
+northpoint_dev
 
-Design System: Custom "Blues and Blacks" palette:
+Import schema:
 
-Primary: Deep Safety Blue (#0f172a)
+mysql -u root -p northpoint_dev \< schema.sql
 
-Secondary: Royal Blue (#3b82f6)
+Example configuration:
 
-Accent: Safety Red (#ef4444)
+``` php
+<?php
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'northpoint_dev');
+```
 
-JavaScript: Modular, vanilla JavaScript using Event Delegation and Fetch API for conflict-free dynamic interactions.
+## 3. Server Configuration
 
-Backend
+Ensure the document root points to the `SafetyCore/` directory.
 
-Language: PHP 7.4+ / 8.0+.
+Apache requirements:
 
-Database: MySQL (Relational).
+-   mod_rewrite enabled
+-   `.htaccess` active
 
-API: Consolidated endpoint (api/hazard_reporting.php) handling all AJAX requests via a switch-case router.
+Routing occurs through:
 
-Database Schema (Key Tables)
+index.php?page=...
 
-companies (Tenants)
+## 4. Default Login
 
-users & user_stores (Many-to-Many assignment)
+Check `schema.sql` for seeded credentials or create a new local user.
 
-roles & permissions (RBAC)
+------------------------------------------------------------------------
 
-stores & hazard_locations (Physical locations)
+# 🔒 Security Guidelines
 
-reports & report_files (Transactional data)
+## Environment Variables
 
-🔮 Future Roadmap
+Never commit:
 
-The NorthPoint 360 ecosystem is actively expanding. Upcoming modules include:
+-   Production database credentials
+-   API keys
+-   Private tokens
 
-Equipment Inspections: Digital pre-operation checklists for forklifts and machinery.
+## File Upload Security
 
-Training Records: Centralized tracking of employee certifications and expiry alerts.
+User uploads stored in:
 
-Incident Management: Comprehensive workflows for investigating workplace accidents.
+reports/uploads/
 
-Audits: Scheduled safety audits with digital scoring and signatures.
+Keep `.htaccess` files intact to prevent script execution.
 
-Compliance Dashboard: High-level regulatory status views for Company management.
+## SQL Injection Protection
+
+Always use prepared statements.
+
+Example:
+
+``` php
+$stmt = $conn->prepare($sql);
+$stmt->bind_param(...);
+```
+
+## XSS Prevention
+
+Always sanitize output with:
+
+``` php
+htmlspecialchars()
+```
+
+------------------------------------------------------------------------
+
+# 🗺️ Development Roadmap
+
+## ✅ Current Version (Beta 05)
+
+-   [x] Multi-tenant RBAC engine
+-   [x] Full hazard reporting CRUD lifecycle
+-   [x] Field Level Hazard Assessments (FLHA) workflow
+-   [x] Incident classification dashboard
+-   [x] Safety meetings & attendance tracking
+-   [x] Dynamic database-driven SEO
+
+## 🔜 Upcoming (V1.0 Release)
+
+-   [ ] Automated Email/SMS notifications for critical incidents
+-   [ ] PDF generation & export for external audits
+-   [ ] Equipment management & pre-use inspections
+-   [ ] Employee training & certification matrix
+
+------------------------------------------------------------------------
+
+Maintained by the **NorthPoint 360 Development Team**
