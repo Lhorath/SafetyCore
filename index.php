@@ -52,6 +52,10 @@ $allowedPages = [
     // Training & Certifications
     'training-matrix',
     
+    // Dynamic Checklists
+    'checklist-builder',
+    'preshift-checklist',
+
     // Equipment Management
     'equipment-management',
     

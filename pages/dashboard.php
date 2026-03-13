@@ -185,7 +185,14 @@ if ($stmt = $conn->prepare($flhaSql)) {
                 <p class="text-xs text-gray-500 mb-5 flex-grow">Investigate and close out hazards reported by your branch.</p>
                 <a href="/store-reports" class="btn btn-primary w-full shadow-sm text-sm py-2">Open Review</a>
             </div>
-
+<div class="card bg-white border border-slate-200 hover:border-blue-400 hover:shadow-xl transition duration-300 flex flex-col items-center text-center p-6 group">
+        <div class="h-14 w-14 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-2xl mb-4">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <h3 class="text-lg font-bold text-primary mb-2">Checklist Builder</h3>
+        <p class="text-xs text-gray-500 mb-5 flex-grow">Create dynamic forms and assign to inventory.</p>
+        <a href="/checklist-builder" class="btn btn-primary w-full shadow-sm text-sm py-2">Open Builder</a>
+    </div>
             <div class="card bg-white border border-slate-200 hover:border-accent-red hover:shadow-xl transition duration-300 flex flex-col items-center text-center p-6 group">
                 <div class="h-14 w-14 bg-red-50 text-accent-red rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
                     <i class="fas fa-file-medical-alt"></i>
