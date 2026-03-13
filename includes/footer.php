@@ -2,12 +2,6 @@
 /**
  * Footer Template - includes/footer.php
  *
- * This file contains the closing HTML structure for the application.
- * It handles:
- * 1. Closing the main content wrapper (opened in header.php).
- * 2. Rendering the modern, responsive footer UI.
- * 3. Global JavaScript execution (e.g., Mobile Menu toggling, Modals, Global API bindings).
- *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @version   10.1.0
@@ -121,14 +115,12 @@
                 });
             });
 
-            // Close modal when clicking outside of modal-content
             window.addEventListener('click', function(e) {
                 if (e.target.classList.contains('modal')) {
                     e.target.classList.add('hidden');
                 }
             });
 
-            // Global toggleModal function (used by Equipment Hub / Checklists)
             window.toggleModal = function(modalId) {
                 const modal = document.getElementById(modalId);
                 if (modal) modal.classList.toggle('hidden');
@@ -146,7 +138,6 @@
             const whoNotifiedSelect = document.getElementById('whoNotifiedSelect');
 
             if (storeSelect && locationSelect) {
-                // Fetch Dynamic Hazard Locations when a Store is Selected
                 storeSelect.addEventListener('change', function() {
                     const storeId = this.value;
                     if (!storeId) {
@@ -184,7 +175,6 @@
                             }
                         });
 
-                    // Fetch Supervisors for Notified Dropdown
                     if (whoNotifiedSelect) {
                         whoNotifiedSelect.innerHTML = '<option value="">Loading supervisors...</option>';
                         fetch(`/api/hazard_reporting.php?action=get_supervisors&store_id=${storeId}`)
@@ -200,7 +190,6 @@
                     }
                 });
 
-                // Add Custom Location logic
                 if (addNewLocationBtn && addLocationModal) {
                     addNewLocationBtn.addEventListener('click', () => {
                         addLocationModal.classList.remove('hidden');
@@ -244,7 +233,6 @@
                     });
                 }
 
-                // UI Form Interaction toggles (Hazard Form specific)
                 const actionRadios = document.querySelectorAll('input[name="immediateActionTaken"]');
                 const actionLabel = document.getElementById('actionDescriptionLabel');
                 actionRadios.forEach(r => {
@@ -284,7 +272,6 @@
                     const item = e.target.closest('.report-item');
                     if (!item) return;
 
-                    // Highlight selected item in list
                     document.querySelectorAll('.report-item').forEach(el => {
                         el.classList.remove('ring-2', 'ring-secondary', 'bg-blue-50');
                         const ribbon = el.querySelector('.absolute.left-0');
@@ -302,6 +289,10 @@
                     .then(data => {
                         if (data.success) {
                             const r = data.data;
+                            
+                            // BUG FIX: Using correct 'created_at' column to parse date safely
+                            const dateObserved = new Date(r.created_at).toLocaleString();
+
                             let html = `
                                 <div class="p-6 animate-fade-in-up w-full">
                                     <div class="flex justify-between items-start border-b border-gray-100 pb-4 mb-6">
@@ -314,7 +305,7 @@
                                     
                                     <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 shadow-inner text-sm">
                                         <div><span class="block text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">Location</span><span class="font-bold text-primary">${r.location_name}</span></div>
-                                        <div><span class="block text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">Date Observed</span><span class="font-bold text-primary">${new Date(r.hazard_observed_at).toLocaleString()}</span></div>
+                                        <div><span class="block text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">Date Observed</span><span class="font-bold text-primary">${dateObserved}</span></div>
                                     </div>
 
                                     <div class="space-y-6 text-sm">
@@ -330,7 +321,6 @@
                                     </div>
                             `;
 
-                            // Inject Edit button if report is not closed
                             if (r.status !== 'Closed') {
                                 html += `
                                     <div class="mt-8 pt-4 border-t border-gray-100 text-right">
