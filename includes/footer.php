@@ -2,551 +2,355 @@
 /**
  * Footer Template - includes/footer.php
  *
- * This file contains the closing HTML structure for every page.
- * It includes the main footer (styled with Tailwind CSS) and all the
- * client-side JavaScript logic for the application's dynamic features.
- *
- * FEATURES:
- * - Responsive Tailwind Footer with Brand, Links, and Contact info.
- * - Modular JavaScript architecture to prevent page conflicts.
- * - Logic for Hazard Reporting (Dependent Dropdowns, Modals, Validation).
- * - Logic for Dashboard Filtering and Statistics.
- * - Logic for Master-Detail Report Viewing & Status Management (Editing/Closing).
- * - Logic for Advanced Statistics & Metrics Dashboard (Beta 04).
+ * This file contains the closing HTML structure for the application.
+ * It handles:
+ * 1. Closing the main content wrapper (opened in header.php).
+ * 2. Rendering the modern, responsive footer UI.
+ * 3. Global JavaScript execution (e.g., Mobile Menu toggling, Modals, Global API bindings).
  *
  * @package   NorthPoint360
  * @author    macweb.ca
- * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   4.4.0 (NorthPoint Beta 04)
+ * @version   10.1.0
  */
 ?>
-    </main> <!-- End of Main Content Wrapper (Opened in header.php) -->
+    </main> <!-- Closes the <main> tag opened in header.php -->
 
-    <!-- Footer (Styled with Tailwind CSS) -->
-    <footer class="bg-primary text-white mt-auto border-t-4 border-secondary">
-        <!-- Expanded to max-w-7xl in Beta 04 to match the new global layout width -->
-        <div class="max-w-7xl mx-auto px-6 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+    <!-- Modern Footer -->
+    <footer class="bg-primary text-slate-400 pt-16 pb-8 border-t border-slate-800 mt-auto relative overflow-hidden">
+        
+        <!-- Subtle Background Glow -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 lg:gap-16 mb-12">
                 
-                <!-- Column 1: Brand & About -->
-                <div class="space-y-4">
-                    <div class="bg-white p-2 rounded w-fit">
-                        <img src="style/images/logo.png" alt="NorthPoint 360 Logo" class="h-10 opacity-90">
-                    </div>
-                    <p class="text-gray-400 text-sm leading-relaxed">
-                        <strong class="text-white">NorthPoint 360</strong> is your central command for workplace safety compliance, reporting, and operational excellence.
+                <!-- Brand & About Section -->
+                <div class="md:col-span-1 lg:col-span-2">
+                    <a href="/" class="flex items-center gap-3 mb-5 group w-fit focus:outline-none">
+                        <img src="/style/images/logo.png" alt="NorthPoint 360" class="h-8 w-auto grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+                        <div class="flex flex-col justify-center">
+                            <span class="text-[1.15rem] font-extrabold text-white leading-none tracking-tight font-heading">NORTHPOINT<span class="text-secondary">360</span></span>
+                        </div>
+                    </a>
+                    <p class="text-sm text-slate-400 leading-relaxed max-w-md">
+                        The ultimate enterprise Environment, Health, and Safety (EHS) management platform built for the modern workforce. Digitize your safety culture today.
                     </p>
                 </div>
 
-                <!-- Column 2: Quick Links -->
+                <!-- Quick Links -->
                 <div>
-                    <h3 class="text-lg font-bold text-secondary mb-4 border-b border-gray-700 pb-2 inline-block">Quick Links</h3>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="/" class="hover:text-secondary transition flex items-center"><i class="fas fa-home w-5 mr-2"></i> Home</a></li>
-                        <li><a href="/services" class="hover:text-secondary transition flex items-center"><i class="fas fa-layer-group w-5 mr-2"></i> Solutions</a></li>
-                        <li><a href="/dashboard" class="hover:text-secondary transition flex items-center"><i class="fas fa-tachometer-alt w-5 mr-2"></i> Dashboard</a></li>
-                        <li><a href="/login" class="hover:text-secondary transition flex items-center"><i class="fas fa-sign-in-alt w-5 mr-2"></i> Log In</a></li>
+                    <h4 class="text-white font-bold mb-5 uppercase tracking-widest text-xs">Platform</h4>
+                    <ul class="space-y-3 text-sm font-medium">
+                        <li><a href="/" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> Home</a></li>
+                        <li><a href="/services" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> Solutions & Modules</a></li>
+                        <li><a href="/login" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> Client Portal</a></li>
                     </ul>
                 </div>
 
-                <!-- Column 3: Contact Info -->
+                <!-- Support & Contact -->
                 <div>
-                    <h3 class="text-lg font-bold text-secondary mb-4 border-b border-gray-700 pb-2 inline-block">Contact</h3>
-                    <ul class="space-y-3 text-sm text-gray-400">
-                        <li class="flex items-start">
-                            <i class="fas fa-envelope w-5 mt-1 text-secondary mr-2"></i> 
-                            <span>support@macweb.ca</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-phone w-5 mt-1 text-secondary mr-2"></i> 
-                            <span>(902) 754 1070</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt w-5 mt-1 text-secondary mr-2"></i> 
-                            <span>Moncton, NB, Canada</span>
-                        </li>
+                    <h4 class="text-white font-bold mb-5 uppercase tracking-widest text-xs">Support</h4>
+                    <ul class="space-y-3 text-sm font-medium">
+                        <li><a href="/about" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> About NorthPoint</a></li>
+                        <li><a href="/contact" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> Contact Us</a></li>
+                        <li><a href="mailto:support@macweb.ca" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> support@macweb.ca</a></li>
                     </ul>
                 </div>
+
             </div>
-            
-            <!-- Copyright Bar -->
-            <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500 text-xs">
-                &copy; <span id="currentYearFooter"></span> MacWeb.ca. All rights reserved.
+
+            <!-- Bottom Row: Copyright & Legal -->
+            <div class="pt-8 border-t border-slate-800/80 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-xs text-slate-500 font-medium">
+                    &copy; <?php echo date('Y'); ?> macweb.ca. All Rights Reserved. <span class="hidden sm:inline">|</span> <span class="block sm:inline mt-1 sm:mt-0 text-slate-600">NorthPoint 360 Beta 10</span>
+                </p>
+                <div class="flex gap-6 text-xs font-medium">
+                    <a href="#" class="text-slate-500 hover:text-slate-300 transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-slate-500 hover:text-slate-300 transition-colors">Terms of Service</a>
+                </div>
             </div>
         </div>
     </footer>
 
-    <!-- Application JavaScript -->
+    <!-- Global Application Scripts -->
     <script>
-        // Global Modal Logic for "Close Report" functionality (used in store-reports)
-        window.openCloseModal = function(reportId) {
-            const modal = document.getElementById('closeReportModal');
-            if(modal) {
-                document.getElementById('closeReportId').value = reportId;
-                document.getElementById('resolutionComments').value = '';
-                modal.classList.remove('hidden');
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             
-            // ============================================================
-            // 1. GLOBAL LOGIC
-            // ============================================================
-            
-            // Set Copyright Year
-            const yearSpan = document.getElementById('currentYearFooter');
-            if (yearSpan) yearSpan.textContent = new Date().getFullYear();
-
-            // Mobile Menu Toggle (for Header)
+            // ==========================================
+            // 1. Mobile Menu Toggle Logic
+            // ==========================================
             const mobileBtn = document.getElementById('mobile-menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');
+
             if (mobileBtn && mobileMenu) {
-                mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-            }
-
-            // --- Modal Close Logic ---
-            const closeReportModal = document.getElementById('closeReportModal');
-            if (closeReportModal) {
-                document.querySelectorAll('.close-modal-btn').forEach(btn => {
-                    btn.addEventListener('click', () => closeReportModal.classList.add('hidden'));
-                });
-                
-                // Confirm Close Action
-                document.getElementById('confirmCloseBtn').addEventListener('click', () => {
-                    const reportId = document.getElementById('closeReportId').value;
-                    const comments = document.getElementById('resolutionComments').value.trim();
-                    if(!comments) { alert('Please enter resolution actions taken.'); return; }
+                mobileBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    mobileMenu.classList.toggle('hidden');
                     
-                    fetch('/api/hazard_reporting.php?action=close_report', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ report_id: reportId, resolution_comments: comments })
-                    }).then(r=>r.json()).then(res => {
-                        if(res.success) {
-                            closeReportModal.classList.add('hidden');
-                            
-                            // Reload the Store Report list to reflect the new 'Closed' status
-                            const storeSelector = document.getElementById('storeSelector');
-                            if (storeSelector) storeSelector.dispatchEvent(new Event('change'));
-
-                            // Briefly show success before list refreshes UI
-                            const viewer = document.getElementById('reportViewer');
-                            if(viewer) viewer.innerHTML = `<div class="p-8 text-center text-green-500 font-bold"><i class="fas fa-check-circle text-4xl mb-3"></i><br>Report Successfully Closed. Reloading data...</div>`;
-                        } else {
-                            alert('Error: ' + res.message);
-                        }
-                    });
-                });
-            }
-
-            // ============================================================
-            // 2. HAZARD REPORT FORM LOGIC
-            // ============================================================
-            const hazardFormStoreSelect = document.getElementById('storeSelect');
-            if (hazardFormStoreSelect) {
-                const reportedBySelect = document.getElementById('reportedBySelect');
-                const hazardLocationSelect = document.getElementById('hazardLocationSelect');
-                const addNewLocationBtn = document.getElementById('addNewLocationBtn');
-                const whoNotifiedSelect = document.getElementById('whoNotifiedSelect');
-                
-                const today = new Date();
-                const repDate = document.getElementById('reporterDate');
-                if(repDate) {
-                    const yyyy = today.getFullYear();
-                    const mm = String(today.getMonth() + 1).padStart(2, '0');
-                    const dd = String(today.getDate()).padStart(2, '0');
-                    const HH = String(today.getHours()).padStart(2, '0');
-                    const MM = String(today.getMinutes()).padStart(2, '0');
-                    repDate.value = `${yyyy}-${mm}-${dd}`;
-                    document.getElementById('hazardDate').value = `${yyyy}-${mm}-${dd}`;
-                    document.getElementById('reporterTime').value = `${HH}:${MM}`;
-                    document.getElementById('hazardTime').value = `${HH}:${MM}`;
-                }
-
-                hazardFormStoreSelect.addEventListener('change', function() {
-                    const storeId = this.value;
-                    if (reportedBySelect && reportedBySelect.tagName === 'SELECT') resetDropdown(reportedBySelect, 'Select a store first');
-                    resetDropdown(hazardLocationSelect, 'Select a store first');
-                    resetDropdown(whoNotifiedSelect, 'Select a store first');
-
-                    if (storeId) {
-                        if (reportedBySelect && reportedBySelect.tagName === 'SELECT') fetchData('get_employees', storeId, reportedBySelect, 'Employee');
-                        fetchData('get_locations', storeId, hazardLocationSelect, 'Location');
-                        fetchData('get_supervisors', storeId, whoNotifiedSelect, 'Supervisor');
-                        addNewLocationBtn.disabled = false;
-                        addNewLocationBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                        addNewLocationBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                    const icon = mobileBtn.querySelector('i');
+                    if (mobileMenu.classList.contains('hidden')) {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                        mobileBtn.classList.remove('bg-slate-100', 'text-primary');
                     } else {
-                        addNewLocationBtn.disabled = true;
-                        addNewLocationBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
-                        addNewLocationBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                        mobileBtn.classList.add('bg-slate-100', 'text-primary');
                     }
                 });
 
-                document.querySelectorAll('input[name="immediateActionTaken"]').forEach(radio => {
-                    radio.addEventListener('change', function() { document.getElementById('actionDescriptionLabel').textContent = (this.value === 'yes') ? 'Describe the action(s) taken:' : 'If No, why not?'; });
-                });
-
-                document.querySelectorAll('input[name="equipmentLockedOut"]').forEach(radio => {
-                    radio.addEventListener('change', function() {
-                        const keyHolderGroup = document.getElementById('keyHolderGroup');
-                        const keyHolderInput = document.getElementById('keyHolderName');
-                        if (this.value === 'yes') { keyHolderGroup.style.display = 'block'; keyHolderInput.required = true; } 
-                        else { keyHolderGroup.style.display = 'none'; keyHolderInput.required = false; keyHolderInput.value = ''; }
-                    });
-                });
-
-                const modal = document.getElementById('addLocationModal');
-                if (modal) {
-                    const closeBtn = document.querySelector('.modal-close-btn');
-                    document.getElementById('addNewLocationBtn').addEventListener('click', () => modal.classList.remove('hidden'));
-                    if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
-                    window.addEventListener('click', (event) => { if (event.target == modal) modal.classList.add('hidden'); });
-                    
-                    document.getElementById('saveNewLocationBtn').addEventListener('click', () => {
-                        const locationName = document.getElementById('newLocationName').value.trim();
-                        const sId = hazardFormStoreSelect.value;
-                        if (!locationName || !sId) { alert('Please enter a location.'); return; }
-                        
-                        fetch('/api/hazard_reporting.php?action=add_location', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ store_id: sId, location_name: locationName })
-                        }).then(r => r.json()).then(res => {
-                            if (res.success) {
-                                if (!document.querySelector(`#hazardLocationSelect option[value='${res.id}']`)) {
-                                    hazardLocationSelect.add(new Option(res.location_name, res.id), null);
-                                }
-                                hazardLocationSelect.value = res.id;
-                                document.getElementById('newLocationName').value = '';
-                                modal.classList.add('hidden');
-                            } else alert('Error: ' + res.message);
-                        });
-                    });
-                }
-                
-                const photoInput = document.getElementById('photoUpload');
-                if (photoInput) photoInput.addEventListener('change', function() { validateFiles(this, 5, 2097152, 'photos', '2MB'); });
-                const videoInput = document.getElementById('videoUpload');
-                if (videoInput) videoInput.addEventListener('change', function() { validateFiles(this, 2, 209715200, 'videos', '200MB'); });
-            }
-
-            // ============================================================
-            // 3. REPORT VIEWING LOGIC (Master-Detail Views)
-            // ============================================================
-            const selectableReportList = document.querySelector('.report-list-selectable');
-            if (selectableReportList) {
-                const viewer = document.getElementById('reportViewer');
-                
-                selectableReportList.addEventListener('click', function(e) {
-                    const item = e.target.closest('.report-item');
-                    if (!item) return;
-                    
-                    // Highlight active list item
-                    document.querySelectorAll('.report-item').forEach(el => el.classList.remove('ring-2', 'ring-secondary', 'bg-blue-50'));
-                    item.classList.add('ring-2', 'ring-secondary', 'bg-blue-50');
-
-                    const reportId = item.dataset.reportId;
-                    if(viewer) {
-                        // Reset viewer state
-                        viewer.classList.remove('items-center', 'justify-center', 'text-gray-400');
-                        viewer.classList.add('block', 'ring-primary', 'ring-opacity-50');
-                        viewer.innerHTML = '<div class="p-8 text-center text-gray-500 w-full"><i class="fas fa-spinner fa-spin mr-2"></i>Loading details...</div>';
-                        
-                        // Mobile scroll
-                        if(window.innerWidth < 1024) viewer.scrollIntoView({ behavior: 'smooth' });
-
-                        // Fetch detailed report data
-                        fetch(`/api/hazard_reporting.php?action=get_report_details&id=${reportId}`)
-                        .then(r => r.json()).then(res => {
-                            if(res.success) {
-                                const r = res.data;
-                                let files = '';
-                                
-                                // Process Media Attachments
-                                if(r.files?.length) {
-                                    files = '<h4 class="font-bold mt-6 mb-3 text-sm uppercase text-gray-500 border-b pb-2">Attachments</h4><div class="grid grid-cols-2 gap-4">';
-                                    r.files.forEach(f => {
-                                        if(f.file_type === 'photo') files += `<a href="${f.file_path}" target="_blank"><img src="${f.file_path}" class="h-32 w-full object-cover rounded shadow-sm border hover:opacity-80 transition"></a>`;
-                                        else files += `<a href="${f.file_path}" target="_blank" class="block p-6 bg-primary text-white text-center rounded shadow-sm hover:bg-slate-800 transition"><i class="fas fa-play-circle text-2xl mb-2"></i><br>View Video</a>`;
-                                    });
-                                    files += '</div>';
-                                }
-
-                                // Contextual Action Buttons
-                                let actionButtons = '';
-                                const isMyReports = window.location.pathname.includes('my-reports');
-                                const isStoreReports = window.location.pathname.includes('store-reports');
-                                
-                                if (isMyReports && r.status !== 'Closed') {
-                                    actionButtons += `<a href="/edit-report?id=${r.id}" class="mt-2 text-xs font-bold bg-white text-secondary border border-secondary px-3 py-1 rounded hover:bg-secondary hover:text-white transition shadow-sm inline-flex items-center"><i class="fas fa-edit mr-1"></i> Edit Details</a>`;
-                                }
-                                
-                                if (isStoreReports && r.can_close) {
-                                    actionButtons += `<button onclick="window.openCloseModal(${r.id})" class="mt-2 text-xs font-bold bg-white text-accent-red border border-accent-red px-3 py-1 rounded hover:bg-accent-red hover:text-white transition shadow-sm inline-flex items-center ml-2"><i class="fas fa-check-circle mr-1"></i> Close Report</button>`;
-                                }
-
-                                const statusBadgeClass = r.status === 'Open' ? 'bg-green-100 text-green-700' : (r.status === 'Under Review' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-600');
-                                
-                                // Parse Resolution Comments Block
-                                let additionalCommentsBlock = '';
-                                if(r.additional_comments && r.additional_comments.trim() !== '') {
-                                    additionalCommentsBlock = `
-                                        <div class="mt-6 border-t pt-4">
-                                            <span class="block text-xs font-bold text-gray-400 uppercase mb-2">Resolution & Comments</span>
-                                            <div class="bg-blue-50 p-4 rounded border border-blue-100 text-primary font-medium whitespace-pre-wrap">${htmlspecialchars(r.additional_comments)}</div>
-                                        </div>
-                                    `;
-                                }
-
-                                // Inject Viewer HTML
-                                viewer.innerHTML = `
-                                    <div class="flex justify-between items-start border-b pb-4 mb-4">
-                                        <div>
-                                            <div class="flex items-center gap-3 mb-1">
-                                                <h3 class="text-2xl font-bold text-primary">Report #${r.id}</h3>
-                                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusBadgeClass}">${r.status}</span>
-                                            </div>
-                                            <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i> ${htmlspecialchars(r.hazard_location_name)}</p>
-                                        </div>
-                                        <div class="flex flex-col items-end">
-                                            <span class="px-3 py-1 rounded-full text-xs font-bold text-white bg-${getRiskColor(r.risk_level)} shadow-sm">Risk Level ${r.risk_level}</span>
-                                            <div>${actionButtons}</div>
-                                        </div>
-                                    </div>
-                                    <div class="space-y-4 text-sm text-gray-800">
-                                        <div class="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                            <div><span class="block text-xs font-bold text-gray-400 uppercase mb-1">Reported By</span>${htmlspecialchars(r.reporter_name)}</div>
-                                            <div><span class="block text-xs font-bold text-gray-400 uppercase mb-1">Date Logged</span>${new Date(r.created_at).toLocaleString()}</div>
-                                        </div>
-                                        <div class="mt-4">
-                                            <span class="block text-xs font-bold text-gray-400 uppercase mb-1">Hazard Description</span>
-                                            <div class="bg-gray-50 p-4 rounded border border-gray-100">${nl2br(htmlspecialchars(r.hazard_description))}</div>
-                                        </div>
-                                        <div class="mt-4">
-                                            <span class="block text-xs font-bold text-gray-400 uppercase mb-1">Immediate Action Taken</span>
-                                            <div class="bg-gray-50 p-4 rounded border border-gray-100">${nl2br(htmlspecialchars(r.action_description))}</div>
-                                        </div>
-                                        ${additionalCommentsBlock}
-                                        ${files}
-                                    </div>
-                                `;
-                            } else { viewer.innerHTML = `<div class="text-red-500 p-4 font-bold text-center">${res.message}</div>`; }
-                        });
+                document.addEventListener('click', (e) => {
+                    if (!mobileMenu.classList.contains('hidden') && !mobileMenu.contains(e.target) && !mobileBtn.contains(e.target)) {
+                        mobileMenu.classList.add('hidden');
+                        const icon = mobileBtn.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                        mobileBtn.classList.remove('bg-slate-100', 'text-primary');
                     }
                 });
             }
 
-            // ============================================================
-            // 4. STORE DASHBOARD LOGIC (List Generation & Filtering)
-            // ============================================================
-            const dashSelector = document.getElementById('storeSelector');
-            if (dashSelector) {
-                const dashContent = document.getElementById('dashboardContent');
-                const listContainer = document.getElementById('reportListContainer');
-                const startFilter = document.getElementById('dateStartFilter');
-                const endFilter = document.getElementById('dateEndFilter');
-                const riskFilter = document.getElementById('riskFilter');
-                let allReports = [];
-
-                dashSelector.addEventListener('change', function() {
-                    if(this.value) {
-                        dashContent.style.display = 'block';
-                        const viewer = document.getElementById('reportViewer');
-                        if (viewer) {
-                            viewer.innerHTML = '<div class="p-8 text-center text-gray-500 w-full flex flex-col items-center"><i class="fas fa-hand-pointer text-5xl mb-4 opacity-50"></i><p class="text-lg font-medium">Select a report from the list to view details</p></div>';
-                        }
-                        listContainer.innerHTML = '<div class="text-center p-4 text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Loading reports...</div>';
-                        fetchStoreData(this.value);
-                    } else { dashContent.style.display = 'none'; }
+            // ==========================================
+            // 2. Global Modal Handlers
+            // ==========================================
+            const closeBtns = document.querySelectorAll('.modal-close-btn, .close-modal-btn');
+            closeBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    if (modal) modal.classList.add('hidden');
                 });
-                
-                if(startFilter) startFilter.addEventListener('change', applyFilters);
-                if(endFilter) endFilter.addEventListener('change', applyFilters);
-                if(riskFilter) riskFilter.addEventListener('change', applyFilters);
+            });
 
-                function fetchStoreData(id) {
-                    fetch(`/api/hazard_reporting.php?action=get_store_stats&store_id=${id}`).then(r=>r.json()).then(res=>{
-                        if(res.success) {
-                            document.getElementById('statMonthCount').textContent = res.data.reports_this_month;
-                            document.getElementById('statRisk1').textContent = res.data.risk_counts['1'];
-                            document.getElementById('statRisk2').textContent = res.data.risk_counts['2'];
-                            document.getElementById('statRisk3').textContent = res.data.risk_counts['3'];
-                        }
-                    });
-                    fetch(`/api/hazard_reporting.php?action=get_store_reports&store_id=${id}`).then(r=>r.json()).then(res=>{
-                        if(res.success) { allReports = res.data; applyFilters(); } 
-                        else { listContainer.innerHTML = `<div class="text-center text-red-500 p-4">Error loading reports.</div>`; }
-                    });
+            // Close modal when clicking outside of modal-content
+            window.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.classList.add('hidden');
                 }
+            });
 
-                function applyFilters() {
-                    const start = startFilter.value;
-                    const end = endFilter.value;
-                    const risk = riskFilter.value;
+            // Global toggleModal function (used by Equipment Hub / Checklists)
+            window.toggleModal = function(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) modal.classList.toggle('hidden');
+            };
 
-                    const filtered = allReports.filter(r => {
-                        const d = r.created_at.split(' ')[0];
-                        const riskMatch = !risk || r.risk_level == risk;
-                        const startDateMatch = !start || d >= start;
-                        const endDateMatch = !end || d <= end;
-                        return riskMatch && startDateMatch && endDateMatch;
-                    });
-                    populateReportList(filtered);
-                }
+            // ==========================================
+            // 3. Hazard Report Module Logic (Legacy Hooks)
+            // ==========================================
+            const storeSelect = document.getElementById('storeSelect');
+            const locationSelect = document.getElementById('hazardLocationSelect');
+            const addNewLocationBtn = document.getElementById('addNewLocationBtn');
+            const addLocationModal = document.getElementById('addLocationModal');
+            const saveNewLocationBtn = document.getElementById('saveNewLocationBtn');
+            const newLocationNameInput = document.getElementById('newLocationName');
+            const whoNotifiedSelect = document.getElementById('whoNotifiedSelect');
 
-                function populateReportList(reports) {
-                    let html = '';
-                    if (reports.length > 0) {
-                        reports.forEach(report => {
-                            const statusColor = report.status === 'Open' ? 'bg-green-500' : (report.status === 'Under Review' ? 'bg-orange-500' : 'bg-gray-400');
-                            html += `
-                                <div class="report-item bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md cursor-pointer mb-3 transition relative overflow-hidden group" data-report-id="${report.id}">
-                                    <div class="absolute left-0 top-0 bottom-0 w-1 ${statusColor}"></div>
-                                    <div class="pl-2">
-                                        <div class="flex justify-between items-center mb-1">
-                                            <span class="font-bold text-primary group-hover:text-secondary transition-colors">#${report.id}</span>
-                                            <span class="text-[10px] text-gray-500">${new Date(report.created_at).toLocaleDateString()}</span>
-                                        </div>
-                                        <div class="text-sm font-medium text-gray-700 truncate group-hover:text-primary transition-colors">${htmlspecialchars(report.hazard_location_name)}</div>
-                                        <div class="mt-2 flex justify-between items-center">
-                                            <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold text-white bg-${getRiskColor(report.risk_level)}">Risk ${report.risk_level}</span>
-                                            <span class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">${report.status}</span>
-                                        </div>
-                                    </div>
-                                </div>`;
-                        });
-                    } else { html = '<div class="text-center text-gray-400 p-8">No reports match the current filters.</div>'; }
-                    listContainer.innerHTML = html;
-                }
-            }
-
-            // ============================================================
-            // 5. STATISTICS & METRICS LOGIC (Beta 04)
-            // ============================================================
-            const metricsStoreSelect = document.getElementById('metricsStoreSelect');
-            if (metricsStoreSelect) {
-                const metricsMonthSelect = document.getElementById('metricsMonthSelect');
-                const metricsContent = document.getElementById('metricsContent');
-                const metricsPlaceholder = document.getElementById('metricsPlaceholder');
-
-                function fetchMetrics() {
-                    const storeId = metricsStoreSelect.value;
-                    const month = metricsMonthSelect.value;
-                    
+            if (storeSelect && locationSelect) {
+                // Fetch Dynamic Hazard Locations when a Store is Selected
+                storeSelect.addEventListener('change', function() {
+                    const storeId = this.value;
                     if (!storeId) {
-                        metricsContent.style.display = 'none';
-                        metricsPlaceholder.style.display = 'flex';
+                        locationSelect.innerHTML = '<option value="">-- Select a store first --</option>';
+                        locationSelect.disabled = true;
+                        if (addNewLocationBtn) {
+                            addNewLocationBtn.disabled = true;
+                            addNewLocationBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                            addNewLocationBtn.classList.remove('bg-secondary', 'hover:bg-blue-600');
+                        }
+                        if (whoNotifiedSelect) {
+                            whoNotifiedSelect.innerHTML = '<option value="">-- Select a store first --</option>';
+                            whoNotifiedSelect.disabled = true;
+                        }
                         return;
                     }
 
-                    fetch(`/api/hazard_reporting.php?action=get_advanced_metrics&store_id=${storeId}&month=${month}`)
-                    .then(r => r.json())
-                    .then(res => {
-                        if(res.success) {
-                            metricsPlaceholder.style.display = 'none';
-                            metricsContent.style.display = 'block';
-                            renderMetrics(res.data);
-                        } else {
-                            alert("Failed to load metrics data.");
-                        }
+                    locationSelect.innerHTML = '<option value="">Loading locations...</option>';
+                    locationSelect.disabled = true;
+                    
+                    fetch(`/api/hazard_reporting.php?action=get_locations&store_id=${storeId}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            locationSelect.innerHTML = '<option value="">-- Select a Location --</option>';
+                            data.forEach(loc => {
+                                locationSelect.add(new Option(loc.location_name, loc.id));
+                            });
+                            locationSelect.disabled = false;
+                            locationSelect.classList.remove('bg-gray-50', 'cursor-not-allowed');
+                            
+                            if (addNewLocationBtn) {
+                                addNewLocationBtn.disabled = false;
+                                addNewLocationBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                                addNewLocationBtn.classList.add('bg-secondary');
+                            }
+                        });
+
+                    // Fetch Supervisors for Notified Dropdown
+                    if (whoNotifiedSelect) {
+                        whoNotifiedSelect.innerHTML = '<option value="">Loading supervisors...</option>';
+                        fetch(`/api/hazard_reporting.php?action=get_supervisors&store_id=${storeId}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                whoNotifiedSelect.innerHTML = '<option value="">-- Select Supervisor --</option>';
+                                data.forEach(user => {
+                                    whoNotifiedSelect.add(new Option(`${user.first_name} ${user.last_name}`, user.id));
+                                });
+                                whoNotifiedSelect.disabled = false;
+                                whoNotifiedSelect.classList.remove('bg-gray-50', 'cursor-not-allowed');
+                            });
+                    }
+                });
+
+                // Add Custom Location logic
+                if (addNewLocationBtn && addLocationModal) {
+                    addNewLocationBtn.addEventListener('click', () => {
+                        addLocationModal.classList.remove('hidden');
                     });
                 }
 
-                metricsStoreSelect.addEventListener('change', fetchMetrics);
-                metricsMonthSelect.addEventListener('change', fetchMetrics);
-
-                function renderMetrics(data) {
-                    // Update Top Cards
-                    document.getElementById('mTotal').textContent = data.total;
-                    document.getElementById('mLockout').textContent = data.lockout_count;
-                    
-                    // Combine Open and Under Review for the orange box
-                    const openCount = (data.status_counts['Open'] || 0) + (data.status_counts['Under Review'] || 0);
-                    document.getElementById('mOpen').textContent = openCount;
-                    document.getElementById('mClosed').textContent = data.status_counts['Closed'] || 0;
-                    
-                    // Update Risk Levels
-                    document.getElementById('mRisk1').textContent = data.risk_levels['1'] || 0;
-                    document.getElementById('mRisk2').textContent = data.risk_levels['2'] || 0;
-                    document.getElementById('mRisk3').textContent = data.risk_levels['3'] || 0;
-
-                    // Helper to render responsive bars for locations & hazard types
-                    const renderBars = (obj, containerId, colorClass) => {
-                        let html = '';
-                        // Find the max value to calculate percentage widths correctly
-                        const values = Object.values(obj);
-                        const max = values.length > 0 ? Math.max(...values) : 1;
-                        
-                        for(let key in obj) {
-                            const count = obj[key];
-                            const pct = Math.max((count / max) * 100, 5); // 5% minimum so bar is visible
-                            
-                            html += `
-                                <div class="mb-4">
-                                    <div class="flex justify-between items-end mb-1">
-                                        <span class="text-xs font-bold text-gray-600 truncate mr-2" title="${htmlspecialchars(key)}">${htmlspecialchars(key)}</span>
-                                        <span class="text-xs font-bold text-gray-500">${count}</span>
-                                    </div>
-                                    <div class="w-full bg-gray-100 rounded-full h-2">
-                                        <div class="h-2 rounded-full ${colorClass}" style="width: ${pct}%"></div>
-                                    </div>
-                                </div>
-                            `;
+                if (saveNewLocationBtn && newLocationNameInput) {
+                    saveNewLocationBtn.addEventListener('click', () => {
+                        const storeId = storeSelect.value;
+                        const locName = newLocationNameInput.value.trim();
+                        if (!storeId || !locName) {
+                            alert("Please enter a location name.");
+                            return;
                         }
-                        document.getElementById(containerId).innerHTML = html || '<div class="text-center text-sm text-gray-400 p-4 border border-dashed rounded">No data for this period.</div>';
-                    };
 
-                    renderBars(data.locations, 'mLocations', 'bg-indigo-500');
-                    renderBars(data.hazard_types, 'mHazardTypes', 'bg-indigo-400');
+                        const originalText = saveNewLocationBtn.innerHTML;
+                        saveNewLocationBtn.innerHTML = "Saving...";
+                        saveNewLocationBtn.disabled = true;
+
+                        fetch('/api/hazard_reporting.php?action=add_location', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ store_id: storeId, location_name: locName })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                const opt = new Option(data.location_name, data.id);
+                                locationSelect.add(opt);
+                                locationSelect.value = data.id;
+                                addLocationModal.classList.add('hidden');
+                                newLocationNameInput.value = '';
+                            } else {
+                                alert(data.message || "Failed to add location.");
+                            }
+                        })
+                        .finally(() => {
+                            saveNewLocationBtn.innerHTML = originalText;
+                            saveNewLocationBtn.disabled = false;
+                        });
+                    });
                 }
-            }
 
+                // UI Form Interaction toggles (Hazard Form specific)
+                const actionRadios = document.querySelectorAll('input[name="immediateActionTaken"]');
+                const actionLabel = document.getElementById('actionDescriptionLabel');
+                actionRadios.forEach(r => {
+                    r.addEventListener('change', function() {
+                        if(this.value === 'yes') actionLabel.textContent = "Describe action taken";
+                        else actionLabel.textContent = "If No, why not?";
+                    });
+                });
 
-            // ============================================================
-            // 6. HELPER FUNCTIONS
-            // ============================================================
-            function fetchData(action, id, el, name) {
-                if(!el) return;
-                el.innerHTML = '<option>Loading...</option>';
-                fetch(`/api/hazard_reporting.php?action=${action}&store_id=${id}`).then(r=>r.json()).then(d=>{
-                    el.innerHTML = `<option value="">-- Select ${name} --</option>`;
-                    d.forEach(i => el.add(new Option(i.location_name || `${i.first_name} ${i.last_name}`, i.id)));
-                    el.disabled = false;
+                const lockoutRadios = document.querySelectorAll('input[name="equipmentLockedOut"]');
+                const keyHolderGroup = document.getElementById('keyHolderGroup');
+                const keyHolderInput = document.getElementById('keyHolderName');
+                lockoutRadios.forEach(r => {
+                    r.addEventListener('change', function() {
+                        if(this.value === 'yes') {
+                            keyHolderGroup.style.display = 'block';
+                            if (keyHolderInput) keyHolderInput.setAttribute('required', 'required');
+                        } else {
+                            keyHolderGroup.style.display = 'none';
+                            if (keyHolderInput) {
+                                keyHolderInput.removeAttribute('required');
+                                keyHolderInput.value = '';
+                            }
+                        }
+                    });
                 });
             }
-            
-            function resetDropdown(el, msg) { 
-                if (el && el.tagName === 'SELECT') { 
-                    el.innerHTML = `<option>${msg}</option>`; 
-                    el.disabled = true; 
-                } 
+
+            // ==========================================
+            // 4. "My Reports" Viewer Logic
+            // ==========================================
+            const reportList = document.querySelector('.report-list-selectable');
+            const reportViewer = document.getElementById('reportViewer');
+
+            if (reportList && reportViewer && window.location.pathname.includes('my-reports')) {
+                reportList.addEventListener('click', function(e) {
+                    const item = e.target.closest('.report-item');
+                    if (!item) return;
+
+                    // Highlight selected item in list
+                    document.querySelectorAll('.report-item').forEach(el => {
+                        el.classList.remove('ring-2', 'ring-secondary', 'bg-blue-50');
+                        const ribbon = el.querySelector('.absolute.left-0');
+                        if(ribbon) ribbon.classList.remove('w-2');
+                    });
+                    item.classList.add('ring-2', 'ring-secondary', 'bg-blue-50');
+                    const ribbon = item.querySelector('.absolute.left-0');
+                    if(ribbon) ribbon.classList.add('w-2');
+
+                    const reportId = item.getAttribute('data-report-id');
+                    reportViewer.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-secondary"><i class="fas fa-circle-notch fa-spin text-4xl mb-4"></i><p class="font-bold">Loading Details...</p></div>`;
+
+                    fetch(`/api/hazard_reporting.php?action=get_report_details&id=${reportId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            const r = data.data;
+                            let html = `
+                                <div class="p-6 animate-fade-in-up w-full">
+                                    <div class="flex justify-between items-start border-b border-gray-100 pb-4 mb-6">
+                                        <div>
+                                            <h3 class="text-2xl font-bold text-primary">Report #${r.id}</h3>
+                                            <p class="text-sm font-bold text-gray-500 mt-1">${r.hazard_type}</p>
+                                        </div>
+                                        <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-bold shadow-sm border border-gray-200">${r.status}</span>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 shadow-inner text-sm">
+                                        <div><span class="block text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">Location</span><span class="font-bold text-primary">${r.location_name}</span></div>
+                                        <div><span class="block text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-1">Date Observed</span><span class="font-bold text-primary">${new Date(r.hazard_observed_at).toLocaleString()}</span></div>
+                                    </div>
+
+                                    <div class="space-y-6 text-sm">
+                                        <div>
+                                            <span class="block text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Hazard Description</span>
+                                            <div class="bg-white p-4 rounded-lg border border-gray-200 text-gray-700 whitespace-pre-wrap shadow-sm">${r.hazard_description}</div>
+                                        </div>
+
+                                        <div>
+                                            <span class="block text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Immediate Actions Taken</span>
+                                            <div class="bg-white p-4 rounded-lg border border-gray-200 text-gray-700 whitespace-pre-wrap shadow-sm">${r.action_description}</div>
+                                        </div>
+                                    </div>
+                            `;
+
+                            // Inject Edit button if report is not closed
+                            if (r.status !== 'Closed') {
+                                html += `
+                                    <div class="mt-8 pt-4 border-t border-gray-100 text-right">
+                                        <a href="/edit-report?id=${r.id}" class="btn btn-secondary text-sm shadow-sm hover:shadow transition"><i class="fas fa-edit mr-2 text-gray-400"></i> Edit Details</a>
+                                    </div>
+                                `;
+                            }
+                            html += `</div>`;
+                            reportViewer.innerHTML = html;
+                        } else {
+                            reportViewer.innerHTML = `<div class="text-red-500 font-bold p-8"><i class="fas fa-exclamation-triangle mr-2"></i>${data.message}</div>`;
+                        }
+                    })
+                    .catch(err => {
+                        reportViewer.innerHTML = `<div class="text-red-500 font-bold p-8">Network error retrieving details.</div>`;
+                    });
+                });
             }
-            
-            function htmlspecialchars(str) {
-                if (typeof str !== 'string') return '';
-                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-                return str.replace(/[&<>"']/g, m => map[m]);
-            }
-            
-            function nl2br(str) {
-                if (typeof str !== 'string') return '';
-                return str.replace(/\\r\\n|\\n|\\r/g, '<br>');
-            }
-            
-            function getRiskColor(level) {
-                if(level == 1) return 'secondary text-black'; 
-                if(level == 2) return 'orange-500'; 
-                return 'accent-red'; 
-            }
-            
-            function validateFiles(input, max, size, name, sizeStr) {
-                if(input.files.length > max) { alert(`Max ${max} ${name}`); input.value = ''; }
-                for(let f of input.files) if(f.size > size) { alert(`File too large (${sizeStr} limit)`); input.value = ''; }
-            }
-            
         });
     </script>
+
 </body>
 </html>

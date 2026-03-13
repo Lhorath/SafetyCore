@@ -15,16 +15,10 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
  * 5. Tailwind CSS Configuration (Custom NorthPoint 360 Brand Palette)
  * 6. Responsive Navigation Bar (Desktop & Mobile) with State-Aware Links
  *
- * Updates in Beta 05 (Dynamic SEO):
- * - Removed hardcoded $pageTitles array.
- * - Implemented dynamic database fetching from `page_seo` table for metadata.
- * - Added comprehensive Meta, OpenGraph, and Twitter Card tags.
- * - Automatically appends login-requirement notices to meta descriptions for web crawlers.
- *
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   5.0.0 (NorthPoint Beta 05)
+ * @version   10.0.0
  */
 
 // Establish the database connection.
@@ -82,213 +76,201 @@ $isLoggedIn = isset($_SESSION['user']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <!-- Dynamic Title & Meta Tags -->
     <title>NorthPoint 360 &bull; <?php echo htmlspecialchars($seo['title']); ?></title>
     <meta name="description" content="<?php echo htmlspecialchars($seo['description']); ?>">
     <meta name="keywords" content="<?php echo htmlspecialchars($seo['keywords']); ?>">
     <meta name="author" content="NorthPoint 360 (macweb.ca)">
-    <!-- Prevent indexing of protected dashboard/admin routes -->
     <meta name="robots" content="<?php echo $isProtected ? 'noindex, nofollow' : 'index, follow'; ?>">
 
-    <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="NorthPoint 360 - <?php echo htmlspecialchars($seo['title']); ?>">
     <meta property="og:description" content="<?php echo htmlspecialchars($seo['description']); ?>">
     <meta property="og:image" content="<?php echo htmlspecialchars($seo['og_image']); ?>">
     <meta property="og:site_name" content="NorthPoint 360">
 
-    <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="NorthPoint 360 - <?php echo htmlspecialchars($seo['title']); ?>">
     <meta name="twitter:description" content="<?php echo htmlspecialchars($seo['description']); ?>">
     <meta name="twitter:image" content="<?php echo htmlspecialchars($seo['og_image']); ?>">
     
-    <!-- Google Fonts: Montserrat (Weights: 400, 500, 600, 700) -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-
-
-    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    // Custom Brand Palette: "Blues and Blacks"
                     colors: {
-                        primary: '#0f172a',    // Dark Slate (Almost Black/Navy) - The Foundation
-                        secondary: '#3b82f6',  // Royal Blue - Highlights & Buttons
+                        primary: '#0f172a',    // Dark Slate
+                        secondary: '#2563eb',  // Modern Blue
                         accent: {
-                            red: '#ef4444',    // Safety Red (Alerts)
-                            gray: '#111827',   // Rich Black (Text/Footer)
-                            light: '#e2e8f0'   // Light Slate (Borders/Subtle backgrounds)
+                            red: '#ef4444',
+                            gray: '#1e293b',
+                            light: '#f1f5f9'
                         },
-                        bg: '#f8fafc',         // Cool Gray (Page Background)
-                        success: '#10b981'     // Emerald Green
+                        bg: '#f8fafc',
+                        success: '#10b981'
                     },
                     fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
 
-    <!-- Custom Styles Layer (Reusable Tailwind Components) -->
     <style type="text/tailwindcss">
         @layer components {
-            /* Standard Button Styles */
             .btn {
-                @apply px-6 py-3 rounded-lg font-bold transition duration-300 ease-in-out inline-block text-center cursor-pointer;
+                @apply px-6 py-2.5 rounded-lg font-semibold transition duration-200 ease-in-out inline-flex items-center justify-center cursor-pointer tracking-wide;
             }
             .btn-primary {
-                @apply bg-secondary text-white hover:bg-blue-700 shadow-md; /* Blue Buttons */
+                @apply bg-secondary text-white hover:bg-blue-700 shadow-sm hover:shadow; 
             }
             .btn-dark {
-                @apply bg-primary text-white hover:bg-slate-800 shadow-md; /* Dark Buttons */
+                @apply bg-primary text-white hover:bg-slate-800 shadow-sm hover:shadow; 
             }
             .btn-accent {
-                @apply bg-accent-red text-white hover:bg-red-700 shadow-md; /* Red Buttons */
+                @apply bg-accent-red text-white hover:bg-red-700 shadow-sm hover:shadow; 
             }
             .btn-secondary {
-                @apply bg-gray-200 text-gray-800 hover:bg-gray-300 shadow-md; /* Neutral Buttons */
+                @apply bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm hover:shadow; 
             }
             
-            /* Form Input Styles */
             .form-input {
-                @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition bg-white;
+                @apply w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition bg-white;
             }
             .form-label {
-                @apply block mb-2 font-bold text-primary text-sm uppercase tracking-wide;
+                @apply block mb-1.5 font-semibold text-slate-700 text-sm;
             }
             
-            /* Card Container Style */
             .card {
-                @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+                @apply bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6;
             }
 
-            /* Navigation Links */
+            /* Modern Pill-Style Nav Links */
             .nav-link { 
-                @apply text-gray-600 hover:text-secondary font-semibold transition duration-200; 
+                @apply px-3.5 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-secondary hover:bg-blue-50 transition-all duration-200; 
             }
             .nav-link.active { 
-                @apply text-secondary border-b-2 border-secondary; 
+                @apply text-secondary bg-blue-50 font-semibold; 
             }
 
-            /* Modal Window Styles */
-            /* Note: 'hidden' class is applied via JS/HTML, not enforced here to allow toggling */
             .modal {
-                @apply fixed inset-0 z-50 overflow-auto bg-black bg-opacity-60 flex items-center justify-center;
+                @apply fixed inset-0 z-50 overflow-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4;
             }
             .modal-content {
-                @apply bg-white mx-auto p-6 border border-gray-300 w-11/12 max-w-lg rounded-xl shadow-2xl relative;
+                @apply bg-white w-full max-w-lg rounded-2xl shadow-2xl relative p-6;
             }
         }
         
-        /* Apply base styles to body */
         body {
-            @apply bg-bg text-accent-gray font-sans;
+            @apply bg-bg text-slate-800 font-sans antialiased;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            @apply font-heading text-primary;
         }
     </style>
-        <!-- External CSS (For custom overrides not handled by Tailwind) -->
+    
     <link rel="stylesheet" href="style/css/style.css">
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <!-- Navigation Bar -->
-    <nav class="bg-white shadow-md z-50 relative border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between items-center h-20">
+    <nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-slate-200 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
                 
-                <!-- Logo Section -->
-                <a href="/" class="flex items-center gap-3 group">
-                    <img src="style/images/logo.png" alt="NorthPoint 360 Logo" class="h-10 w-auto transition-transform group-hover:scale-105">
-                    <div class="hidden md:flex flex-col">
-                        <span class="text-xl font-extrabold text-primary leading-none tracking-tight">NORTHPOINT<span class="text-secondary">360</span></span>
-                        <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">EHS Management</span>
+                <a href="/" class="flex items-center gap-3 group focus:outline-none">
+                    <img src="style/images/logo.png" alt="NorthPoint 360" class="h-8 w-auto transition-transform duration-300 group-hover:scale-105">
+                    <div class="hidden sm:flex flex-col justify-center">
+                        <span class="text-[1.15rem] font-extrabold text-primary leading-none tracking-tight font-heading">NORTHPOINT<span class="text-secondary">360</span></span>
                     </div>
                 </a>
 
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <!-- Public Links -->
+                <div class="hidden md:flex items-center space-x-1">
                     <a href="/" class="nav-link <?php echo ($currentPage == 'home') ? 'active' : ''; ?>">Home</a>
                     <a href="/services" class="nav-link <?php echo ($currentPage == 'services') ? 'active' : ''; ?>">Solutions</a>
                     <a href="/contact" class="nav-link <?php echo ($currentPage == 'contact') ? 'active' : ''; ?>">Contact</a>
                     
-                    <!-- Authentication Logic -->
-                    <?php if ($isLoggedIn): ?>
-                        <div class="h-6 w-px bg-gray-200 mx-2"></div> <!-- Vertical Divider -->
-                        
-                        <!-- Internal App Links -->
-                        <a href="/dashboard" class="nav-link <?php echo ($currentPage == 'dashboard') ? 'active' : ''; ?>">Dashboard</a>
-                        
-                        <!-- Profile Link with Avatar -->
-                        <a href="/profile" class="flex items-center gap-2 text-primary hover:text-secondary font-bold transition group">
-                            <div class="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center text-xs shadow-sm">
-                                <?php echo substr($_SESSION['user']['first_name'], 0, 1); ?>
-                            </div>
-                            <span class="group-hover:underline"><?php echo htmlspecialchars($_SESSION['user']['first_name']); ?></span>
-                        </a>
+                    <div class="flex items-center border-l border-slate-200 ml-3 pl-3 gap-2">
+                        <?php if ($isLoggedIn): ?>
+                            <a href="/dashboard" class="nav-link <?php echo ($currentPage == 'dashboard') ? 'active' : ''; ?>">Dashboard</a>
+                            
+                            <a href="/profile" class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all group focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                                <div class="w-6 h-6 rounded-full bg-secondary text-white flex items-center justify-center text-[10px] font-bold shadow-sm group-hover:scale-105 transition-transform">
+                                    <?php echo strtoupper(substr($_SESSION['user']['first_name'], 0, 1)); ?>
+                                </div>
+                                <span class="text-sm font-semibold text-slate-700 group-hover:text-secondary transition-colors">
+                                    <?php echo htmlspecialchars($_SESSION['user']['first_name']); ?>
+                                </span>
+                            </a>
 
-                        <!-- Logout Button -->
-                        <a href="/logout.php" class="btn bg-gray-100 text-accent-red hover:bg-red-50 !px-4 !py-2 !rounded text-sm border border-gray-200 transition">
-                            Sign Out
-                        </a>
-                    <?php else: ?>
-                        <div class="h-6 w-px bg-gray-200 mx-2"></div> <!-- Vertical Divider -->
-                        <a href="/login" class="btn btn-dark !px-6 !py-2 shadow-lg hover:-translate-y-0.5 transition transform">
-                            Log In
-                        </a>
-                    <?php endif; ?>
+                            <a href="/logout.php" class="p-2 text-slate-400 hover:text-accent-red hover:bg-red-50 rounded-full transition-colors focus:outline-none" title="Sign Out">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </a>
+                        <?php else: ?>
+                            <a href="/login" class="btn bg-primary text-white hover:bg-secondary !px-5 !py-2 !text-sm shadow-sm transition-colors focus:ring-2 focus:ring-secondary/50 focus:outline-none">
+                                Log In
+                            </a>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
-                <!-- Mobile Menu Button (Hamburger) -->
                 <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-secondary focus:outline-none p-2">
-                        <i class="fas fa-bars text-2xl"></i>
+                    <button id="mobile-menu-btn" class="text-slate-500 hover:text-primary focus:outline-none p-2 rounded-md hover:bg-slate-100 transition-colors">
+                        <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Menu (Collapsible) -->
-        <!-- Controlled by JavaScript in footer.php -->
-        <div id="mobile-menu" class="hidden md:hidden bg-gray-50 border-t border-gray-200 absolute w-full shadow-xl left-0 z-50">
-            <div class="px-4 pt-2 pb-6 space-y-2">
-                <a href="/" class="block py-3 px-2 text-gray-600 font-medium hover:bg-white hover:text-secondary rounded">Home</a>
-                <a href="/services" class="block py-3 px-2 text-gray-600 font-medium hover:bg-white hover:text-secondary rounded">Solutions</a>
-                <a href="/contact" class="block py-3 px-2 text-gray-600 font-medium hover:bg-white hover:text-secondary rounded">Contact</a>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 shadow-xl absolute w-full left-0 z-50">
+            <div class="px-4 py-4 space-y-1">
+                <a href="/" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
+                    <i class="fas fa-home w-6 text-slate-400"></i> Home
+                </a>
+                <a href="/services" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
+                    <i class="fas fa-layer-group w-6 text-slate-400"></i> Solutions
+                </a>
+                <a href="/contact" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
+                    <i class="fas fa-envelope w-6 text-slate-400"></i> Contact
+                </a>
                 
-                <div class="border-t border-gray-200 my-2"></div>
+                <div class="border-t border-slate-100 my-2"></div>
 
                 <?php if ($isLoggedIn): ?>
-                    <a href="/dashboard" class="block py-3 px-2 text-secondary font-bold hover:bg-white rounded">Dashboard</a>
-                    <a href="/profile" class="block py-3 px-2 text-gray-600 hover:bg-white rounded">My Profile</a>
-                    <a href="/logout.php" class="block py-3 px-2 text-accent-red font-bold hover:bg-red-50 rounded">Sign Out</a>
+                    <a href="/dashboard" class="flex items-center px-3 py-2.5 rounded-md text-base font-bold text-secondary bg-blue-50/50 hover:bg-blue-50 transition-colors">
+                        <i class="fas fa-chart-line w-6"></i> Dashboard
+                    </a>
+                    <a href="/profile" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
+                        <i class="fas fa-user-circle w-6 text-slate-400"></i> My Profile
+                    </a>
+                    <a href="/logout.php" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-accent-red hover:bg-red-50 transition-colors mt-2">
+                        <i class="fas fa-sign-out-alt w-6"></i> Sign Out
+                    </a>
                 <?php else: ?>
-                    <a href="/login" class="block py-3 px-2 text-secondary font-bold hover:bg-white rounded">Log In</a>
+                    <a href="/login" class="mt-4 flex w-full justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary hover:bg-secondary transition-colors">
+                        Log In
+                    </a>
                 <?php endif; ?>
             </div>
         </div>
     </nav>
     
-    <!-- Subheader (Dark Bar with Breadcrumb style) -->
-    <div class="bg-primary text-white shadow-inner py-3 border-b border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center gap-2 text-sm">
-                <i class="fas fa-layer-group text-secondary opacity-80"></i>
-                <span class="font-medium text-gray-400 uppercase tracking-wider text-xs">Section:</span>
-                <span class="font-bold text-white"><?php echo htmlspecialchars($subheaderTitle); ?></span>
+    <div class="bg-primary text-white py-2 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="flex items-center gap-2.5 text-xs sm:text-sm">
+                <i class="fas fa-compass text-secondary/80"></i>
+                <span class="text-slate-400 uppercase tracking-widest text-[10px] sm:text-xs font-bold">Section:</span>
+                <span class="font-semibold text-slate-200"><?php echo htmlspecialchars($subheaderTitle); ?></span>
             </div>
         </div>
     </div>
 
-    <!-- Main Content Wrapper -->
-    <!-- Content injected by router (index.php) goes here. Closed in footer.php -->
-    <main class="flex-grow max-w-7xl mx-auto w-full px-4 py-8">
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
