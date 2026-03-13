@@ -47,8 +47,8 @@ $allowedPages = [
     // Meetings & Toolbox Talks
     'meetings-list', 'host-meeting',
     
-    // Training & Certifications
-    'training-matrix',
+    // Hubs
+    'training-matrix', 'equipment-management',
     
     // System Administration
     'admin', 'company-admin'

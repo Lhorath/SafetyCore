@@ -154,6 +154,16 @@ if ($stmt = $conn->prepare($flhaSql)) {
                 <p class="text-sm text-gray-500 mb-6 flex-grow leading-relaxed">Update your contact info, change passwords, and manage settings.</p>
                 <a href="/profile" class="btn btn-secondary w-full group-hover:-translate-y-0.5 transform transition-all shadow-sm font-bold"><i class="fas fa-cog mr-2"></i> Settings</a>
             </div>
+
+            <div class="card bg-white border border-gray-100 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 flex flex-col items-center text-center p-8 group relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-emerald-50 rounded-bl-full -z-10 transition-transform group-hover:scale-150"></div>
+                <div class="h-16 w-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-3xl mb-5 shadow-sm group-hover:-translate-y-1 transition-transform duration-300">
+                    <i class="fas fa-truck-pickup"></i>
+                </div>
+                <h3 class="text-xl font-bold text-primary mb-2">Equipment Hub</h3>
+                <p class="text-sm text-gray-500 mb-6 flex-grow leading-relaxed">View asset inventory and log your mandatory pre-use inspections.</p>
+                <a href="/equipment-management" class="btn bg-emerald-500 text-white hover:bg-emerald-600 w-full group-hover:-translate-y-0.5 transform transition-all shadow-sm font-bold"><i class="fas fa-clipboard-check mr-2"></i> View & Inspect</a>
+            </div>
         </div>
     </div>
 

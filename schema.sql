@@ -638,7 +638,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
   UNIQUE KEY `role_name` (`role_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.roles: ~16 rows (approximately)
+-- Dumping data for table u971098166_safetysite.roles: ~14 rows (approximately)
 REPLACE INTO `roles` (`id`, `role_name`) VALUES
 	(1, 'Admin'),
 	(2, 'Manager'),
@@ -683,9 +683,26 @@ CREATE TABLE IF NOT EXISTS `stores` (
   CONSTRAINT `stores_ibfk_2` FOREIGN KEY (`jhsc_leader_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.stores: ~1 rows (approximately)
+-- Dumping data for table u971098166_safetysite.stores: ~0 rows (approximately)
 REPLACE INTO `stores` (`id`, `company_id`, `store_name`, `store_number`, `location_type`, `address`, `city`, `province_state`, `is_active`, `manager_user_id`, `jhsc_leader_user_id`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'Office', '1', 'store', NULL, NULL, NULL, 1, 3, 6, '2026-02-18 13:05:30', '2026-02-18 13:30:18');
+
+-- Dumping structure for table u971098166_safetysite.training_categories
+CREATE TABLE IF NOT EXISTS `training_categories` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `company_id` int(10) unsigned NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `description` text DEFAULT NULL,
+  `validity_months` int(11) DEFAULT 0 COMMENT '0 = Never expires, >0 = Expires in X months',
+  PRIMARY KEY (`id`),
+  KEY `company_id` (`company_id`),
+  CONSTRAINT `training_categories_ibfk_1` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table u971098166_safetysite.training_categories: ~2 rows (approximately)
+REPLACE INTO `training_categories` (`id`, `company_id`, `name`, `description`, `validity_months`) VALUES
+	(1, 1, 'Fall Arrest', NULL, 36),
+	(2, 1, 'First Aid', NULL, 36);
 
 -- Dumping structure for table u971098166_safetysite.user_job_sites
 CREATE TABLE IF NOT EXISTS `user_job_sites` (
@@ -731,6 +748,29 @@ REPLACE INTO `user_stores` (`user_id`, `store_id`, `assigned_at`) VALUES
 	(13, 1, '2026-02-18 13:21:50'),
 	(14, 1, '2026-02-18 13:21:50'),
 	(15, 1, '2026-02-24 20:45:16');
+
+-- Dumping structure for table u971098166_safetysite.user_training_records
+CREATE TABLE IF NOT EXISTS `user_training_records` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `category_id` int(10) unsigned NOT NULL,
+  `issue_date` date NOT NULL,
+  `expiry_date` date DEFAULT NULL,
+  `certificate_number` varchar(100) DEFAULT NULL,
+  `logged_by_user_id` int(10) unsigned NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_training` (`user_id`,`category_id`) COMMENT 'Ensures one active record per category per user',
+  KEY `category_id` (`category_id`),
+  KEY `logged_by_user_id` (`logged_by_user_id`),
+  CONSTRAINT `user_training_records_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `user_training_records_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `training_categories` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `user_training_records_ibfk_3` FOREIGN KEY (`logged_by_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table u971098166_safetysite.user_training_records: ~1 rows (approximately)
+REPLACE INTO `user_training_records` (`id`, `user_id`, `category_id`, `issue_date`, `expiry_date`, `certificate_number`, `logged_by_user_id`, `created_at`) VALUES
+	(1, 15, 1, '2025-05-23', '2028-05-23', '12345', 1, '2026-03-13 02:07:20');
 
 -- Dumping structure for table u971098166_safetysite.users
 CREATE TABLE IF NOT EXISTS `users` (
