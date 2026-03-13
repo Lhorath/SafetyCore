@@ -6,23 +6,23 @@
  * endpoints. Addresses audit finding F-02.
  *
  * Usage — HTML forms:
- *   require_once 'includes/csrf.php';
- *   csrf_field();                    // outputs hidden <input>
+ * require_once 'includes/csrf.php';
+ * csrf_field();                    // outputs hidden <input>
  *
  * Usage — API endpoints (JSON POST):
- *   require_once '../includes/csrf.php';
- *   csrf_verify_or_die();            // halts with 403 JSON on failure
+ * require_once '../includes/csrf.php';
+ * csrf_verify_or_die();            // halts with 403 JSON on failure
  *
  * Usage — AJAX (JavaScript):
- *   Fetch the token from the meta tag rendered by csrf_meta_tag(), then
- *   include it as the X-CSRF-Token request header or in the JSON body as
- *   "_csrf_token".
+ * Fetch the token from the meta tag rendered by csrf_meta_tag(), then
+ * include it as the X-CSRF-Token request header or in the JSON body as
+ * "_csrf_token".
  *
  * Token lifecycle:
- *   - One token per session, regenerated on login (session_regenerate_id
- *     already called in login_process.php).
- *   - Token is stored in $_SESSION['csrf_token'] and verified server-side.
- *   - Accepted via POST field "_csrf_token" OR header "X-CSRF-Token".
+ * - One token per session, regenerated on login (session_regenerate_id
+ * already called in login_process.php).
+ * - Token is stored in $_SESSION['csrf_token'] and verified server-side.
+ * - Accepted via POST field "_csrf_token" OR header "X-CSRF-Token".
  *
  * @package   NorthPoint360
  * @author    macweb.ca
@@ -57,8 +57,8 @@ function csrf_field(): void {
  * Echoes a <meta> tag for use by JavaScript fetch/XHR calls.
  * Place in <head> via header.php.
  *
- *   const token = document.querySelector('meta[name="csrf-token"]').content;
- *   fetch('/api/...', { headers: { 'X-CSRF-Token': token }, ... });
+ * const token = document.querySelector('meta[name="csrf-token"]').content;
+ * fetch('/api/...', { headers: { 'X-CSRF-Token': token }, ... });
  */
 function csrf_meta_tag(): void {
     $token = htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8');
@@ -113,3 +113,34 @@ function csrf_verify_or_die(): void {
         exit();
     }
 }
+
+// ── Compatibility / Alias functions (Added for new Modules) ────────────────────
+
+/**
+ * Generates a secure CSRF token and stores it in the user's session.
+ * Alias for csrf_token() to support the Training Matrix module.
+ *
+ * @return string The 64-character hex CSRF token
+ */
+if (!function_exists('generate_csrf_token')) {
+    function generate_csrf_token(): string {
+        return csrf_token();
+    }
+}
+
+/**
+ * Validates a submitted CSRF token against the one stored in the session.
+ * Used by the Training Matrix API for manual validation matching.
+ *
+ * @param string $token The token submitted via POST/Fetch
+ * @return bool True if valid, False if invalid or missing
+ */
+if (!function_exists('validate_csrf_token')) {
+    function validate_csrf_token(string $token): bool {
+        if (empty($_SESSION['csrf_token']) || empty($token)) {
+            return false;
+        }
+        return hash_equals($_SESSION['csrf_token'], $token);
+    }
+}
+?>
