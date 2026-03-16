@@ -17,7 +17,7 @@
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   6.0.0 (NorthPoint Beta 06)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 require_once __DIR__ . '/../../includes/company_context.php';

@@ -18,7 +18,7 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 // Establish the database connection.
@@ -187,7 +187,7 @@ $isLoggedIn = isset($_SESSION['user']);
             <div class="flex justify-between items-center h-16">
                 
                 <a href="/" class="flex items-center gap-3 group focus:outline-none">
-                    <img src="style/images/logo.png" alt="NorthPoint 360" class="h-8 w-auto transition-transform duration-300 group-hover:scale-105">
+                    <img src="/style/images/logo.png" alt="NorthPoint 360" class="h-8 w-auto transition-transform duration-300 group-hover:scale-105">
                     <div class="hidden sm:flex flex-col justify-center">
                         <span class="text-[1.15rem] font-extrabold text-primary leading-none tracking-tight font-heading">NORTHPOINT<span class="text-secondary">360</span></span>
                     </div>

@@ -1,6 +1,9 @@
 <?php
 /**
  * Dynamic Checklist API - api/checklists.php
+ *
+ * @package   NorthPoint360
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 session_start();
 header('Content-Type: application/json');

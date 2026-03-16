@@ -3,6 +3,7 @@
  * Equipment Management Dashboard - pages/equipment-management.php
  *
  * @package   NorthPoint360
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 if (!isset($_SESSION['user'])) { header('Location: /login'); exit(); }

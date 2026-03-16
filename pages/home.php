@@ -6,6 +6,7 @@
  * Features a modern full-width hero section and highlights core EHS modules.
  *
  * @package   NorthPoint360
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 ?>
 

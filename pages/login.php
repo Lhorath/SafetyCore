@@ -13,7 +13,7 @@
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   7.0.0 (NorthPoint Beta 07)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 // ── Error message mapping ──────────────────────────────────────────────────────

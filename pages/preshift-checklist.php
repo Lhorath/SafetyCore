@@ -1,4 +1,10 @@
 <?php
+/**
+ * Pre-Shift Checklist - pages/preshift-checklist.php
+ *
+ * @package   NorthPoint360
+ * @version   10.0.0 (NorthPoint Beta 10)
+ */
 if (!isset($_SESSION['user'])) { header('Location: /login'); exit(); }
 require_once 'includes/csrf.php';
 $csrfToken = generate_csrf_token();

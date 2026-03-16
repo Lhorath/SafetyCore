@@ -19,82 +19,6 @@
 CREATE DATABASE IF NOT EXISTS `u971098166_safetysite` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
 USE `u971098166_safetysite`;
 
--- Dumping structure for table u971098166_safetysite.checklist_items
-CREATE TABLE IF NOT EXISTS `checklist_items` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `template_id` int(10) unsigned NOT NULL,
-  `label` varchar(255) NOT NULL,
-  `field_type` enum('pass_fail','yes_no','checkbox','text','numeric') NOT NULL DEFAULT 'pass_fail',
-  `is_required` tinyint(1) NOT NULL DEFAULT 1,
-  `order_index` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  KEY `template_id` (`template_id`),
-  CONSTRAINT `checklist_items_ibfk_1` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Dumping data for table u971098166_safetysite.checklist_items: ~1 rows (approximately)
-REPLACE INTO `checklist_items` (`id`, `template_id`, `label`, `field_type`, `is_required`, `order_index`) VALUES
-	(1, 1, 'Is good?', 'pass_fail', 1, 0);
-
--- Dumping structure for table u971098166_safetysite.checklist_responses
-CREATE TABLE IF NOT EXISTS `checklist_responses` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `submission_id` int(10) unsigned NOT NULL,
-  `item_id` int(10) unsigned NOT NULL,
-  `response_value` text DEFAULT NULL,
-  `notes` text DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `submission_id` (`submission_id`),
-  KEY `item_id` (`item_id`),
-  CONSTRAINT `checklist_responses_ibfk_1` FOREIGN KEY (`submission_id`) REFERENCES `checklist_submissions` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `checklist_responses_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `checklist_items` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Dumping data for table u971098166_safetysite.checklist_responses: ~1 rows (approximately)
-REPLACE INTO `checklist_responses` (`id`, `submission_id`, `item_id`, `response_value`, `notes`) VALUES
-	(1, 1, 1, 'Pass', '');
-
--- Dumping structure for table u971098166_safetysite.checklist_submissions
-CREATE TABLE IF NOT EXISTS `checklist_submissions` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `company_id` int(10) unsigned NOT NULL,
-  `user_id` int(10) unsigned NOT NULL,
-  `equipment_id` int(10) unsigned NOT NULL,
-  `template_id` int(10) unsigned NOT NULL,
-  `shift_date` date NOT NULL,
-  `meter_reading` varchar(100) DEFAULT NULL,
-  `overall_status` enum('Safe','Unsafe') NOT NULL,
-  `general_comments` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `equipment_id` (`equipment_id`),
-  KEY `template_id` (`template_id`),
-  CONSTRAINT `checklist_submissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `checklist_submissions_ibfk_2` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `checklist_submissions_ibfk_3` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Dumping data for table u971098166_safetysite.checklist_submissions: ~1 rows (approximately)
-REPLACE INTO `checklist_submissions` (`id`, `company_id`, `user_id`, `equipment_id`, `template_id`, `shift_date`, `meter_reading`, `overall_status`, `general_comments`, `created_at`) VALUES
-	(1, 1, 1, 2, 1, '2026-03-13', NULL, 'Safe', '', '2026-03-13 04:20:03');
-
--- Dumping structure for table u971098166_safetysite.checklist_templates
-CREATE TABLE IF NOT EXISTS `checklist_templates` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `company_id` int(10) unsigned NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `company_id` (`company_id`),
-  CONSTRAINT `checklist_templates_ibfk_1` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Dumping data for table u971098166_safetysite.checklist_templates: ~1 rows (approximately)
-REPLACE INTO `checklist_templates` (`id`, `company_id`, `name`, `description`, `created_at`) VALUES
-	(1, 1, 'Fork', '1', '2026-03-13 03:00:18');
-
 -- Dumping structure for table u971098166_safetysite.companies
 CREATE TABLE IF NOT EXISTS `companies` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -116,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `companies` (
 
 -- Dumping data for table u971098166_safetysite.companies: ~3 rows (approximately)
 REPLACE INTO `companies` (`id`, `company_name`, `company_type`, `is_system`, `industry`, `contact_email`, `is_active`, `created_at`, `updated_at`, `company_code`) VALUES
-	(1, 'MacWeb Canada', 'multi_location', 1, NULL, NULL, 1, '2026-02-18 13:00:12', '2026-03-13 11:52:38', '0001'),
+	(1, 'MacWeb Canada', 'multi_location', 0, NULL, NULL, 1, '2026-02-18 13:00:12', '2026-03-12 12:15:02', '0001'),
 	(2, 'Elmwood Group', 'multi_location', 0, 'Hardware Retail', NULL, 1, '2026-03-12 12:08:37', '2026-03-12 12:15:02', '0002'),
 	(3, 'Ridgeline Construction Inc.', 'job_based', 0, 'General Contracting', NULL, 1, '2026-03-12 12:08:37', '2026-03-12 12:15:02', '0003');
 
@@ -142,7 +66,6 @@ CREATE TABLE IF NOT EXISTS `equipment` (
   `company_id` int(10) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
   `category` enum('Heavy Machinery','Vehicles','Power Tools','PPE/Harnesses','Other') NOT NULL DEFAULT 'Other',
-  `checklist_template_id` int(10) unsigned DEFAULT NULL,
   `serial_number` varchar(100) DEFAULT NULL,
   `status` enum('Active','Maintenance','Out of Service') NOT NULL DEFAULT 'Active',
   `next_inspection_date` date DEFAULT NULL,
@@ -151,15 +74,12 @@ CREATE TABLE IF NOT EXISTS `equipment` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_company_id` (`company_id`),
-  KEY `fk_equipment_template` (`checklist_template_id`),
-  CONSTRAINT `fk_equip_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_equipment_template` FOREIGN KEY (`checklist_template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `fk_equip_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.equipment: ~2 rows (approximately)
+-- Dumping data for table u971098166_safetysite.equipment: ~1 rows (approximately)
 REPLACE INTO `equipment` (`id`, `company_id`, `name`, `category`, `checklist_template_id`, `serial_number`, `status`, `next_inspection_date`, `notes`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'Linde 30', 'Heavy Machinery', 1, '123231', 'Active', '2026-03-12', NULL, '2026-03-13 02:27:08', '2026-03-13 04:19:56'),
-	(2, 1, 'a', 'Heavy Machinery', 1, 'w', 'Active', NULL, NULL, '2026-03-13 03:09:24', '2026-03-13 03:09:24');
+	(1, 1, 'Linde 30', 'Heavy Machinery', NULL, '123231', 'Active', '2026-03-12', NULL, '2026-03-13 02:27:08', '2026-03-13 02:27:08');
 
 -- Dumping structure for table u971098166_safetysite.equipment_inspections
 CREATE TABLE IF NOT EXISTS `equipment_inspections` (
@@ -445,38 +365,32 @@ CREATE TABLE IF NOT EXISTS `page_seo` (
   `requires_login` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 if behind authentication',
   PRIMARY KEY (`id`),
   UNIQUE KEY `page_route` (`page_route`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.page_seo: ~28 rows (approximately)
+-- Dumping data for table u971098166_safetysite.page_seo: ~20 rows (approximately)
 REPLACE INTO `page_seo` (`id`, `page_route`, `meta_title`, `meta_description`, `meta_keywords`, `og_image`, `requires_login`) VALUES
-	(1, 'home', 'Home', 'NorthPoint 360 is the ultimate enterprise EHS management platform for the modern workforce.', 'EHS, safety, compliance, workplace, NorthPoint 360', '/style/images/logo.png', 0),
-	(2, 'services', 'Solutions & Features', 'Explore NorthPoint 360\'s core EHS modules including FLHAs, hazard reporting, equipment management, and training tracking.', 'EHS solutions, digital FLHA, equipment management, safety meetings', '/style/images/logo.png', 0),
-	(3, 'contact', 'Contact Support', 'Get in touch with NorthPoint 360 support, request technical assistance, or schedule a sales demo.', 'contact, support, EHS demo', '/style/images/logo.png', 0),
-	(4, 'login', 'Log In', 'Sign in to your secure NorthPoint 360 EHS dashboard.', 'login, sign in, secure portal', '/style/images/logo.png', 0),
-	(5, 'dashboard', 'Dashboard', 'Your centralized EHS dashboard. Monitor personal stats, active FLHAs, and access quick field tools.', 'dashboard, EHS hub, employee portal', '/style/images/logo.png', 1),
-	(6, 'hazard-report', 'Report a Hazard', 'Log unsafe conditions, property damage, or near misses directly from the field with photo evidence.', 'hazard reporting, near miss, safety log, EHS observation', '/style/images/logo.png', 1),
-	(7, 'my-reports', 'My Reports', 'View the history and resolution status of safety hazards you have reported.', 'my hazard reports, safety history, observation log', '/style/images/logo.png', 1),
-	(8, 'store-reports', 'Branch Hazard Review', 'Management tool to investigate, assign corrective actions, and close out branch hazards.', 'hazard review, branch safety, manager tools, corrective actions', '/style/images/logo.png', 1),
-	(9, 'incident-report', 'Log an Incident', 'Report actual injuries, illnesses, or major property damage requiring immediate management attention.', 'incident reporting, OSHA, WCB, injury log', '/style/images/logo.png', 1),
-	(10, 'store-incidents', 'Compliance Log', 'Classify and monitor OSHA/WCB recordable incidents, lost time, and medical interventions.', 'incident log, compliance tracking, recordable incidents', '/style/images/logo.png', 1),
-	(11, 'flha-list', 'FLHA Logs', 'View open, active, and completed Field Level Hazard Assessments for your team.', 'FLHA log, field level hazard assessment, safety forms', '/style/images/logo.png', 1),
-	(12, 'flha-form', 'Start FLHA', 'Complete a new digital Field Level Hazard Assessment before starting your shift.', 'new FLHA, hazard assessment form, pre-task hazard assessment', '/style/images/logo.png', 1),
-	(13, 'flha-close', 'Close FLHA', 'Sign off, verify job completion, and close out an active Field Level Hazard Assessment.', 'close FLHA, shift sign off', '/style/images/logo.png', 1),
-	(14, 'metrics', 'Analytics & Metrics', 'Real-time executive oversight of equipment health, field compliance, and training readiness via interactive charts.', 'EHS metrics, safety analytics, compliance dashboard, KPIs', '/style/images/logo.png', 1),
-	(15, 'meetings-list', 'Safety Meetings', 'Host toolbox talks, document safety topics, and track verified team attendance digitally.', 'toolbox talks, safety meetings, attendance logs', '/style/images/logo.png', 1),
-	(16, 'host-meeting', 'Host a Meeting', 'Start a new safety meeting, attach presentation materials, and gather digital signatures.', 'host toolbox talk, safety presentation, digital sign-in', '/style/images/logo.png', 1),
-	(17, 'company-admin', 'Company Administration', 'Manage your company\'s users, assign branches, and control Role-Based Access Control (RBAC).', 'company admin, user management, branch management', '/style/images/logo.png', 1),
+	(1, 'home', 'Welcome', 'NorthPoint 360 is your central command for workplace safety compliance, hazard reporting, and operational excellence.', 'EHS, safety compliance, hazard reporting, NorthPoint 360', '/style/images/logo.png', 0),
+	(2, 'services', 'Solutions', 'Discover our comprehensive suite of EHS management solutions tailored for modern businesses.', 'EHS solutions, safety software, incident management', '/style/images/logo.png', 0),
+	(3, 'contact', 'Contact Support', 'Get in touch with NorthPoint 360 support for assistance with your EHS platform.', 'contact, support, NorthPoint 360', '/style/images/logo.png', 0),
+	(4, 'login', 'Secure Login', 'Log in to your NorthPoint 360 portal to manage your workplace safety and reports.', 'login, secure portal, EHS software', '/style/images/logo.png', 0),
+	(5, 'dashboard', 'Dashboard', 'Centralized safety dashboard providing real-time insights and quick actions.', 'dashboard, safety metrics, portal', '/style/images/logo.png', 1),
+	(6, 'hazard-report', 'Report a Hazard', 'Submit a new workplace hazard, near miss, or safety observation.', 'hazard reporting, safety form', '/style/images/logo.png', 1),
+	(7, 'my-reports', 'My History', 'Review and track the status of safety reports you have submitted.', 'my reports, history, safety tracking', '/style/images/logo.png', 1),
+	(8, 'store-reports', 'Store Hazard Reports', 'Manage, investigate, and close hazard reports for your specific branch.', 'store reports, hazard management, branch safety', '/style/images/logo.png', 1),
+	(9, 'incident-report', 'Report Incident', 'Log workplace injuries, property damage, and severe incidents.', 'incident reporting, injury log, OSHA', '/style/images/logo.png', 1),
+	(10, 'store-incidents', 'Incident Management', 'Review, classify, and track recordable incidents and lost-time data.', 'incident management, OSHA compliance, lost time', '/style/images/logo.png', 1),
+	(11, 'flha-list', 'FLHA Dashboard', 'Manage your daily Field Level Hazard Assessments (FLHA) for remote job sites.', 'FLHA, field hazard assessment, remote safety', '/style/images/logo.png', 1),
+	(12, 'flha-form', 'New Field Assessment', 'Complete your mandatory pre-shift Field Level Hazard Assessment.', 'FLHA form, hazard assessment wizard', '/style/images/logo.png', 1),
+	(13, 'flha-close', 'Close FLHA Record', 'Finalize your Field Level Hazard Assessment and log end-of-shift compliance conditions.', 'FLHA close out, safety compliance', '/style/images/logo.png', 1),
+	(14, 'metrics', 'Statistics & Metrics', 'Deep dive into hazard trends, resolution times, and risk analytics.', 'safety metrics, EHS analytics, KPI', '/style/images/logo.png', 1),
+	(15, 'meetings-list', 'Meetings & Talks', 'Review safety meetings, toolbox talks, and attendance records.', 'safety meetings, toolbox talks, attendance', '/style/images/logo.png', 1),
+	(16, 'host-meeting', 'Host a Meeting', 'Log a new safety meeting, define topics, and track employee attendance.', 'host meeting, safety talk form', '/style/images/logo.png', 1),
+	(17, 'company-admin', 'Company Administration', 'Manage users, roles, and location structure for your organisation.', 'company admin, user management, job sites, branches, NorthPoint 360', '/style/images/logo.png', 1),
 	(18, 'admin-edit-user', 'Edit User', 'Modify an existing user account including role and location assignment.', 'edit user, role assignment, platform admin, NorthPoint 360', '/style/images/logo.png', 1),
-	(19, 'training-matrix', 'Training Matrix', 'Monitor employee compliance, track certifications, and manage upcoming expiry dates across the branch.', 'training matrix, safety certifications, compliance tracking', '/style/images/logo.png', 1),
-	(20, 'equipment-management', 'Equipment Hub', 'Track asset inventory, manage active status, and review daily pre-shift inspection logs.', 'equipment management, asset inventory, safety checks', '/style/images/logo.png', 1),
-	(21, 'checklist-builder', 'Checklist Builder', 'Create custom, dynamic pre-shift inspection templates with intelligent Pass/Fail logic.', 'custom checklists, form builder, equipment inspection template', '/style/images/logo.png', 1),
-	(22, 'preshift-checklist', 'Pre-Shift Checklist', 'Complete your mandatory daily pre-shift equipment inspections and instantly flag unsafe assets.', 'pre-shift inspection, daily equipment check, fleet safety', '/style/images/logo.png', 1),
-	(23, 'about', 'About Us', 'Learn about NorthPoint 360\'s mission to replace paper trails and build proactive safety cultures.', 'about NorthPoint 360, EHS software, safety culture', '/style/images/logo.png', 0),
-	(24, '404', 'Page Not Found', 'The requested page could not be found.', '404, error, not found', '/style/images/logo.png', 0),
-	(25, 'profile', 'My Profile', 'View your user profile, job site assignments, and personal training records.', 'profile, user account, training records', '/style/images/logo.png', 1),
-	(26, 'profile-edit', 'Edit Profile', 'Update your NorthPoint 360 user details, password, and preferences.', 'edit profile, account settings', '/style/images/logo.png', 1),
-	(27, 'edit-report', 'Edit Report', 'Update details, add supervisor notes, or close out an existing hazard report.', 'edit hazard, resolve report', '/style/images/logo.png', 1),
-	(28, 'admin', 'Platform Administration', 'Advanced system administration, multi-tenant company management, and global platform oversight.', 'super admin, platform management, NorthPoint 360 admin', '/style/images/logo.png', 1);
+	(19, 'training-matrix', 'Training & Certifications', 'Monitor employee training certifications, manage expiry dates, and ensure compliance.', 'training matrix, certifications, safety compliance', '/style/images/logo.png', 1),
+	(20, 'equipment-management', 'Equipment Management', 'Track equipment inventory, maintenance statuses, and log pre-use inspections.', 'equipment, maintenance, inspection, safety logs', '/style/images/logo.png', 1),
+	(21, 'checklist-builder', 'Checklist Builder', 'Create dynamic pre-shift equipment checklists.', NULL, '/style/images/logo.png', 1),
+	(22, 'preshift-checklist', 'Pre-Shift Checklist', 'Complete daily equipment logs.', NULL, '/style/images/logo.png', 1);
 
 -- Dumping structure for table u971098166_safetysite.permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -768,7 +682,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
   UNIQUE KEY `role_name` (`role_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.roles: ~14 rows (approximately)
+-- Dumping data for table u971098166_safetysite.roles: ~16 rows (approximately)
 REPLACE INTO `roles` (`id`, `role_name`) VALUES
 	(1, 'Admin'),
 	(2, 'Manager'),
@@ -813,7 +727,7 @@ CREATE TABLE IF NOT EXISTS `stores` (
   CONSTRAINT `stores_ibfk_2` FOREIGN KEY (`jhsc_leader_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.stores: ~0 rows (approximately)
+-- Dumping data for table u971098166_safetysite.stores: ~1 rows (approximately)
 REPLACE INTO `stores` (`id`, `company_id`, `store_name`, `store_number`, `location_type`, `address`, `city`, `province_state`, `is_active`, `manager_user_id`, `jhsc_leader_user_id`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'Office', '1', 'store', NULL, NULL, NULL, 1, 3, 6, '2026-02-18 13:05:30', '2026-02-18 13:30:18');
 

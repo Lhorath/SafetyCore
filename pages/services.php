@@ -5,6 +5,7 @@
  * Details the core modules and capabilities of the NorthPoint 360 platform.
  *
  * @package   NorthPoint360
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 ?>
 

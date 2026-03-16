@@ -15,7 +15,7 @@
  * @package   NorthPoint360
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   3.0.0 (NorthPoint Beta 10)
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 // Ensure session is started for CAPTCHA tracking

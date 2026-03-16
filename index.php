@@ -8,7 +8,7 @@
  *
  * @package   NorthPoint360
  * @author    macweb.ca
- * @version   1.0.0
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 // Initialize Session
@@ -60,7 +60,7 @@ $allowedPages = [
     'equipment-management',
     
     // System Administration
-    'admin', 'company-admin'
+    'admin', 'admin-edit-user', 'company-admin'
 ];
 
 // If the requested page is not in the whitelist, force a 404
@@ -69,7 +69,7 @@ if (!in_array($page, $allowedPages)) {
 }
 
 // --- 3. Dynamic SEO & Access Control (Database Check) ---
-$pageTitle = 'SafetyCore';
+$pageTitle = 'NorthPoint 360';
 $pageDescription = 'Enterprise Environment, Health, and Safety Management.';
 $requiresLogin = false;
 

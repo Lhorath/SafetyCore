@@ -4,6 +4,7 @@
  *
  * @package   NorthPoint360
  * @author    macweb.ca
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 // ── 1. Security & Access Control ─────────────────────────────────────────────

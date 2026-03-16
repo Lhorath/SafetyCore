@@ -4,7 +4,7 @@
  *
  * @package   NorthPoint360
  * @author    macweb.ca
- * @version   10.1.0
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 ?>
     </main> <!-- Closes the <main> tag opened in header.php -->

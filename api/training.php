@@ -6,6 +6,7 @@
  * Enforces RBAC and CSRF protection.
  *
  * @package   NorthPoint360
+ * @version   10.0.0 (NorthPoint Beta 10)
  */
 
 session_start();
