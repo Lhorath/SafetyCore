@@ -40,7 +40,7 @@ switch ($action) {
     case 'save_template':
         if (!$isManager) exit(json_encode(['success'=>false, 'message'=>'Unauthorized']));
         $data = json_decode(file_get_contents('php://input'), true);
-        if (!validate_csrf_token($data['csrf_token'] ?? '')) exit(json_encode(['success'=>false, 'message'=>'Invalid CSRF']));
+        if (!validate_csrf_token($data['csrf_token'] ?? '')) exit(json_encode(['success'=>false, 'message'=>'Invalid security token.']));
         
         $name = trim($data['name']);
         $desc = trim($data['description'] ?? '');
@@ -55,7 +55,7 @@ switch ($action) {
     case 'save_item':
         if (!$isManager) exit(json_encode(['success'=>false]));
         $data = json_decode(file_get_contents('php://input'), true);
-        if (!validate_csrf_token($data['csrf_token'] ?? '')) exit(json_encode(['success'=>false]));
+        if (!validate_csrf_token($data['csrf_token'] ?? '')) exit(json_encode(['success'=>false, 'message'=>'Invalid security token.']));
 
         $templateId = (int)$data['template_id'];
         $label = trim($data['label']);
@@ -95,7 +95,7 @@ switch ($action) {
 
     case 'submit_checklist':
         $data = json_decode(file_get_contents('php://input'), true);
-        if (!validate_csrf_token($data['csrf_token'] ?? '')) exit(json_encode(['success'=>false, 'message'=>'Invalid CSRF']));
+        if (!validate_csrf_token($data['csrf_token'] ?? '')) exit(json_encode(['success'=>false, 'message'=>'Invalid security token.']));
 
         $equipId = (int)$data['equipment_id'];
         $templateId = (int)$data['template_id'];

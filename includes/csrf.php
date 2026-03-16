@@ -109,7 +109,7 @@ function csrf_check(string &$errorMessage): bool {
 function csrf_verify_or_die(): void {
     if (!csrf_valid()) {
         http_response_code(403);
-        echo json_encode(['success' => false, 'message' => 'CSRF token invalid or missing.']);
+        echo json_encode(['success' => false, 'message' => 'Invalid security token.']);
         exit();
     }
 }

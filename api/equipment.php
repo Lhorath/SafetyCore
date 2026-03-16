@@ -95,7 +95,7 @@ switch ($action) {
     case 'assign_template':
         if (!$isManager) { echo json_encode(['success' => false, 'message' => 'Unauthorized']); exit(); }
         $data = json_decode(file_get_contents('php://input'), true);
-        if (!validate_csrf_token($data['csrf_token'] ?? '')) { echo json_encode(['success' => false, 'message' => 'Invalid CSRF']); exit(); }
+        if (!validate_csrf_token($data['csrf_token'] ?? '')) { echo json_encode(['success' => false, 'message' => 'Invalid security token.']); exit(); }
 
         $equipId = (int)$data['equipment_id'];
         $templateId = !empty($data['template_id']) ? (int)$data['template_id'] : null;
@@ -112,7 +112,7 @@ switch ($action) {
     case 'add_equipment':
         if (!$isManager) { echo json_encode(['success' => false, 'message' => 'Unauthorized']); exit(); }
         $data = json_decode(file_get_contents('php://input'), true);
-        if (!validate_csrf_token($data['csrf_token'] ?? '')) { echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']); exit(); }
+        if (!validate_csrf_token($data['csrf_token'] ?? '')) { echo json_encode(['success' => false, 'message' => 'Invalid security token.']); exit(); }
 
         $name = trim($data['name'] ?? '');
         $category = trim($data['category'] ?? 'Other');
@@ -134,7 +134,7 @@ switch ($action) {
 
     case 'log_inspection':
         $data = json_decode(file_get_contents('php://input'), true);
-        if (!validate_csrf_token($data['csrf_token'] ?? '')) { echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']); exit(); }
+        if (!validate_csrf_token($data['csrf_token'] ?? '')) { echo json_encode(['success' => false, 'message' => 'Invalid security token.']); exit(); }
 
         $equipId = (int)$data['equipment_id'];
         $inspType = trim($data['inspection_type'] ?? 'Maintenance');

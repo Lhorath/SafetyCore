@@ -109,7 +109,7 @@ switch ($action) {
         
         $data = json_decode(file_get_contents('php://input'), true);
         if (!validate_csrf_token($data['csrf_token'] ?? '')) {
-            echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']); exit();
+            echo json_encode(['success' => false, 'message' => 'Invalid security token.']); exit();
         }
 
         $name = trim($data['name'] ?? '');
@@ -139,7 +139,7 @@ switch ($action) {
         
         $data = json_decode(file_get_contents('php://input'), true);
         if (!validate_csrf_token($data['csrf_token'] ?? '')) {
-            echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']); exit();
+            echo json_encode(['success' => false, 'message' => 'Invalid security token.']); exit();
         }
 
         $empId = (int)$data['user_id'];
