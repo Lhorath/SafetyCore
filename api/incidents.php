@@ -53,7 +53,7 @@ switch ($action) {
     case 'get_store_incidents':
         if (!$isManager) {
             http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
             exit();
         }
 
@@ -87,7 +87,7 @@ switch ($action) {
     case 'get_details':
         if (!$isManager) {
             http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
             exit();
         }
 
@@ -131,7 +131,7 @@ switch ($action) {
     case 'update_review':
         if (!$isManager) {
             http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
             exit();
         }
 

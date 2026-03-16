@@ -80,7 +80,7 @@ switch ($action) {
         break;
 
     case 'get_templates':
-        if (!$isManager) { echo json_encode(['success' => false]); exit(); }
+        if (!$isManager) { echo json_encode(['success' => false, 'message' => 'Access denied.']); exit(); }
         $sql = "SELECT id, name FROM checklist_templates WHERE company_id = ? ORDER BY name ASC";
         $stmt = $conn->prepare($sql);
         if (!$stmt) { echo json_encode(['success' => false, 'message' => 'SQL Error: ' . $conn->error]); exit(); }
@@ -93,7 +93,7 @@ switch ($action) {
         break;
 
     case 'assign_template':
-        if (!$isManager) { echo json_encode(['success' => false, 'message' => 'Unauthorized']); exit(); }
+        if (!$isManager) { echo json_encode(['success' => false, 'message' => 'Access denied.']); exit(); }
         $data = json_decode(file_get_contents('php://input'), true);
         if (!validate_csrf_token($data['csrf_token'] ?? '')) { echo json_encode(['success' => false, 'message' => 'Invalid security token.']); exit(); }
 
@@ -110,7 +110,7 @@ switch ($action) {
         break;
 
     case 'add_equipment':
-        if (!$isManager) { echo json_encode(['success' => false, 'message' => 'Unauthorized']); exit(); }
+        if (!$isManager) { echo json_encode(['success' => false, 'message' => 'Access denied.']); exit(); }
         $data = json_decode(file_get_contents('php://input'), true);
         if (!validate_csrf_token($data['csrf_token'] ?? '')) { echo json_encode(['success' => false, 'message' => 'Invalid security token.']); exit(); }
 

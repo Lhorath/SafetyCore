@@ -48,7 +48,7 @@ switch ($action) {
      */
     case 'get_matrix':
         if (!$isManager) {
-            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
             exit();
         }
 
@@ -105,7 +105,7 @@ switch ($action) {
      * Add a new custom training category
      */
     case 'add_category':
-        if (!$isManager) { echo json_encode(['success' => false, 'message' => 'Unauthorized']); exit(); }
+        if (!$isManager) { echo json_encode(['success' => false, 'message' => 'Access denied.']); exit(); }
         
         $data = json_decode(file_get_contents('php://input'), true);
         if (!validate_csrf_token($data['csrf_token'] ?? '')) {
@@ -135,7 +135,7 @@ switch ($action) {
      * Log a user's training record (Upsert to prevent duplicates)
      */
     case 'log_training':
-        if (!$isManager) { echo json_encode(['success' => false, 'message' => 'Unauthorized']); exit(); }
+        if (!$isManager) { echo json_encode(['success' => false, 'message' => 'Access denied.']); exit(); }
         
         $data = json_decode(file_get_contents('php://input'), true);
         if (!validate_csrf_token($data['csrf_token'] ?? '')) {

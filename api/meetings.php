@@ -48,7 +48,7 @@ $allowedRoles = [
 
 if (!in_array($userRole, $allowedRoles)) {
     http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
+    echo json_encode(['success' => false, 'message' => 'Access denied.']);
     exit();
 }
 
@@ -118,7 +118,7 @@ switch ($action) {
 
         if (!$storeOwned) {
             http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'Access denied to that store location.']);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
             break;
         }
 

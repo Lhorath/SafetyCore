@@ -162,7 +162,7 @@ switch ($action) {
     // =========================================================================
     case 'get_reports_by_store':
         if (!$isManager) {
-            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
             exit;
         }
 
@@ -285,7 +285,7 @@ switch ($action) {
     // 6. Manager Edit/Close Report
     case 'update_report':
         if (!$isManager) {
-            echo json_encode(['success' => false, 'message' => 'Unauthorized']); exit;
+            echo json_encode(['success' => false, 'message' => 'Access denied.']); exit;
         }
 
         $data = json_decode(file_get_contents('php://input'), true);

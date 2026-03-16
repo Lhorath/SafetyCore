@@ -80,7 +80,7 @@ switch ($action) {
         // Audit F-04 pattern: scope to company_id before fetching
         if (!validate_location_ownership($conn, $jobSiteId, $companyId, 'job_based')) {
             http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'Access denied to this job site.']);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
             break;
         }
 
@@ -92,7 +92,7 @@ switch ($action) {
     case 'add_job_site':
         if (!$isManager) {
             http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'Unauthorized.']);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
             break;
         }
 
@@ -140,7 +140,7 @@ switch ($action) {
     case 'update_site_status':
         if (!$isManager) {
             http_response_code(403);
-            echo json_encode(['success' => false, 'message' => 'Unauthorized.']);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
             break;
         }
 

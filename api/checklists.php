@@ -13,7 +13,7 @@ require_once '../includes/csrf.php';
 
 if (!isset($_SESSION['user'])) {
     http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    echo json_encode(['success' => false, 'message' => 'Authentication required.']);
     exit();
 }
 
@@ -38,7 +38,7 @@ switch ($action) {
     
     // --- BUILDER ENDPOINTS (Managers Only) ---
     case 'save_template':
-        if (!$isManager) exit(json_encode(['success'=>false, 'message'=>'Unauthorized']));
+        if (!$isManager) exit(json_encode(['success'=>false, 'message'=>'Access denied.']));
         $data = json_decode(file_get_contents('php://input'), true);
         if (!validate_csrf_token($data['csrf_token'] ?? '')) exit(json_encode(['success'=>false, 'message'=>'Invalid security token.']));
         
@@ -48,12 +48,12 @@ switch ($action) {
         $stmt = $conn->prepare("INSERT INTO checklist_templates (company_id, name, description) VALUES (?, ?, ?)");
         $stmt->bind_param("iss", $companyId, $name, $desc);
         if ($stmt->execute()) echo json_encode(['success'=>true, 'template_id'=>$conn->insert_id]);
-        else echo json_encode(['success'=>false]);
+        else echo json_encode(['success'=>false, 'message'=>'Database error.']);
         $stmt->close();
         break;
 
     case 'save_item':
-        if (!$isManager) exit(json_encode(['success'=>false]));
+        if (!$isManager) exit(json_encode(['success'=>false, 'message'=>'Access denied.']));
         $data = json_decode(file_get_contents('php://input'), true);
         if (!validate_csrf_token($data['csrf_token'] ?? '')) exit(json_encode(['success'=>false, 'message'=>'Invalid security token.']));
 
@@ -64,7 +64,7 @@ switch ($action) {
         $stmt = $conn->prepare("INSERT INTO checklist_items (template_id, label, field_type) VALUES (?, ?, ?)");
         $stmt->bind_param("iss", $templateId, $label, $type);
         if ($stmt->execute()) echo json_encode(['success'=>true]);
-        else echo json_encode(['success'=>false]);
+        else echo json_encode(['success'=>false, 'message'=>'Database error.']);
         $stmt->close();
         break;
 
