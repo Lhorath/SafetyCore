@@ -30,21 +30,50 @@ $successMessage = '';
 $errorMessage = '';
 $uploadedFilePaths = []; // Track files for cleanup if DB insert fails
 
+$companyId = (int)($_SESSION['user']['company_id'] ?? 0);
+$userId = (int)($_SESSION['user']['id'] ?? 0);
+$userRole = $_SESSION['user']['role_name'] ?? '';
+$isManager = in_array($userRole, ['Admin', 'Manager', 'Safety Manager', 'Safety Leader', 'Owner / CEO', 'Co-manager']);
+
 // --- 2. Initial Data Fetch ---
-// Fetch all stores for the initial dropdown.
-// In a full multi-tenant setup, this might be filtered by the user's company_id.
+// Fetch stores scoped by company; non-managers only see stores they are assigned to.
 $stores = [];
-$sql = "SELECT id, store_name, store_number FROM stores ORDER BY store_name ASC";
-if ($result = $conn->query($sql)) {
-    while ($row = $result->fetch_assoc()) {
-        $stores[] = $row;
+if ($companyId) {
+    if ($isManager) {
+        $sql = "SELECT id, store_name, store_number FROM stores WHERE company_id = ? ORDER BY store_name ASC";
+        if ($stmt = $conn->prepare($sql)) {
+            $stmt->bind_param("i", $companyId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc()) {
+                $stores[] = $row;
+            }
+            $stmt->close();
+        }
+    } else {
+        $sql = "SELECT s.id, s.store_name, s.store_number
+                FROM stores s
+                INNER JOIN user_stores us ON s.id = us.store_id AND us.user_id = ?
+                WHERE s.company_id = ?
+                ORDER BY s.store_name ASC";
+        if ($stmt = $conn->prepare($sql)) {
+            $stmt->bind_param("ii", $userId, $companyId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc()) {
+                $stores[] = $row;
+            }
+            $stmt->close();
+        }
     }
-    $result->free();
 }
+$allowedStoreIds = array_column($stores, 'id');
 
 // --- 3. Form Processing (POST) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
+    if (!csrf_check($errorMessage)) {
+        // $errorMessage set by csrf_check; do not process form
+    } else {
     // --- Server-Side Configuration ---
     // These limits are checked here but depend on php.ini (upload_max_filesize, post_max_size)
     define('MAX_PHOTO_SIZE', 2 * 1024 * 1024); // 2 MB
@@ -129,6 +158,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // --- C. Process Text Data & Sanitization ---
         $storeId = filter_input(INPUT_POST, 'store', FILTER_VALIDATE_INT);
+        if (!$storeId || !in_array($storeId, $allowedStoreIds)) {
+            throw new Exception('Invalid store selected. Please choose a location you have access to.');
+        }
         $reporterUserId = $_SESSION['user']['id']; // Securely use session ID
         
         $reportDate = ($_POST['reporterDate'] ?? '') . ' ' . ($_POST['reporterTime'] ?? '');
@@ -147,6 +179,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $notifiedUserId = filter_input(INPUT_POST, 'whoNotified', FILTER_VALIDATE_INT) ?: null;
         $additionalComments = trim($_POST['additionalComments'] ?? '');
+        // Validate notified_user_id is an allowed supervisor for the selected store (when provided)
+        if ($notifiedUserId !== null && $notifiedUserId > 0) {
+            $supSql = "SELECT 1 FROM users u
+                       INNER JOIN user_stores us ON u.id = us.user_id AND us.store_id = ?
+                       INNER JOIN roles r ON u.role_id = r.id
+                       INNER JOIN stores s ON s.id = us.store_id AND s.company_id = ?
+                       WHERE u.id = ? AND r.role_name IN ('Admin', 'Manager', 'Safety Manager', 'Safety Leader', 'Co-manager', 'Owner / CEO')
+                       LIMIT 1";
+            $supStmt = $conn->prepare($supSql);
+            if ($supStmt) {
+                $supStmt->bind_param("iii", $storeId, $companyId, $notifiedUserId);
+                $supStmt->execute();
+                if (!$supStmt->get_result()->fetch_assoc()) {
+                    $supStmt->close();
+                    throw new Exception('Invalid person selected for "Who was notified". Please choose from the list for this location.');
+                }
+                $supStmt->close();
+            }
+        }
         
         // --- D. Insert Main Report Record ---
         $sql = "INSERT INTO reports (reporter_user_id, store_id, report_date, hazard_location_id, risk_level, hazard_observed_at, hazard_type, hazard_description, potential_consequences, action_taken, action_description, equipment_locked_out, lockout_key_holder, notified_user_id, additional_comments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -154,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conn->prepare($sql);
         if (!$stmt) throw new Exception("Database prepare error: " . $conn->error);
         
-        $stmt->bind_param("iisiiisssisisis", $reporterUserId, $storeId, $reportDate, $hazardLocationId, $riskLevel, $hazardObservedAt, $hazardType, $hazardDescription, $potentialConsequences, $actionTaken, $actionDescription, $equipmentLockedOut, $lockoutKeyHolder, $notifiedUserId, $additionalComments);
+        $stmt->bind_param("iisiisssisisis", $reporterUserId, $storeId, $reportDate, $hazardLocationId, $riskLevel, $hazardObservedAt, $hazardType, $hazardDescription, $potentialConsequences, $actionTaken, $actionDescription, $equipmentLockedOut, $lockoutKeyHolder, $notifiedUserId, $additionalComments);
         
         if (!$stmt->execute()) throw new Exception("Database execute error: " . $stmt->error);
         
@@ -194,6 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($uploadedFilePaths as $path) {
             if (file_exists($path)) unlink($path);
         }
+    }
     }
 }
 ?>
@@ -246,6 +298,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Main Form -->
     <form action="/hazard-report" method="POST" enctype="multipart/form-data" class="space-y-8">
+        <?php csrf_field(); ?>
         
         <!-- Section 1: Reporter Information -->
         <div class="card">

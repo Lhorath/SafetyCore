@@ -28,6 +28,9 @@ $errorMessage = '';
 
 // --- Handle Form Submission ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!csrf_check($errorMessage)) {
+        // $errorMessage set by csrf_check; do not process form
+    } else {
     // Sanitize inputs to prevent injection and whitespace issues
     $name    = trim($_POST['name'] ?? '');
     $email   = trim($_POST['email'] ?? '');
@@ -80,6 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $errorMessage = "An error occurred while sending your message. Please try again later.";
         }
+    }
     }
 }
 
@@ -201,6 +205,7 @@ $captcha_question = "What is $num1 + $num2?";
                     <?php endif; ?>
 
                     <form action="/contact" method="POST" class="space-y-6">
+                        <?php csrf_field(); ?>
                         
                         <!-- Row: Name & Email -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -22,8 +22,8 @@
  * @version   10.0.0 (NorthPoint Beta 10)
  */
 
-require_once 'includes/permissions.php';
-require_once 'includes/csrf.php';
+require_once __DIR__ . '/../includes/permissions.php';
+require_once __DIR__ . '/../includes/csrf.php';
 
 // ── 1. Auth check ─────────────────────────────────────────────────────────────
 if (!isset($_SESSION['user'])) {

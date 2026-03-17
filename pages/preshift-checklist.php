@@ -6,7 +6,7 @@
  * @version   10.0.0 (NorthPoint Beta 10)
  */
 if (!isset($_SESSION['user'])) { header('Location: /login'); exit(); }
-require_once 'includes/csrf.php';
+require_once __DIR__ . '/../includes/csrf.php';
 $csrfToken = generate_csrf_token();
 ?>
 

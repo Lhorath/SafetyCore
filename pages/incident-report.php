@@ -43,10 +43,13 @@ if ($stmt = $conn->prepare($sql)) {
     $stores = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 }
+$allowedStoreIds = array_column($stores, 'id');
 
 // --- 3. Process Form Submission ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
+    if (!csrf_check($errorMessage)) {
+        // $errorMessage set by csrf_check; do not process form
+    } else {
     // Sanitize and validate inputs
     $storeId          = filter_input(INPUT_POST, 'store_id', FILTER_VALIDATE_INT);
     $incidentType     = trim($_POST['incident_type'] ?? '');
@@ -62,6 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Basic Validation
     if (!$storeId || empty($incidentType) || empty($incidentDate) || empty($incidentTime) || empty($description)) {
         $errorMessage = "Please fill out all required fields marked with an asterisk (*).";
+    } elseif (!in_array($storeId, $allowedStoreIds)) {
+        $errorMessage = "Invalid location selected. Please choose a branch you have access to.";
     } else {
         // Insert into the database
         $insertSql = "INSERT INTO incidents (company_id, store_id, reporter_user_id, incident_type, incident_date, location_details, description, immediate_actions) 
@@ -88,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $errorMessage = "Failed to prepare the database statement.";
         }
+    }
     }
 }
 ?>
@@ -139,6 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Incident Submission Form -->
     <form action="/incident-report" method="POST" class="space-y-6">
+        <?php csrf_field(); ?>
         <div class="card p-6 md:p-8 space-y-8 shadow-md border border-gray-200 rounded-xl">
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">

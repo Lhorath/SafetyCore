@@ -15,7 +15,7 @@ if (!isset($_SESSION['user'])) {
 }
 
 // Load permissions helper so child views (like manage-users.php) can use its functions
-require_once 'includes/permissions.php';
+require_once __DIR__ . '/../includes/permissions.php';
 
 // Restored Standard RBAC (Role-Based Access Control)
 $userRole = $_SESSION['user']['role_name'] ?? '';
@@ -45,7 +45,7 @@ $errorMessage   = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // CSRF validation
-    require_once 'includes/csrf.php';
+    require_once __DIR__ . '/../includes/csrf.php';
     if (!csrf_check($errorMessage)) {
         // Fall through — $errorMessage is set, form re-renders with error banner
     } else {
@@ -167,7 +167,7 @@ $roles = $conn->query("SELECT id, role_name FROM roles ORDER BY role_name ASC")-
             <?php
                 $viewPath = "pages/admin-views/{$adminView}.php";
                 if (file_exists($viewPath)) {
-                    require_once $viewPath;
+                    require_once __DIR__ . '/' . $viewPath;
                 } else {
                     echo "<div class='bg-red-100 border-l-4 border-accent-red text-red-700 p-4 rounded shadow-sm'>
                             <p class='font-bold'>System Error</p>

@@ -53,7 +53,9 @@ if (!$report) {
 
 // --- 4. Process Form Submission (POST) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($errorMessage)) {
-    
+    if (!csrf_check($errorMessage)) {
+        // $errorMessage set by csrf_check; do not process form
+    } else {
     // Sanitize and validate inputs
     $riskLevel = filter_input(INPUT_POST, 'riskLevel', FILTER_VALIDATE_INT);
     $hazardDescription = trim($_POST['hazardDescription'] ?? '');
@@ -86,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($errorMessage)) {
             $errorMessage = "An error occurred while updating the report. Please try again.";
         }
         $upStmt->close();
+    }
     }
 }
 ?>
@@ -129,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($errorMessage)) {
 
     <!-- Edit Form -->
     <form action="/edit-report?id=<?php echo $reportId; ?>" method="POST" class="space-y-6">
+        <?php csrf_field(); ?>
         
         <!-- Read-Only Context Data Panel -->
         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600 shadow-inner">

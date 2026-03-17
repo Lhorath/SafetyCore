@@ -13,7 +13,7 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-require_once 'includes/csrf.php';
+require_once __DIR__ . '/../includes/csrf.php';
 
 $userRole = $_SESSION['user']['role_name'] ?? '';
 $managementRoles = ['Admin', 'Manager', 'Safety Manager', 'Safety Leader', 'Owner / CEO', 'Co-manager', 'JHSC Leader'];
