@@ -77,10 +77,12 @@ $trSql = "
     JOIN users u ON ut.user_id = u.id
     LEFT JOIN user_stores us ON u.id = us.user_id
     LEFT JOIN stores s ON us.store_id = s.id
-    WHERE s.company_id = ? OR u.is_platform_admin = 1
+    LEFT JOIN user_job_sites ujs ON u.id = ujs.user_id
+    LEFT JOIN job_sites js ON ujs.job_site_id = js.id
+    WHERE s.company_id = ? OR js.company_id = ?
 ";
 if ($stmt = $conn->prepare($trSql)) {
-    $stmt->bind_param("i", $companyId);
+    $stmt->bind_param("ii", $companyId, $companyId);
     $stmt->execute();
     $res = $stmt->get_result()->fetch_assoc();
     if ($res) {

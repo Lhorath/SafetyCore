@@ -29,24 +29,65 @@ if (!isset($_SESSION['user'])) {
 
 // Get the logged-in user's ID from the secure session.
 $userId = $_SESSION['user']['id'];
+$companyType = $_SESSION['user']['company_type'] ?? 'multi_location';
 
 // Fetch the user's full details.
 // Note: Since Revision 10, the 'store_id' column was removed from the 'users' table 
 // in favor of the 'user_stores' junction table to support Many-to-Many relationships.
 // We use GROUP_CONCAT to aggregate all assigned store names into a single readable string.
-$sql = "SELECT 
-            u.first_name, 
-            u.last_name, 
-            u.email, 
-            u.employee_position, 
-            r.role_name,
-            GROUP_CONCAT(s.store_name SEPARATOR ', ') as store_names
-        FROM users u
-        LEFT JOIN roles r ON u.role_id = r.id
-        LEFT JOIN user_stores us ON u.id = us.user_id
-        LEFT JOIN stores s ON us.store_id = s.id
-        WHERE u.id = ?
-        GROUP BY u.id";
+$locationLabel = 'Assigned Branch(es)';
+$locationIcon = 'fa-store';
+if ($companyType === 'job_based') {
+    $sql = "SELECT 
+                u.first_name, 
+                u.last_name, 
+                u.email, 
+                u.employee_position, 
+                u.employee_code,
+                u.status,
+                u.employment_type,
+                u.department,
+                u.phone_number,
+                u.hire_date,
+                u.preferred_language,
+                u.timezone,
+                r.role_name,
+                CONCAT(su.first_name, ' ', su.last_name) AS supervisor_name,
+                GROUP_CONCAT(DISTINCT js.job_name SEPARATOR ', ') AS assigned_locations
+            FROM users u
+            LEFT JOIN roles r ON u.role_id = r.id
+            LEFT JOIN users su ON u.supervisor_user_id = su.id
+            LEFT JOIN user_job_sites ujs ON u.id = ujs.user_id
+            LEFT JOIN job_sites js ON ujs.job_site_id = js.id
+            WHERE u.id = ?
+            GROUP BY u.id";
+    $locationLabel = 'Assigned Job Site(s)';
+    $locationIcon = 'fa-hard-hat';
+} else {
+    $sql = "SELECT 
+                u.first_name, 
+                u.last_name, 
+                u.email, 
+                u.employee_position, 
+                u.employee_code,
+                u.status,
+                u.employment_type,
+                u.department,
+                u.phone_number,
+                u.hire_date,
+                u.preferred_language,
+                u.timezone,
+                r.role_name,
+                CONCAT(su.first_name, ' ', su.last_name) AS supervisor_name,
+                GROUP_CONCAT(DISTINCT s.store_name SEPARATOR ', ') AS assigned_locations
+            FROM users u
+            LEFT JOIN roles r ON u.role_id = r.id
+            LEFT JOIN users su ON u.supervisor_user_id = su.id
+            LEFT JOIN user_stores us ON u.id = us.user_id
+            LEFT JOIN stores s ON us.store_id = s.id
+            WHERE u.id = ?
+            GROUP BY u.id";
+}
 
 // Prepare and execute the query
 $stmt = $conn->prepare($sql);
@@ -114,13 +155,44 @@ if (!$user) {
                 </span>
             </div>
 
-            <!-- Field: Assigned Stores (Multi-Tenant Support) -->
             <div class="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Assigned Branch(es)</span>
+                <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Employee Code</span>
+                <span class="text-lg font-medium text-gray-800">
+                    <?php echo htmlspecialchars($user['employee_code'] ?? 'Not Assigned'); ?>
+                </span>
+            </div>
+
+            <div class="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Employment Details</span>
+                <span class="text-lg font-medium text-gray-800">
+                    <?php echo htmlspecialchars($user['employment_type'] ?? 'Not Specified'); ?>
+                    <?php if (!empty($user['department'])): ?>
+                        <span class="text-gray-400">|</span> <?php echo htmlspecialchars($user['department']); ?>
+                    <?php endif; ?>
+                </span>
+            </div>
+
+            <div class="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Contact</span>
+                <span class="text-lg font-medium text-gray-800">
+                    <?php echo htmlspecialchars($user['phone_number'] ?? 'Not Specified'); ?>
+                </span>
+            </div>
+
+            <div class="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Supervisor</span>
+                <span class="text-lg font-medium text-gray-800">
+                    <?php echo htmlspecialchars($user['supervisor_name'] ?? 'Unassigned'); ?>
+                </span>
+            </div>
+
+            <!-- Field: Assigned Location(s) -->
+            <div class="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1"><?php echo htmlspecialchars($locationLabel); ?></span>
                 <div class="flex items-center text-gray-800">
-                    <i class="fas fa-store text-secondary mr-2"></i>
+                    <i class="fas <?php echo htmlspecialchars($locationIcon); ?> text-secondary mr-2"></i>
                     <span class="text-lg font-medium">
-                        <?php echo htmlspecialchars($user['store_names'] ?? 'Unassigned'); ?>
+                        <?php echo htmlspecialchars($user['assigned_locations'] ?? 'Unassigned'); ?>
                     </span>
                 </div>
             </div>
@@ -131,6 +203,9 @@ if (!$user) {
                 <!-- Badge Style -->
                 <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-primary text-white shadow-sm">
                     <?php echo htmlspecialchars($user['role_name']); ?>
+                </span>
+                <span class="inline-block ml-2 px-3 py-1 rounded-full text-xs font-bold <?php echo (($user['status'] ?? 'active') === 'active') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'; ?>">
+                    <?php echo htmlspecialchars(ucfirst($user['status'] ?? 'active')); ?>
                 </span>
             </div>
 

@@ -16,6 +16,7 @@
  */
 
 require_once __DIR__ . '/../includes/csrf.php';
+require_once __DIR__ . '/../includes/user_profile_fields.php';
 
 // ── 1. Auth check ─────────────────────────────────────────────────────────────
 if (!isset($_SESSION['user'])) {
@@ -38,6 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstName       = trim($_POST['first_name']      ?? '');
     $lastName        = trim($_POST['last_name']       ?? '');
     $email           = trim($_POST['email']           ?? '');
+    $phoneNumber     = upf_nullable_string($_POST['phone_number'] ?? null, 30);
+    $preferredLang   = upf_nullable_string($_POST['preferred_language'] ?? null, 10);
+    $timezone        = upf_nullable_string($_POST['timezone'] ?? null, 50);
     $newPassword     = $_POST['new_password']         ?? '';
     $confirmPassword = $_POST['confirm_password']     ?? '';
 
@@ -46,6 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errorMessage = 'First Name, Last Name, and Email cannot be empty.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errorMessage = 'Please enter a valid email address.';
+    } elseif (!upf_valid_phone($phoneNumber)) {
+        $errorMessage = 'Please enter a valid phone number.';
+    } elseif (!upf_valid_language($preferredLang)) {
+        $errorMessage = 'Preferred language must follow format like en or en-CA.';
+    } elseif (!upf_valid_timezone($timezone)) {
+        $errorMessage = 'Please select a valid timezone.';
     } elseif (!empty($newPassword) && strlen($newPassword) < 8) {
         // F-21 FIX: enforce minimum password length server-side
         $errorMessage = 'Your new password must be at least 8 characters long.';
@@ -54,14 +64,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $params = [];
         $types  = '';
-        $sql    = "UPDATE users SET first_name = ?, last_name = ?, email = ?";
+        $sql    = "UPDATE users
+                   SET first_name = ?, last_name = ?, email = ?, phone_number = ?, preferred_language = ?, timezone = ?";
         $params[] = $firstName;
         $params[] = $lastName;
         $params[] = $email;
-        $types   .= 'sss';
+        $params[] = $phoneNumber;
+        $params[] = $preferredLang;
+        $params[] = $timezone;
+        $types   .= 'ssssss';
 
         if (!empty($newPassword)) {
-            $sql     .= ", password = ?";
+            $sql     .= ", password = ?, password_changed_at = NOW()";
             $params[] = password_hash($newPassword, PASSWORD_DEFAULT);
             $types   .= 's';
         }
@@ -78,6 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $successMessage = 'Your profile has been updated successfully!';
                     $_SESSION['user']['first_name'] = $firstName;
                     $_SESSION['user']['last_name']  = $lastName;
+                    $_SESSION['user']['phone_number'] = $phoneNumber;
+                    $_SESSION['user']['preferred_language'] = $preferredLang;
+                    $_SESSION['user']['timezone'] = $timezone;
                 } else {
                     $errorMessage = 'An error occurred while updating your profile.';
                 }
@@ -95,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ── 3. Fetch current user data ────────────────────────────────────────────────
 fetch_user:
-$stmt = $conn->prepare("SELECT first_name, last_name, email FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT first_name, last_name, email, phone_number, preferred_language, timezone FROM users WHERE id = ?");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
@@ -153,6 +170,21 @@ if (!$user) {
                     <label class="form-label" for="email">Email Address</label>
                     <input type="email" id="email" name="email" class="form-input"
                            value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                </div>
+                <div>
+                    <label class="form-label" for="phone_number">Phone Number</label>
+                    <input type="text" id="phone_number" name="phone_number" class="form-input"
+                           value="<?php echo htmlspecialchars($user['phone_number'] ?? ''); ?>" placeholder="+1 555 123 4567">
+                </div>
+                <div>
+                    <label class="form-label" for="preferred_language">Preferred Language</label>
+                    <input type="text" id="preferred_language" name="preferred_language" class="form-input"
+                           value="<?php echo htmlspecialchars($user['preferred_language'] ?? ''); ?>" placeholder="en or en-CA">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="form-label" for="timezone">Timezone</label>
+                    <input type="text" id="timezone" name="timezone" class="form-input"
+                           value="<?php echo htmlspecialchars($user['timezone'] ?? ''); ?>" placeholder="America/Edmonton">
                 </div>
             </div>
         </div>

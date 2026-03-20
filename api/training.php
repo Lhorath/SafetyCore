@@ -70,7 +70,7 @@ switch ($action) {
             LEFT JOIN stores s ON us.store_id = s.id
             LEFT JOIN user_job_sites ujs ON u.id = ujs.user_id
             LEFT JOIN job_sites js ON ujs.job_site_id = js.id
-            WHERE s.company_id = ? OR js.company_id = ? OR u.is_platform_admin = 1
+            WHERE s.company_id = ? OR js.company_id = ?
             ORDER BY u.first_name ASC
         ";
         $stmt = $conn->prepare($userSql);

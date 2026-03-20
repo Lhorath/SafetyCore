@@ -17,13 +17,10 @@ if (!isset($_SESSION['user'])) {
 // Load permissions helper so child views (like manage-users.php) can use its functions
 require_once __DIR__ . '/../includes/permissions.php';
 require_once __DIR__ . '/../includes/csrf.php';
+require_once __DIR__ . '/../includes/user_profile_fields.php';
 
-// Restored Standard RBAC (Role-Based Access Control)
-$userRole = $_SESSION['user']['role_name'] ?? '';
-$allowedRoles = ['Admin', 'Manager', 'Owner / CEO'];
-
-if (!in_array($userRole, $allowedRoles)) {
-    // Unauthorized access attempts are redirected to the dashboard.
+// Platform admin panel must only be accessible to true platform admins.
+if (!is_platform_admin()) {
     echo "<script>window.location.href = '/dashboard';</script>";
     exit();
 }
@@ -40,6 +37,7 @@ if (!in_array($adminView, $allowedAdminViews)) {
 
 // ── 3. Handle Form Submissions ────────────────────────────────────────────────
 
+$companyId = (int)($_SESSION['user']['company_id'] ?? 1);
 $successMessage = '';
 $errorMessage   = '';
 
@@ -56,6 +54,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $lastName  = trim($_POST['last_name'] ?? '');
             $email     = trim($_POST['email'] ?? '');
             $position  = trim($_POST['employee_position'] ?? '');
+            $employeeCode = upf_nullable_string($_POST['employee_code'] ?? null, 50);
+            $status = strtolower(trim($_POST['status'] ?? 'active'));
+            $employmentType = upf_nullable_string($_POST['employment_type'] ?? null, 20);
+            $department = upf_nullable_string($_POST['department'] ?? null, 100);
+            $phoneNumber = upf_nullable_string($_POST['phone_number'] ?? null, 30);
+            $hireDate = upf_nullable_string($_POST['hire_date'] ?? null, 20);
+            $preferredLanguage = upf_nullable_string($_POST['preferred_language'] ?? null, 10);
+            $timezone = upf_nullable_string($_POST['timezone'] ?? null, 50);
+            $supervisorUserId = filter_input(INPUT_POST, 'supervisor_user_id', FILTER_VALIDATE_INT) ?: null;
             $password  = $_POST['password'] ?? '';
             $storeId   = filter_input(INPUT_POST, 'store_id', FILTER_VALIDATE_INT);
             $roleId    = filter_input(INPUT_POST, 'role_id',  FILTER_VALIDATE_INT);
@@ -64,15 +71,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errorMessage = "Please fill out all required fields, including password.";
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $errorMessage = "Invalid email address format.";
+            } elseif (strlen($password) < 8) {
+                $errorMessage = "Password must be at least 8 characters.";
+            } elseif (!upf_valid_status($status)) {
+                $errorMessage = "Invalid status selected.";
+            } elseif (!upf_valid_employment_type($employmentType)) {
+                $errorMessage = "Invalid employment type selected.";
+            } elseif (!upf_valid_phone($phoneNumber)) {
+                $errorMessage = "Invalid phone number format.";
+            } elseif (!upf_valid_language($preferredLanguage)) {
+                $errorMessage = "Invalid preferred language format.";
+            } elseif (!upf_valid_timezone($timezone)) {
+                $errorMessage = "Invalid timezone selected.";
+            } elseif (!upf_supervisor_in_company($conn, $supervisorUserId, $companyId)) {
+                $errorMessage = "Selected supervisor is not in this company.";
             } else {
+                if ($hireDate !== null && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $hireDate)) {
+                    $hireDate = null;
+                }
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
                 $conn->begin_transaction();
                 try {
                     $stmt = $conn->prepare(
-                        "INSERT INTO users (first_name, last_name, email, password, employee_position, role_id)
-                         VALUES (?, ?, ?, ?, ?, ?)"
+                        "INSERT INTO users (
+                            first_name, last_name, email, password, employee_position, role_id,
+                            employee_code, status, employment_type, department, phone_number,
+                            hire_date, preferred_language, timezone, supervisor_user_id
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                     );
-                    $stmt->bind_param("sssssi", $firstName, $lastName, $email, $hashedPassword, $position, $roleId);
+                    $stmt->bind_param(
+                        "sssssissssssssi",
+                        $firstName, $lastName, $email, $hashedPassword, $position, $roleId,
+                        $employeeCode, $status, $employmentType, $department, $phoneNumber,
+                        $hireDate, $preferredLanguage, $timezone, $supervisorUserId
+                    );
                     $stmt->execute();
                     $newUserId = $stmt->insert_id;
                     $stmt->close();
@@ -123,8 +155,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ── 4. Global Data Fetching ───────────────────────────────────────────────────
 
-$companyId = $_SESSION['user']['company_id'] ?? 1;
-
 $stores = [];
 $stmtS  = $conn->prepare("SELECT id, store_name FROM stores WHERE company_id = ? ORDER BY store_name ASC");
 $stmtS->bind_param("i", $companyId);
@@ -133,6 +163,8 @@ $stores = $stmtS->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmtS->close();
 
 $roles = $conn->query("SELECT id, role_name FROM roles ORDER BY role_name ASC")->fetch_all(MYSQLI_ASSOC);
+$companyType = $_SESSION['user']['company_type'] ?? 'multi_location';
+$supervisors = upf_get_supervisor_candidates_by_type($conn, (int)$companyId, $companyType);
 ?>
 
 <div class="flex flex-col md:flex-row gap-6">

@@ -1,7 +1,7 @@
 -- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Server version:               10.4.32-MariaDB - mariadb.org binary distribution
--- Server OS:                    Win64
+-- Host:                         srv1846.hstgr.io
+-- Server version:               11.8.3-MariaDB-log - MariaDB Server
+-- Server OS:                    Linux
 -- HeidiSQL Version:             12.16.0.7229
 -- --------------------------------------------------------
 
@@ -18,6 +18,78 @@
 -- Dumping database structure for u971098166_ad9a31
 CREATE DATABASE IF NOT EXISTS `u971098166_ad9a31` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
 USE `u971098166_ad9a31`;
+
+-- Dumping structure for table u971098166_ad9a31.checklist_items
+CREATE TABLE IF NOT EXISTS `checklist_items` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `template_id` int(10) unsigned NOT NULL,
+  `label` varchar(255) NOT NULL,
+  `field_type` enum('pass_fail','yes_no','checkbox','numeric','text') NOT NULL,
+  `is_required` tinyint(1) NOT NULL DEFAULT 1,
+  `order_index` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_template_id` (`template_id`),
+  CONSTRAINT `fk_ci_template` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Fields/questions for each checklist template';
+
+-- Dumping data for table u971098166_ad9a31.checklist_items: ~0 rows (approximately)
+
+-- Dumping structure for table u971098166_ad9a31.checklist_responses
+CREATE TABLE IF NOT EXISTS `checklist_responses` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `submission_id` int(10) unsigned NOT NULL,
+  `item_id` int(10) unsigned NOT NULL,
+  `response_value` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_submission_id` (`submission_id`),
+  KEY `idx_item_id` (`item_id`),
+  CONSTRAINT `fk_cr_item` FOREIGN KEY (`item_id`) REFERENCES `checklist_items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_cr_submission` FOREIGN KEY (`submission_id`) REFERENCES `checklist_submissions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Per-item answers for each checklist submission';
+
+-- Dumping data for table u971098166_ad9a31.checklist_responses: ~0 rows (approximately)
+
+-- Dumping structure for table u971098166_ad9a31.checklist_submissions
+CREATE TABLE IF NOT EXISTS `checklist_submissions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `company_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `equipment_id` int(10) unsigned NOT NULL,
+  `template_id` int(10) unsigned NOT NULL,
+  `shift_date` date NOT NULL,
+  `overall_status` enum('Safe','Unsafe') NOT NULL DEFAULT 'Safe',
+  `general_comments` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_company_shift` (`company_id`,`shift_date`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_equipment_id` (`equipment_id`),
+  KEY `idx_template_id` (`template_id`),
+  CONSTRAINT `fk_cs_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_cs_equipment` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_cs_template` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_cs_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Submitted pre-shift checklist sessions';
+
+-- Dumping data for table u971098166_ad9a31.checklist_submissions: ~0 rows (approximately)
+
+-- Dumping structure for table u971098166_ad9a31.checklist_templates
+CREATE TABLE IF NOT EXISTS `checklist_templates` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `company_id` int(10) unsigned NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_company_id` (`company_id`),
+  CONSTRAINT `fk_ct_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Reusable dynamic pre-shift checklist templates';
+
+-- Dumping data for table u971098166_ad9a31.checklist_templates: ~0 rows (approximately)
 
 -- Dumping structure for table u971098166_ad9a31.companies
 CREATE TABLE IF NOT EXISTS `companies` (
@@ -368,9 +440,9 @@ CREATE TABLE IF NOT EXISTS `page_seo` (
   `requires_login` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 if behind authentication',
   PRIMARY KEY (`id`),
   UNIQUE KEY `page_route` (`page_route`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_ad9a31.page_seo: ~20 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.page_seo: ~23 rows (approximately)
 REPLACE INTO `page_seo` (`id`, `page_route`, `meta_title`, `meta_description`, `meta_keywords`, `og_image`, `requires_login`) VALUES
 	(1, 'home', 'Sentry OHS | Occupational Health and Safety Software', 'Sentry OHS is an occupational health and safety software platform for digital hazard reporting, incident management, FLHA workflows, safety meetings, and compliance tracking.', 'occupational health and safety software, OHS software, EHS software, hazard reporting software, incident management, FLHA, safety compliance, Sentry OHS', '/style/images/logo.png', 0),
 	(2, 'services', 'Sentry OHS Solutions | OHS Software Modules', 'Explore Sentry OHS solutions for digital hazard reporting, incident management, FLHA workflows, toolbox talks, equipment checks, and compliance tracking.', 'Sentry OHS solutions, OHS software modules, EHS solutions, hazard reporting, incident management, FLHA, toolbox talks, safety compliance software', '/style/images/logo.png', 0),
@@ -829,13 +901,29 @@ CREATE TABLE IF NOT EXISTS `users` (
   `first_name` varchar(100) NOT NULL,
   `last_name` varchar(100) NOT NULL,
   `employee_position` varchar(100) DEFAULT NULL,
+  `employee_code` varchar(50) DEFAULT NULL,
+  `status` enum('active','inactive','suspended','terminated') NOT NULL DEFAULT 'active',
+  `employment_type` enum('full_time','part_time','contractor','temporary') DEFAULT NULL,
+  `department` varchar(100) DEFAULT NULL,
+  `phone_number` varchar(30) DEFAULT NULL,
+  `supervisor_user_id` int(10) unsigned DEFAULT NULL,
+  `hire_date` date DEFAULT NULL,
+  `last_login_at` datetime DEFAULT NULL,
+  `password_changed_at` datetime DEFAULT NULL,
+  `mfa_enabled` tinyint(1) NOT NULL DEFAULT 0,
+  `preferred_language` varchar(10) DEFAULT NULL,
+  `timezone` varchar(50) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `is_platform_admin` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 = platform level admin',
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   KEY `role_id` (`role_id`),
-  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
+  KEY `idx_users_status` (`status`),
+  KEY `idx_users_department` (`department`),
+  KEY `idx_users_supervisor` (`supervisor_user_id`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
+  CONSTRAINT `fk_users_supervisor` FOREIGN KEY (`supervisor_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table u971098166_ad9a31.users: ~15 rows (approximately)
@@ -856,69 +944,22 @@ REPLACE INTO `users` (`id`, `role_id`, `email`, `password`, `first_name`, `last_
 	(14, 13, 'custom@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Custom', 'Contractor', '2026-02-18 13:21:50', '2026-02-18 13:21:50', 0),
 	(15, 1, 'skybordage@hotmail.com', '$2y$10$A/s.41TPZAqpDKKSTJrMoujg97Fr7h/fo6bBNgX7Be0pdsWpIuvYq', 'Caleb', 'Bordage', 'Tester', '2026-02-24 20:45:16', '2026-03-12 12:17:15', 1);
 
--- Dumping structure for table u971098166_ad9a31.checklist_templates
-CREATE TABLE IF NOT EXISTS `checklist_templates` (
+-- Dumping structure for table u971098166_ad9a31.user_emergency_contacts
+CREATE TABLE IF NOT EXISTS `user_emergency_contacts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `company_id` int(10) unsigned NOT NULL,
-  `name` varchar(150) NOT NULL,
-  `description` text DEFAULT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `contact_name` varchar(120) NOT NULL,
+  `relationship` varchar(80) DEFAULT NULL,
+  `phone_number` varchar(30) NOT NULL,
+  `is_primary` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `idx_company_id` (`company_id`),
-  CONSTRAINT `fk_ct_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Reusable dynamic pre-shift checklist templates';
+  KEY `idx_uec_user_id` (`user_id`),
+  CONSTRAINT `fk_uec_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping structure for table u971098166_ad9a31.checklist_items
-CREATE TABLE IF NOT EXISTS `checklist_items` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `template_id` int(10) unsigned NOT NULL,
-  `label` varchar(255) NOT NULL,
-  `field_type` enum('pass_fail','yes_no','checkbox','numeric','text') NOT NULL,
-  `is_required` tinyint(1) NOT NULL DEFAULT 1,
-  `order_index` int(11) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `idx_template_id` (`template_id`),
-  CONSTRAINT `fk_ci_template` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Fields/questions for each checklist template';
-
--- Dumping structure for table u971098166_ad9a31.checklist_submissions
-CREATE TABLE IF NOT EXISTS `checklist_submissions` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `company_id` int(10) unsigned NOT NULL,
-  `user_id` int(10) unsigned NOT NULL,
-  `equipment_id` int(10) unsigned NOT NULL,
-  `template_id` int(10) unsigned NOT NULL,
-  `shift_date` date NOT NULL,
-  `overall_status` enum('Safe','Unsafe') NOT NULL DEFAULT 'Safe',
-  `general_comments` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `idx_company_shift` (`company_id`,`shift_date`),
-  KEY `idx_user_id` (`user_id`),
-  KEY `idx_equipment_id` (`equipment_id`),
-  KEY `idx_template_id` (`template_id`),
-  CONSTRAINT `fk_cs_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_cs_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_cs_equipment` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_cs_template` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Submitted pre-shift checklist sessions';
-
--- Dumping structure for table u971098166_ad9a31.checklist_responses
-CREATE TABLE IF NOT EXISTS `checklist_responses` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `submission_id` int(10) unsigned NOT NULL,
-  `item_id` int(10) unsigned NOT NULL,
-  `response_value` varchar(255) DEFAULT NULL,
-  `notes` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `idx_submission_id` (`submission_id`),
-  KEY `idx_item_id` (`item_id`),
-  CONSTRAINT `fk_cr_submission` FOREIGN KEY (`submission_id`) REFERENCES `checklist_submissions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_cr_item` FOREIGN KEY (`item_id`) REFERENCES `checklist_items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Per-item answers for each checklist submission';
+-- Dumping data for table u971098166_ad9a31.user_emergency_contacts: ~0 rows (approximately)
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

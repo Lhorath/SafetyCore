@@ -118,7 +118,11 @@ $companyStmt->close();
 // ── 4. User lookup ────────────────────────────────────────────────────────────
 // F-07 FIX: include last_name in the SELECT so it can be stored in the session.
 $userStmt = $conn->prepare(
-    "SELECT u.id, u.first_name, u.last_name, u.email, u.password, r.role_name
+    "SELECT u.id, u.first_name, u.last_name, u.email, u.password, u.employee_position,
+            u.employee_code, u.status, u.employment_type, u.department, u.phone_number,
+            u.hire_date, u.last_login_at, u.password_changed_at, u.mfa_enabled,
+            u.preferred_language, u.timezone,
+            r.role_name
      FROM users u
      JOIN roles r ON u.role_id = r.id
      WHERE u.email = ?
@@ -139,6 +143,10 @@ if (!$company || !$company['is_active']) {
 }
 
 if (!$user || !$passwordValid) {
+    fail_login($conn, $identifier, $ipAddress);
+}
+
+if (($user['status'] ?? 'active') !== 'active') {
     fail_login($conn, $identifier, $ipAddress);
 }
 
@@ -219,6 +227,18 @@ $_SESSION['user'] = [
     'first_name'   => $user['first_name'],
     'last_name'    => $user['last_name'],      // F-07 FIX: was missing, broke audit trail
     'email'        => $user['email'],
+    'employee_position' => $user['employee_position'],
+    'employee_code' => $user['employee_code'],
+    'status' => $user['status'],
+    'employment_type' => $user['employment_type'],
+    'department' => $user['department'],
+    'phone_number' => $user['phone_number'],
+    'hire_date' => $user['hire_date'],
+    'last_login_at' => $user['last_login_at'],
+    'password_changed_at' => $user['password_changed_at'],
+    'mfa_enabled' => (int)($user['mfa_enabled'] ?? 0),
+    'preferred_language' => $user['preferred_language'],
+    'timezone' => $user['timezone'],
     'role_name'    => $user['role_name'],
     'company_id'   => $companyId,
     'company_name' => $company['company_name'],
@@ -227,6 +247,13 @@ $_SESSION['user'] = [
     'location_key' => $locationKey,
     'store_id'     => $primaryLocationId,      // kept for backward compat
 ];
+
+$lastLoginStmt = $conn->prepare("UPDATE users SET last_login_at = NOW() WHERE id = ?");
+if ($lastLoginStmt) {
+    $lastLoginStmt->bind_param("i", $user['id']);
+    $lastLoginStmt->execute();
+    $lastLoginStmt->close();
+}
 
 // Seed a fresh CSRF token for the new session (F-02)
 csrf_token();
