@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errorMessage = "Incorrect security answer. Please try again.";
     } else {
         // --- Email Configuration ---
-        $to = 'support@macweb.ca'; 
+        $to = 'support@sentryohs.com'; 
         
         // prepend brand name to subject for easy filtering
         $email_subject = "Sentry OHS Inquiry: " . $subject;
@@ -145,7 +145,7 @@ $captcha_question = "What is $num1 + $num2?";
                             </div>
                             <div>
                                 <p class="text-sm font-bold text-slate-800 mb-1">Email Support</p>
-                                <a href="mailto:support@macweb.ca" class="text-sm text-gray-500 hover:text-blue-600 transition-colors">support@macweb.ca</a>
+                                <a href="mailto:support@sentryohs.com" class="text-sm text-gray-500 hover:text-blue-600 transition-colors">support@sentryohs.com</a>
                             </div>
                         </div>
 

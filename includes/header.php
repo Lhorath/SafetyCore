@@ -120,6 +120,8 @@ if ($isLoggedIn) {
     <meta name="twitter:title" content="Sentry OHS - <?php echo htmlspecialchars($seo['title']); ?>">
     <meta name="twitter:description" content="<?php echo htmlspecialchars($seo['description']); ?>">
     <meta name="twitter:image" content="<?php echo htmlspecialchars($seo['og_image']); ?>">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

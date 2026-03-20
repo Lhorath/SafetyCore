@@ -47,7 +47,7 @@
                     <ul class="space-y-3 text-sm font-medium">
                         <li><a href="/about" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> About Sentry OHS</a></li>
                         <li><a href="/contact" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> Contact Us</a></li>
-                        <li><a href="mailto:support@macweb.ca" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> support@macweb.ca</a></li>
+                        <li><a href="mailto:support@sentryohs.com" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> support@sentryohs.com</a></li>
                     </ul>
                 </div>
 
