@@ -61,7 +61,7 @@ function render_module_card(array $module): void {
     $icon = htmlspecialchars($module['icon_class'] ?? 'fa-circle');
     ?>
     <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all flex flex-col">
-        <div class="w-12 h-12 rounded-xl bg-blue-50 text-secondary flex items-center justify-center text-xl mb-4">
+        <div class="dashboard-shield-icon mb-4">
             <i class="fas <?php echo $icon; ?>"></i>
         </div>
         <h3 class="text-lg font-bold text-primary mb-2"><?php echo $name; ?></h3>
@@ -71,6 +71,30 @@ function render_module_card(array $module): void {
     <?php
 }
 ?>
+
+<style>
+    .dashboard-shield-icon {
+        width: 3rem;
+        height: 3rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-image: url('/style/images/shield.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        color: #ffffff;
+        font-size: 1.15rem;
+        line-height: 1;
+    }
+
+    .dashboard-shield-icon i {
+        display: inline-block;
+        transform: scale(0.9);
+        transform-origin: center;
+    }
+
+</style>
 
 <div class="max-w-7xl mx-auto py-8 space-y-8">
     <section class="bg-gradient-to-r from-primary via-slate-900 to-primary rounded-2xl p-8 text-white shadow-lg">
