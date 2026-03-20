@@ -2,8 +2,8 @@
 /**
  * Branch Hazard Review (Store Reports) - pages/store-reports.php
  *
- * @package   NorthPoint360
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @package   Sentry OHS
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 if (!isset($_SESSION['user'])) {
@@ -175,6 +175,10 @@ $stmtS->close();
                         
                         // BUG FIX: Using created_at instead of hazard_observed_at to prevent "Invalid Date"
                         const observedDate = new Date(r.created_at).toLocaleString();
+                        const isLockedOut = r.equipment_locked_out === 1
+                            || r.equipment_locked_out === '1'
+                            || r.equipment_locked_out === true
+                            || r.equipment_locked_out === 'yes';
 
                         managerReportViewer.innerHTML = `
                             <div class="p-6 animate-fade-in-up w-full">
@@ -204,7 +208,7 @@ $stmtS->close();
                                         <div class="bg-white p-4 rounded-lg border border-gray-200 text-gray-700 whitespace-pre-wrap shadow-sm">${r.action_description}</div>
                                     </div>
                                     
-                                    ${r.equipment_locked_out === 'yes' ? `
+                                    ${isLockedOut ? `
                                     <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
                                         <span class="block text-orange-800 text-xs font-bold uppercase tracking-wider mb-1"><i class="fas fa-lock mr-1"></i> Equipment Locked Out</span>
                                         <span class="font-bold text-orange-900">Key Holder: ${r.lockout_key_holder}</span>

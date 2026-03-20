@@ -2,8 +2,8 @@
 /**
  * Hazard Reporting API - api/hazard_reporting.php
  *
- * @package   NorthPoint360
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @package   Sentry OHS
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 session_start();
@@ -61,6 +61,11 @@ switch ($action) {
     // 2. Add Custom Location (store must belong to user's company)
     case 'add_location':
         $data = json_decode(file_get_contents('php://input'), true);
+        if (!validate_csrf_token($data['csrf_token'] ?? '')) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Invalid security token.']);
+            break;
+        }
         $storeId = (int)($data['store_id'] ?? 0);
         $locName = trim($data['location_name'] ?? '');
 
@@ -206,10 +211,10 @@ switch ($action) {
         $locationId = (int)$_POST['location_id'];
         $hazardType = trim($_POST['hazard_type']);
         $description = trim($_POST['hazard_description']);
-        $immAction = $_POST['immediateActionTaken'] === 'yes' ? 'yes' : 'no';
+        $immAction = (isset($_POST['immediateActionTaken']) && $_POST['immediateActionTaken'] === 'yes') ? 1 : 0;
         $actionDesc = trim($_POST['action_description'] ?? '');
         $supNotified = !empty($_POST['supervisor_notified_user_id']) ? (int)$_POST['supervisor_notified_user_id'] : null;
-        $eqLocked = $_POST['equipmentLockedOut'] === 'yes' ? 'yes' : 'no';
+        $eqLocked = (isset($_POST['equipmentLockedOut']) && $_POST['equipmentLockedOut'] === 'yes') ? 1 : 0;
         $keyHolder = trim($_POST['lockout_key_holder'] ?? '');
 
         // Basic Validation
@@ -262,7 +267,7 @@ switch ($action) {
             }
         }
 
-        if ($eqLocked === 'yes' && empty($keyHolder)) {
+        if ($eqLocked === 1 && empty($keyHolder)) {
             echo json_encode(['success' => false, 'message' => 'Key holder name is required if equipment is locked out.']);
             exit;
         }
@@ -298,19 +303,19 @@ switch ($action) {
             }
         }
 
-        // Insert into Database
+        // Insert into database using canonical reports-table contract.
         $sql = "INSERT INTO reports (
-                    reporter_user_id, store_id, hazard_location_id, hazard_type, hazard_description, 
-                    immediate_action_taken, action_description, equipment_locked_out, lockout_key_holder, 
-                    supervisor_notified_user_id, media_path, status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Open')";
+                    reporter_user_id, store_id, hazard_location_id, hazard_type, hazard_description,
+                    action_taken, action_description, equipment_locked_out, lockout_key_holder,
+                    notified_user_id, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Open')";
         
         if ($stmt = $conn->prepare($sql)) {
             $stmt->bind_param(
-                "iiissssssis", 
-                $userId, $storeId, $locationId, $hazardType, $description, 
-                $immAction, $actionDesc, $eqLocked, $keyHolder, 
-                $supNotified, $mediaPath
+                "iiissisisi",
+                $userId, $storeId, $locationId, $hazardType, $description,
+                $immAction, $actionDesc, $eqLocked, $keyHolder,
+                $supNotified
             );
             
             if ($stmt->execute()) {

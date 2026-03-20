@@ -12,10 +12,10 @@
  * - Transaction-based database insertion for data integrity.
  * - Integration with JavaScript in footer.php for dynamic store/location logic.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // --- 1. Security Check ---
@@ -80,6 +80,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     define('MAX_PHOTO_COUNT', 5);
     define('MAX_VIDEO_SIZE', 200 * 1024 * 1024); // 200 MB
     define('MAX_VIDEO_COUNT', 2);
+    $allowedPhotoExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+    $allowedPhotoMimes = ['image/jpeg', 'image/png', 'image/gif'];
+    $allowedVideoExtensions = ['mp4', 'mov', 'wmv'];
+    $allowedVideoMimes = ['video/mp4', 'video/quicktime', 'video/x-ms-wmv'];
     
     // Upload Directories (Relative to the index.php router)
     define('PHOTO_UPLOAD_DIR', 'reports/uploads/photos/'); 
@@ -92,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Start a database transaction
     // This ensures that we don't save a partial report if file uploads fail, or vice versa.
     $conn->begin_transaction();
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
     
     try {
         // --- A. Process Photo Uploads ---
@@ -113,6 +118,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 
                 $fileExtension = strtolower(pathinfo($photos['name'][$i], PATHINFO_EXTENSION));
+                if (!in_array($fileExtension, $allowedPhotoExtensions, true)) {
+                    throw new Exception('Photo "' . htmlspecialchars($photos['name'][$i]) . '" has an unsupported file extension.');
+                }
+                $detectedMime = $finfo ? finfo_file($finfo, $photos['tmp_name'][$i]) : '';
+                if (!in_array($detectedMime, $allowedPhotoMimes, true)) {
+                    throw new Exception('Photo "' . htmlspecialchars($photos['name'][$i]) . '" has an invalid file type.');
+                }
                 $uniqueName = uniqid('photo_', true) . '.' . $fileExtension;
                 $targetPath = PHOTO_UPLOAD_DIR . $uniqueName;
                 
@@ -144,6 +156,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $fileExtension = strtolower(pathinfo($videos['name'][$i], PATHINFO_EXTENSION));
+                if (!in_array($fileExtension, $allowedVideoExtensions, true)) {
+                    throw new Exception('Video "' . htmlspecialchars($videos['name'][$i]) . '" has an unsupported file extension.');
+                }
+                $detectedMime = $finfo ? finfo_file($finfo, $videos['tmp_name'][$i]) : '';
+                if (!in_array($detectedMime, $allowedVideoMimes, true)) {
+                    throw new Exception('Video "' . htmlspecialchars($videos['name'][$i]) . '" has an invalid file type.');
+                }
                 $uniqueName = uniqid('video_', true) . '.' . $fileExtension;
                 $targetPath = VIDEO_UPLOAD_DIR . $uniqueName;
                 
@@ -234,12 +253,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // --- F. Commit Transaction ---
         $conn->commit();
+        if ($finfo) {
+            finfo_close($finfo);
+        }
         $successMessage = "Report submitted successfully! Thank you for your contribution to safety.";
 
     } catch (Exception $e) {
+        if ($finfo) {
+            finfo_close($finfo);
+        }
         // Rollback DB changes if anything failed
         $conn->rollback();
-        $errorMessage = "Error: " . $e->getMessage();
+        error_log('Hazard report submission failed: ' . $e->getMessage());
+        $errorMessage = "An error occurred while submitting the report. Please try again or contact support.";
         
         // Cleanup uploaded files to prevent orphans
         foreach ($uploadedFilePaths as $path) {

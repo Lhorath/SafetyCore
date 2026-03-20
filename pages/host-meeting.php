@@ -12,10 +12,10 @@
  * - Added "Select All" functionality and strict client-side validation.
  * - Styled using the Beta 05 Tailwind component library.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // --- 1. Security & Access Control ---
@@ -23,6 +23,9 @@ if (!isset($_SESSION['user'])) {
     header('Location: /login');
     exit();
 }
+
+require_once __DIR__ . '/../includes/csrf.php';
+$csrfToken = generate_csrf_token();
 
 $userRole = $_SESSION['user']['role_name'] ?? '';
 
@@ -75,6 +78,7 @@ if (in_array($userRole, ['Admin', 'Owner / CEO', 'Safety Manager'])) {
 ?>
 
 <div class="max-w-3xl mx-auto py-8">
+    <input type="hidden" id="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
     
     <!-- Page Header & Cancel Action -->
     <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-primary pb-4 gap-4">
@@ -269,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     document.getElementById('hostMeetingForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        const csrfToken = document.getElementById('csrf_token').value;
         
         // Gather checked attendees
         const attendees = [];
@@ -301,7 +306,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Submit to API via POST
         fetch('/api/meetings.php?action=save_meeting', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
             body: JSON.stringify(payload)
         })
         .then(response => response.json())

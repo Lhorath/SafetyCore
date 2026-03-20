@@ -11,10 +11,10 @@
  *   F-17 — 'JHSC Leader' added alongside 'JHSC Member' in $allowedRoles
  *           (matches the new DB role added in Beta 09).
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 session_start();

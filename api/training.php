@@ -5,8 +5,8 @@
  * Handles backend processing for employee certifications and training categories.
  * Enforces RBAC and CSRF protection.
  *
- * @package   NorthPoint360
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @package   Sentry OHS
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 session_start();
@@ -79,22 +79,39 @@ switch ($action) {
         $users = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
-        // 3. Map records to users
-        foreach ($users as $u) {
-            $u['records'] = [];
-            
-            $recSql = "SELECT category_id, issue_date, expiry_date, certificate_number FROM user_training_records WHERE user_id = ?";
+        // 3. Batch-fetch all records to avoid N+1 per-user queries.
+        $userIds = array_values(array_map(static fn($u) => (int)$u['id'], $users));
+        $recordsByUser = [];
+        if (!empty($userIds)) {
+            $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+            $recSql = "SELECT user_id, category_id, issue_date, expiry_date, certificate_number
+                       FROM user_training_records
+                       WHERE user_id IN ($placeholders)";
             $recStmt = $conn->prepare($recSql);
-            $recStmt->bind_param("i", $u['id']);
+            $types = str_repeat('i', count($userIds));
+            $recStmt->bind_param($types, ...$userIds);
             $recStmt->execute();
-            $records = $recStmt->get_result()->fetch_all(MYSQLI_ASSOC);
-            
-            // Map by category_id for easy O(1) frontend lookup
-            foreach ($records as $r) {
-                $u['records'][$r['category_id']] = $r;
-            }
+            $allRecords = $recStmt->get_result()->fetch_all(MYSQLI_ASSOC);
             $recStmt->close();
-            
+
+            foreach ($allRecords as $r) {
+                $uid = (int)$r['user_id'];
+                $cat = (int)$r['category_id'];
+                if (!isset($recordsByUser[$uid])) {
+                    $recordsByUser[$uid] = [];
+                }
+                $recordsByUser[$uid][$cat] = [
+                    'category_id' => $cat,
+                    'issue_date' => $r['issue_date'],
+                    'expiry_date' => $r['expiry_date'],
+                    'certificate_number' => $r['certificate_number'],
+                ];
+            }
+        }
+
+        foreach ($users as $u) {
+            $uid = (int)$u['id'];
+            $u['records'] = $recordsByUser[$uid] ?? [];
             $matrix['users'][] = $u;
         }
 
@@ -151,14 +168,51 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Employee, Category, and Issue Date are required.']); break;
         }
 
-        // Calculate Expiry Date based on category validity
+        // Enforce tenant ownership on both employee and category before writing.
+        $empScopeSql = "SELECT 1
+                        FROM users u
+                        WHERE u.id = ?
+                          AND (
+                                EXISTS (
+                                    SELECT 1
+                                    FROM user_stores us
+                                    JOIN stores s ON us.store_id = s.id
+                                    WHERE us.user_id = u.id AND s.company_id = ?
+                                )
+                                OR EXISTS (
+                                    SELECT 1
+                                    FROM user_job_sites ujs
+                                    JOIN job_sites js ON ujs.job_site_id = js.id
+                                    WHERE ujs.user_id = u.id AND js.company_id = ?
+                                )
+                              )
+                        LIMIT 1";
+        $empScopeStmt = $conn->prepare($empScopeSql);
+        $empScopeStmt->bind_param("iii", $empId, $companyId, $companyId);
+        $empScopeStmt->execute();
+        $employeeInScope = $empScopeStmt->get_result()->fetch_assoc() !== null;
+        $empScopeStmt->close();
+
+        if (!$employeeInScope) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            break;
+        }
+
+        // Calculate expiry date from a category that is also tenant-scoped.
         $expiryDate = null;
-        $catSql = "SELECT validity_months FROM training_categories WHERE id = ?";
+        $catSql = "SELECT validity_months FROM training_categories WHERE id = ? AND company_id = ?";
         $cStmt = $conn->prepare($catSql);
-        $cStmt->bind_param("i", $catId);
+        $cStmt->bind_param("ii", $catId, $companyId);
         $cStmt->execute();
         $catRes = $cStmt->get_result()->fetch_assoc();
         $cStmt->close();
+
+        if (!$catRes) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            break;
+        }
 
         if ($catRes && $catRes['validity_months'] > 0) {
             $months = (int)$catRes['validity_months'];

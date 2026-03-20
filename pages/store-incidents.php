@@ -12,10 +12,10 @@
  * - Integrated AJAX interactions with `api/incidents.php`.
  * - Styled with the platform's custom Tailwind color palette (accent-red focus).
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // --- 1. Security & Access Control ---

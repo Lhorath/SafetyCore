@@ -2,7 +2,7 @@
 /**
  * Contact Page - pages/contact.php
  *
- * This file displays the public contact form for NorthPoint 360.
+ * This file displays the public contact form for Sentry OHS.
  * It handles form submission, input validation, custom math CAPTCHA, and sends 
  * inquiries directly to the administration via email using the PHP mail() function.
  *
@@ -12,10 +12,10 @@
  * - Secure email transmission with proper headers.
  * - Custom Math CAPTCHA to prevent automated spam without third-party dependencies.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // Ensure session is started for CAPTCHA tracking
@@ -55,10 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $to = 'support@macweb.ca'; 
         
         // prepend brand name to subject for easy filtering
-        $email_subject = "NorthPoint 360 Inquiry: " . $subject;
+        $email_subject = "Sentry OHS Inquiry: " . $subject;
         
         // Construct the email body
-        $email_body = "You have received a new message from the NorthPoint 360 contact form.\n\n";
+        $email_body = "You have received a new message from the Sentry OHS contact form.\n\n";
         $email_body .= "Name: $name\n";
         $email_body .= "Email: $email\n";
         $email_body .= "Status: $loggedInInfo\n";
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Headers
         // 'From' set to a noreply address on the domain to ensure delivery.
         // 'Reply-To' set to the sender's email for convenience.
-        $headers = "From: NorthPoint 360 <noreply@safety.macweb.ca>\r\n";
+        $headers = "From: Sentry OHS <noreply@safety.macweb.ca>\r\n";
         $headers .= "Reply-To: $email\r\n";
         $headers .= "X-Mailer: PHP/" . phpversion();
 
@@ -103,10 +103,10 @@ $captcha_question = "What is $num1 + $num2?";
     
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
         <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
-            Contact <span class="text-blue-500">Support</span>
+            Contact <span class="text-blue-500">Sentry OHS</span>
         </h1>
         <p class="text-lg text-gray-300 font-light max-w-2xl mx-auto">
-            Interested in NorthPoint 360 for your business? Have a question or need technical assistance? Send us a message below.
+            Connect with our team for OHS software support, implementation questions, pricing details, or a product demo.
         </p>
     </div>
 </div>
@@ -124,7 +124,7 @@ $captcha_question = "What is $num1 + $num2?";
                 
                 <!-- Contact Details Card -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                    <h3 class="text-xl font-bold text-slate-800 mb-6 border-b border-gray-100 pb-3">Get in Touch</h3>
+                    <h3 class="text-xl font-bold text-slate-800 mb-6 border-b border-gray-100 pb-3">Talk to Our Team</h3>
                     
                     <div class="space-y-6">
                         <!-- Address -->
@@ -144,7 +144,7 @@ $captcha_question = "What is $num1 + $num2?";
                                 <i class="fas fa-envelope text-blue-600 text-lg"></i>
                             </div>
                             <div>
-                                <p class="text-sm font-bold text-slate-800 mb-1">Email</p>
+                                <p class="text-sm font-bold text-slate-800 mb-1">Email Support</p>
                                 <a href="mailto:support@macweb.ca" class="text-sm text-gray-500 hover:text-blue-600 transition-colors">support@macweb.ca</a>
                             </div>
                         </div>
@@ -155,7 +155,7 @@ $captcha_question = "What is $num1 + $num2?";
                                 <i class="fas fa-phone text-blue-600 text-lg"></i>
                             </div>
                             <div>
-                                <p class="text-sm font-bold text-slate-800 mb-1">Sales & Support</p>
+                                <p class="text-sm font-bold text-slate-800 mb-1">Sales and Support</p>
                                 <p class="text-sm text-gray-500">(902) 754 1070</p>
                             </div>
                         </div>
@@ -168,10 +168,10 @@ $captcha_question = "What is $num1 + $num2?";
                     <i class="fas fa-desktop absolute -right-4 -bottom-4 text-6xl text-white opacity-5 transform -rotate-12"></i>
                     
                     <h3 class="text-lg font-bold mb-3 flex items-center relative z-10">
-                        <i class="fas fa-rocket text-blue-400 mr-2"></i> Request a Demo
+                        <i class="fas fa-rocket text-blue-400 mr-2"></i> Book a Demo
                     </h3>
                     <p class="text-sm text-gray-300 leading-relaxed relative z-10">
-                        Our team is happy to walk you through the platform's capabilities. Select <strong>"Sales / Demo Request"</strong> in the subject line.
+                        See how Sentry OHS supports hazard reporting, incident management, FLHA workflows, and compliance tracking. Select <strong>"Sales / Demo Request"</strong> in the subject line.
                     </p>
                 </div>
             </div>
@@ -180,7 +180,7 @@ $captcha_question = "What is $num1 + $num2?";
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-10">
                     
-                    <h2 class="text-2xl font-bold text-slate-800 mb-8 border-b border-gray-100 pb-4">Send a Message</h2>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-8 border-b border-gray-100 pb-4">Send Us a Message</h2>
 
                     <!-- Success Alert -->
                     <?php if (!empty($successMessage)): ?>
@@ -236,7 +236,7 @@ $captcha_question = "What is $num1 + $num2?";
                         <!-- Row: Message -->
                         <div>
                             <label for="message" class="form-label text-slate-700">Message <span class="text-accent-red">*</span></label>
-                            <textarea id="message" name="message" required class="form-input shadow-sm min-h-[160px] bg-gray-50 focus:bg-white" placeholder="How can we help you?"><?php echo isset($_POST['message']) ? htmlspecialchars($_POST['message']) : ''; ?></textarea>
+                            <textarea id="message" name="message" required class="form-input shadow-sm min-h-[160px] bg-gray-50 focus:bg-white" placeholder="Tell us about your OHS goals, team size, and what support you need."><?php echo isset($_POST['message']) ? htmlspecialchars($_POST['message']) : ''; ?></textarea>
                         </div>
 
                         <!-- Custom Math CAPTCHA -->

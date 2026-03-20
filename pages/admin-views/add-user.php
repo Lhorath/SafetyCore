@@ -7,15 +7,15 @@
  * ($stores, $roles, $successMessage, $errorMessage) defined in the parent scope.
  *
  * Features:
- * - Tailwind CSS styling consistent with NorthPoint 360 branding.
+ * - Tailwind CSS styling consistent with Sentry OHS branding.
  * - Password field for initial credential setup (added in Revision 11).
  * - Dropdowns for Store and Role assignment.
  * - Responsive Card layout.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 ?>
 
@@ -52,6 +52,7 @@
     <!-- Add User Form -->
     <!-- Action points back to the main admin controller with the current view parameter -->
     <form action="/admin?view=add-user" method="POST" class="space-y-8">
+        <?php csrf_field(); ?>
         
         <!-- Card 1: Personal Information -->
         <div class="card">
@@ -70,7 +71,7 @@
                 <!-- Email -->
                 <div class="md:col-span-2">
                     <label class="form-label" for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required class="form-input" placeholder="john.doe@northpoint360.ca" autocomplete="new-email">
+                    <input type="email" id="email" name="email" required class="form-input" placeholder="john.doe@sentryohs.ca" autocomplete="new-email">
                 </div>
                 <!-- Position -->
                 <div class="md:col-span-2">

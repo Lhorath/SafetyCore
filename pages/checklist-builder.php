@@ -4,8 +4,8 @@
  *
  * Management interface to create dynamic Pre-Shift Equipment Checklists.
  *
- * @package   NorthPoint360
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @package   Sentry OHS
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 if (!isset($_SESSION['user'])) {

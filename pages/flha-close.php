@@ -11,10 +11,10 @@
  * - Added strict client-side validation for conditional text areas.
  * - Enhanced UI with clear warnings about the permanent nature of the closure.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // --- 1. Security & Authentication ---
@@ -22,6 +22,9 @@ if (!isset($_SESSION['user'])) {
     header('Location: /login');
     exit();
 }
+
+require_once __DIR__ . '/../includes/csrf.php';
+$csrfToken = generate_csrf_token();
 
 // Validate the incoming FLHA ID
 $flhaId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -59,6 +62,7 @@ if (!$flhaId) {
         <!-- Close Out Form -->
         <form id="flhaCloseForm" class="p-6 md:p-10 space-y-8 bg-white">
             <input type="hidden" id="c_flhaId" value="<?php echo htmlspecialchars($flhaId); ?>">
+            <input type="hidden" id="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
 
             <!-- Question 1: Permits -->
             <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-100 pb-6 gap-4">
@@ -180,6 +184,7 @@ if (!$flhaId) {
      */
     document.getElementById('flhaCloseForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        const csrfToken = document.getElementById('csrf_token').value;
         
         const btn = document.getElementById('submitCloseBtn');
         const originalBtnText = btn.innerHTML;
@@ -215,7 +220,10 @@ if (!$flhaId) {
         // 4. API Request
         fetch('/api/flha.php?action=close_out', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
             body: JSON.stringify(payload)
         })
         .then(response => response.json())

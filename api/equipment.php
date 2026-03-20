@@ -2,8 +2,8 @@
 /**
  * Equipment Management API - api/equipment.php
  *
- * @package   NorthPoint360
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @package   Sentry OHS
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 session_start();
@@ -100,6 +100,32 @@ switch ($action) {
         $equipId = (int)$data['equipment_id'];
         $templateId = !empty($data['template_id']) ? (int)$data['template_id'] : null;
 
+        // Verify equipment belongs to the caller's company before assignment.
+        $equipScopeStmt = $conn->prepare("SELECT 1 FROM equipment WHERE id = ? AND company_id = ? LIMIT 1");
+        $equipScopeStmt->bind_param("ii", $equipId, $companyId);
+        $equipScopeStmt->execute();
+        $equipmentOwned = $equipScopeStmt->get_result()->fetch_assoc() !== null;
+        $equipScopeStmt->close();
+        if (!$equipmentOwned) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            break;
+        }
+
+        // Verify template ownership when assigning a non-null template.
+        if ($templateId !== null) {
+            $tplScopeStmt = $conn->prepare("SELECT 1 FROM checklist_templates WHERE id = ? AND company_id = ? LIMIT 1");
+            $tplScopeStmt->bind_param("ii", $templateId, $companyId);
+            $tplScopeStmt->execute();
+            $templateOwned = $tplScopeStmt->get_result()->fetch_assoc() !== null;
+            $tplScopeStmt->close();
+            if (!$templateOwned) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Access denied.']);
+                break;
+            }
+        }
+
         $sql = "UPDATE equipment SET checklist_template_id = ? WHERE id = ? AND company_id = ?";
         $stmt = $conn->prepare($sql);
         if (!$stmt) { echo json_encode(['success' => false, 'message' => 'SQL Error: ' . $conn->error]); exit(); }
@@ -144,6 +170,18 @@ switch ($action) {
 
         if (!$equipId || empty($result)) { echo json_encode(['success' => false, 'message' => 'Missing fields.']); break; }
 
+        // Ensure inspections can only be logged for in-tenant equipment.
+        $eqScopeStmt = $conn->prepare("SELECT 1 FROM equipment WHERE id = ? AND company_id = ? LIMIT 1");
+        $eqScopeStmt->bind_param("ii", $equipId, $companyId);
+        $eqScopeStmt->execute();
+        $equipmentOwned = $eqScopeStmt->get_result()->fetch_assoc() !== null;
+        $eqScopeStmt->close();
+        if (!$equipmentOwned) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied.']);
+            break;
+        }
+
         $sql = "INSERT INTO equipment_inspections (equipment_id, user_id, inspection_type, inspection_date, result, comments) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         if (!$stmt) { echo json_encode(['success' => false, 'message' => 'SQL Error: ' . $conn->error]); exit(); }
@@ -151,11 +189,14 @@ switch ($action) {
         $stmt->bind_param("iissss", $equipId, $userId, $inspType, $inspDate, $result, $comments);
         
         if ($stmt->execute()) {
-            if ($result === 'Pass') {
-                $autoStatus = 'Active';
-                $conn->query("UPDATE equipment SET status = 'Active' WHERE id = $equipId");
-            } elseif ($result === 'Fail') {
-                $conn->query("UPDATE equipment SET status = 'Out of Service' WHERE id = $equipId");
+            if ($result === 'Pass' || $result === 'Fail') {
+                $autoStatus = ($result === 'Pass') ? 'Active' : 'Out of Service';
+                $statusStmt = $conn->prepare("UPDATE equipment SET status = ? WHERE id = ? AND company_id = ?");
+                if ($statusStmt) {
+                    $statusStmt->bind_param("sii", $autoStatus, $equipId, $companyId);
+                    $statusStmt->execute();
+                    $statusStmt->close();
+                }
             }
             echo json_encode(['success' => true]);
         } else {

@@ -2,13 +2,13 @@
 /**
  * Main Front Controller - index.php
  *
- * This is the primary entry point for the NorthPoint 360 (SafetyCore) application.
+ * This is the primary entry point for the Sentry OHS application.
  * It handles page routing, dynamic SEO metadata injection, layout construction 
  * (header/footer), and global authentication checks.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // Initialize Session
@@ -69,7 +69,7 @@ if (!in_array($page, $allowedPages)) {
 }
 
 // --- 3. Dynamic SEO & Access Control (Database Check) ---
-$pageTitle = 'NorthPoint 360';
+$pageTitle = 'Sentry OHS';
 $pageDescription = 'Enterprise Environment, Health, and Safety Management.';
 $requiresLogin = false;
 
@@ -81,7 +81,7 @@ if ($stmt = $conn->prepare($seoSql)) {
     $result = $stmt->get_result();
     
     if ($row = $result->fetch_assoc()) {
-        $pageTitle = $row['meta_title'] . ' | NorthPoint 360';
+        $pageTitle = $row['meta_title'] . ' | Sentry OHS';
         $pageDescription = $row['meta_description'];
         $requiresLogin = (bool)$row['requires_login'];
     }

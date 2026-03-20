@@ -14,10 +14,10 @@
  * - Adds job site creation form for job-based companies.
  * - Audit F-08 fix: all location queries scoped to company_id.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 require_once __DIR__ . '/../../includes/company_context.php';
@@ -26,6 +26,7 @@ $companyId  = $_SESSION['user']['company_id'] ?? 1;
 $companyCtx = get_company_context($conn, $companyId);
 $isJobBased = ($companyCtx['type'] === 'job_based');
 $isSystem   = $companyCtx['is_system'];
+$adminBaseRoute = $adminBaseRoute ?? '/admin';
 
 // ─── POST: Handle Add Location ────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -108,7 +109,7 @@ $locations = $companyCtx['locations'];
         </div>
         <p class="text-sm text-gray-500 mt-1">
             <?php if ($isSystem): ?>
-                Platform administration — managing the NorthPoint 360 system company.
+                Platform administration — managing the Sentry OHS system company.
             <?php elseif ($isJobBased): ?>
                 <span class="inline-flex items-center gap-1 bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded-full">
                     <i class="fas fa-hard-hat"></i> Job-Based Company
@@ -146,7 +147,8 @@ $locations = $companyCtx['locations'];
             </h3>
         </div>
 
-        <form action="/admin?view=manage-company" method="POST">
+        <form action="<?php echo htmlspecialchars($adminBaseRoute); ?>?view=manage-company" method="POST">
+            <?php csrf_field(); ?>
 
             <?php if ($isJobBased): ?>
             <!-- ── JOB SITE FORM ── -->
@@ -306,7 +308,7 @@ $locations = $companyCtx['locations'];
                                         ? "filter_job_site={$loc['id']}"
                                         : "filter_store={$loc['id']}";
                                     ?>
-                                    <a href="/admin?view=manage-users&<?php echo $staffParam; ?>"
+                                    <a href="<?php echo htmlspecialchars($adminBaseRoute); ?>?view=manage-users&<?php echo $staffParam; ?>"
                                        class="text-gray-500 hover:text-secondary font-bold transition text-xs uppercase tracking-wide border border-gray-200 rounded-lg px-3 py-2 hover:bg-white hover:border-secondary hover:shadow-sm inline-flex items-center">
                                         <i class="fas fa-users mr-2"></i> Staff
                                     </a>

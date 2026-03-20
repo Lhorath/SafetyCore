@@ -9,10 +9,10 @@
  *           The approach adapts to both store-based and job-based company types.
  *   F-02 — csrf_verify_or_die() added to save_open and close_out (write operations).
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 session_start();

@@ -2,16 +2,16 @@
 /**
  * Public Landing Page - pages/home.php
  *
- * The main public-facing landing page for NorthPoint 360.
+ * The main public-facing landing page for Sentry OHS.
  * Features a modern full-width hero section and highlights core EHS modules.
  *
- * @package   NorthPoint360
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @package   Sentry OHS
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 ?>
 
 <!-- ==========================================
-     STATIC HERO SECTION (Beta 10)
+     STATIC HERO SECTION
      ========================================== -->
 <div class="relative w-full bg-slate-900 overflow-hidden py-24 lg:py-36 border-b border-slate-800">
     
@@ -23,15 +23,15 @@
     <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
         
         <span class="inline-block py-1.5 px-4 rounded-full bg-blue-600/20 text-blue-400 text-xs md:text-sm font-bold tracking-widest uppercase mb-6 border border-blue-500/30 backdrop-blur-md shadow-lg">
-            <i class="fas fa-rocket mr-2"></i> Now in Beta 10
+            <i class="fas fa-shield-alt mr-2"></i> Digital OHS Platform
         </span>
         
         <h1 class="text-5xl md:text-6xl lg:text-8xl font-extrabold text-white tracking-tight mb-6 drop-shadow-lg">
-            NorthPoint <span class="text-blue-500">360</span>
+            Sentry <span class="text-blue-500">OHS</span>
         </h1>
         
         <p class="text-lg md:text-2xl text-gray-300 mb-10 font-light max-w-3xl mx-auto leading-relaxed">
-            The ultimate enterprise Environment, Health, and Safety (EHS) management platform built for the modern workforce.
+            Sentry OHS helps organizations manage occupational health and safety with digital hazard reporting, incident management, FLHA workflows, and compliance-ready records.
         </p>
         
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -53,9 +53,9 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="text-center max-w-3xl mx-auto mb-16">
-            <h2 class="text-sm font-bold text-blue-600 tracking-widest uppercase mb-2">Complete EHS Solution</h2>
-            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight">Everything you need to build a proactive safety culture.</h3>
-            <p class="mt-4 text-lg text-gray-500">NorthPoint 360 eliminates paper trails, bridging the gap between field operators and management in real-time.</p>
+            <h2 class="text-sm font-bold text-blue-600 tracking-widest uppercase mb-2">Complete OHS Software</h2>
+            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight">Everything needed to run safer worksites and stay compliant.</h3>
+            <p class="mt-4 text-lg text-gray-500">Move from paper forms to real-time digital safety workflows across hazard reporting, FLHA, meetings, and corrective actions.</p>
         </div>
 
         <!-- Features Grid -->
@@ -67,7 +67,7 @@
                     <i class="fas fa-exclamation-triangle text-2xl text-accent-red"></i>
                 </div>
                 <h4 class="text-xl font-bold text-slate-800 mb-3">Hazard & Incident Logging</h4>
-                <p class="text-gray-500 leading-relaxed">Report unsafe conditions, near misses, and actual incidents instantly. Track resolutions through a unified management dashboard.</p>
+                <p class="text-gray-500 leading-relaxed">Capture hazards, near misses, and incidents in minutes, then track investigations, corrective actions, and closeout status from one dashboard.</p>
             </div>
 
             <!-- Feature 2 -->
@@ -76,7 +76,7 @@
                     <i class="fas fa-clipboard-list text-2xl text-blue-600"></i>
                 </div>
                 <h4 class="text-xl font-bold text-slate-800 mb-3">Digital FLHAs</h4>
-                <p class="text-gray-500 leading-relaxed">Empower workers with an intuitive Field Level Hazard Assessment wizard. Identify daily job steps and mitigate risks before work begins.</p>
+                <p class="text-gray-500 leading-relaxed">Guide crews through Field Level Hazard Assessments with structured job steps, risk controls, and documented sign-off before work begins.</p>
             </div>
 
             <!-- Feature 3 -->
@@ -85,7 +85,7 @@
                     <i class="fas fa-truck-pickup text-2xl text-orange-500"></i>
                 </div>
                 <h4 class="text-xl font-bold text-slate-800 mb-3">Equipment Management</h4>
-                <p class="text-gray-500 leading-relaxed">Track asset inventory, build dynamic pre-shift inspection checklists, and automatically remove failed equipment from service.</p>
+                <p class="text-gray-500 leading-relaxed">Standardize equipment inspections with configurable checklists, visibility into asset status, and clear out-of-service records for failed items.</p>
             </div>
 
             <!-- Feature 4 -->
@@ -94,7 +94,7 @@
                     <i class="fas fa-certificate text-2xl text-purple-600"></i>
                 </div>
                 <h4 class="text-xl font-bold text-slate-800 mb-3">Training Matrix</h4>
-                <p class="text-gray-500 leading-relaxed">Ensure compliance by tracking employee certifications. Easily monitor validity periods and upcoming expiration dates at a glance.</p>
+                <p class="text-gray-500 leading-relaxed">Track certifications and training records by worker, role, and expiry date so teams can maintain compliance without manual spreadsheets.</p>
             </div>
 
             <!-- Feature 5 -->
@@ -103,7 +103,7 @@
                     <i class="fas fa-users-class text-2xl text-teal-600"></i>
                 </div>
                 <h4 class="text-xl font-bold text-slate-800 mb-3">Safety Meetings</h4>
-                <p class="text-gray-500 leading-relaxed">Host digital toolbox talks. Document topics discussed and seamlessly record verified employee attendance logs.</p>
+                <p class="text-gray-500 leading-relaxed">Run toolbox talks digitally, capture attendance, and maintain searchable meeting records to support internal and external audits.</p>
             </div>
 
             <!-- Feature 6 -->
@@ -112,7 +112,7 @@
                     <i class="fas fa-shield-alt text-2xl text-slate-700"></i>
                 </div>
                 <h4 class="text-xl font-bold text-slate-800 mb-3">Enterprise Security</h4>
-                <p class="text-gray-500 leading-relaxed">Built with robust RBAC (Role-Based Access Control) and multi-tenant architecture, ensuring your company data remains isolated and secure.</p>
+                <p class="text-gray-500 leading-relaxed">Protect data with role-based access controls and multi-tenant separation, giving each company secure access to its own records.</p>
             </div>
 
         </div>
@@ -125,8 +125,8 @@
 <div class="bg-primary py-16 relative overflow-hidden">
     <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-transparent to-transparent"></div>
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <h2 class="text-3xl font-extrabold text-white mb-6 tracking-tight">Ready to elevate your safety standards?</h2>
-        <p class="text-lg text-blue-100 mb-8 font-light">Join the NorthPoint 360 Beta 10 testing phase and experience the future of digital compliance.</p>
+        <h2 class="text-3xl font-extrabold text-white mb-6 tracking-tight">Ready to modernize your safety program?</h2>
+        <p class="text-lg text-blue-100 mb-8 font-light">Use Sentry OHS to centralize safety reporting, strengthen compliance, and improve visibility from the field to management.</p>
         <a href="/login" class="inline-block bg-white text-primary font-bold py-3 px-10 rounded-lg text-lg hover:bg-gray-100 transition-colors shadow-lg">
             Login to Dashboard
         </a>

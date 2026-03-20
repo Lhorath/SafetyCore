@@ -6,10 +6,10 @@
  * level of an existing report, provided the report is not marked as 'Closed'.
  * Ensures that users can only edit their own reports.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // --- 1. Security & Authentication ---

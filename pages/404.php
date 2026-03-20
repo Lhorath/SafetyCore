@@ -4,17 +4,17 @@
  *
  * This file is displayed whenever a user attempts to access a page
  * that is not found in the router's whitelist or does not exist on the server.
- * It provides a user-friendly message indicating the error using the NorthPoint 360 branding.
+ * It provides a user-friendly message indicating the error using the Sentry OHS branding.
  *
  * Features:
  * - Responsive Tailwind CSS layout.
  * - Branded color scheme (Primary Blue / Safety Red).
  * - Clear navigation back to the homepage.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 ?>
 <div class="flex flex-col items-center justify-center min-h-[60vh] py-12 text-center">

@@ -1,25 +1,24 @@
 /*
  * Main Stylesheet - style/css/style.css
  *
- * As of "NorthPoint Beta 01", the application utilizes the Tailwind CSS framework 
+ * As of "Sentry OHS Beta 01", the application utilizes the Tailwind CSS framework 
  * for all primary styling, layout, and responsive design.
  *
  * ARCHITECTURE NOTES:
  * 1. Utility Classes: Most styling is applied directly in HTML/PHP files (e.g., class="bg-primary p-6").
- * 2. Components: Reusable classes (like .btn, .card, .form-input) are defined in the 
- * <style type="text/tailwindcss"> block within 'includes/header.php'.
- * 3. Configuration: Brand colors (Primary Blue, Safety Red, etc.) and fonts are configured 
- * in the Tailwind script setup located in 'includes/header.php'.
+ * 2. Components: Reusable classes (like .btn, .card, .form-input) are defined in
+ * 'style/css/tailwind.input.css' and compiled into the production bundle.
+ * 3. Configuration: Brand colors and fonts are configured in 'tailwind.config.js'.
  *
  * PURPOSE OF THIS FILE:
  * This file is reserved for non-Tailwind CSS overrides, complex keyframe animations, 
  * or styles required by third-party JavaScript libraries (e.g., date pickers, chart legends) 
  * that are not easily styled via utility classes.
  *
- * @package   NorthPoint360
+ * @package   Sentry OHS
  * @author    macweb.ca
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   4.0.0 (NorthPoint Beta 01)
+ * @version   10.2.0 (Sentry OHS Beta 10)
  */
 
 /* * ----------------------------------------------------------------------------

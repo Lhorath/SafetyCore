@@ -11,10 +11,10 @@
  * - Implemented secure POST handling with prepared statements.
  * - Styled with the new Beta 05 Tailwind UI component library (accent-red).
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // --- 1. Security & Authentication ---

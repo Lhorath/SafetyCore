@@ -18,10 +18,10 @@
  *   // $ctx['location_key'] => 'store_id' | 'job_site_id'  (for FK references)
  *   // $ctx['location_label'] => 'Branch / Location' | 'Job Site'
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 /**

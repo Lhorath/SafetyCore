@@ -12,13 +12,13 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
  * 2. Database Connection (via db.php)
  * 3. Dynamic SEO & Page Titling (Beta 05 Update)
  * 4. CSS/Font Resource Loading (Tailwind, FontAwesome, Google Fonts)
- * 5. Tailwind CSS Configuration (Custom NorthPoint 360 Brand Palette)
+ * 5. Tailwind CSS Configuration (Custom Sentry OHS Brand Palette)
  * 6. Responsive Navigation Bar (Desktop & Mobile) with State-Aware Links
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // Establish the database connection.
@@ -32,7 +32,7 @@ $currentPage = basename($currentPage); // Security sanitization
 // Establish sensible default fallbacks in case the database doesn't have an entry for the route
 $seo = [
     'title'          => ucwords(str_replace('-', ' ', $currentPage)),
-    'description'    => 'NorthPoint 360 is a comprehensive EHS Management Platform.',
+    'description'    => 'Sentry OHS is a comprehensive EHS Management Platform.',
     'keywords'       => 'EHS, safety, compliance, workplace, management software',
     'og_image'       => '/style/images/logo.png',
     'requires_login' => false
@@ -62,12 +62,40 @@ $isProtected = !in_array($currentPage, $publicPages) || $seo['requires_login'];
 
 if ($isProtected) {
     // Append this strictly to the meta description, not the visual UI
-    $seo['description'] .= " (Note: Access to this feature requires an active, authenticated NorthPoint 360 user account.)";
+    $seo['description'] .= " (Note: Access to this feature requires an active, authenticated Sentry OHS user account.)";
 }
 
 // Set variables for the UI
 $subheaderTitle = $seo['title'];
 $isLoggedIn = isset($_SESSION['user']);
+
+// Role-aware navigation shortcuts (matches dashboard permission model)
+$canMeetings = false;
+$canMetrics = false;
+$canHazardReview = false;
+$canIncidentReview = false;
+$canCompanyAdmin = false;
+$canPlatformAdmin = false;
+$adminShortcutRoute = '';
+$adminShortcutLabel = '';
+
+if ($isLoggedIn) {
+    require_once __DIR__ . '/permissions.php';
+    $canMeetings = can_access_module($conn, 'meetings_talks');
+    $canMetrics = can_access_module($conn, 'metrics_stats');
+    $canHazardReview = can_access_module($conn, 'location_hazards');
+    $canIncidentReview = can_access_module($conn, 'manage_incidents');
+    $canCompanyAdmin = can_access_module($conn, 'company_users') || can_access_module($conn, 'company_structure');
+    $canPlatformAdmin = can_access_module($conn, 'platform_admin');
+
+    if ($canPlatformAdmin) {
+        $adminShortcutRoute = '/admin';
+        $adminShortcutLabel = 'Platform Admin';
+    } elseif ($canCompanyAdmin) {
+        $adminShortcutRoute = '/company-admin?view=users';
+        $adminShortcutLabel = 'Company Admin';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,20 +104,20 @@ $isLoggedIn = isset($_SESSION['user']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <title>NorthPoint 360 &bull; <?php echo htmlspecialchars($seo['title']); ?></title>
+    <title>Sentry OHS &bull; <?php echo htmlspecialchars($seo['title']); ?></title>
     <meta name="description" content="<?php echo htmlspecialchars($seo['description']); ?>">
     <meta name="keywords" content="<?php echo htmlspecialchars($seo['keywords']); ?>">
-    <meta name="author" content="NorthPoint 360 (macweb.ca)">
+    <meta name="author" content="Sentry OHS (macweb.ca)">
     <meta name="robots" content="<?php echo $isProtected ? 'noindex, nofollow' : 'index, follow'; ?>">
 
     <meta property="og:type" content="website">
-    <meta property="og:title" content="NorthPoint 360 - <?php echo htmlspecialchars($seo['title']); ?>">
+    <meta property="og:title" content="Sentry OHS - <?php echo htmlspecialchars($seo['title']); ?>">
     <meta property="og:description" content="<?php echo htmlspecialchars($seo['description']); ?>">
     <meta property="og:image" content="<?php echo htmlspecialchars($seo['og_image']); ?>">
-    <meta property="og:site_name" content="NorthPoint 360">
+    <meta property="og:site_name" content="Sentry OHS">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="NorthPoint 360 - <?php echo htmlspecialchars($seo['title']); ?>">
+    <meta name="twitter:title" content="Sentry OHS - <?php echo htmlspecialchars($seo['title']); ?>">
     <meta name="twitter:description" content="<?php echo htmlspecialchars($seo['description']); ?>">
     <meta name="twitter:image" content="<?php echo htmlspecialchars($seo['og_image']); ?>">
     
@@ -98,86 +126,7 @@ $isLoggedIn = isset($_SESSION['user']);
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#0f172a',    // Dark Slate
-                        secondary: '#2563eb',  // Modern Blue
-                        accent: {
-                            red: '#ef4444',
-                            gray: '#1e293b',
-                            light: '#f1f5f9'
-                        },
-                        bg: '#f8fafc',
-                        success: '#10b981'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Montserrat', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style type="text/tailwindcss">
-        @layer components {
-            .btn {
-                @apply px-6 py-2.5 rounded-lg font-semibold transition duration-200 ease-in-out inline-flex items-center justify-center cursor-pointer tracking-wide;
-            }
-            .btn-primary {
-                @apply bg-secondary text-white hover:bg-blue-700 shadow-sm hover:shadow; 
-            }
-            .btn-dark {
-                @apply bg-primary text-white hover:bg-slate-800 shadow-sm hover:shadow; 
-            }
-            .btn-accent {
-                @apply bg-accent-red text-white hover:bg-red-700 shadow-sm hover:shadow; 
-            }
-            .btn-secondary {
-                @apply bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm hover:shadow; 
-            }
-            
-            .form-input {
-                @apply w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition bg-white;
-            }
-            .form-label {
-                @apply block mb-1.5 font-semibold text-slate-700 text-sm;
-            }
-            
-            .card {
-                @apply bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6;
-            }
-
-            /* Modern Pill-Style Nav Links */
-            .nav-link { 
-                @apply px-3.5 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-secondary hover:bg-blue-50 transition-all duration-200; 
-            }
-            .nav-link.active { 
-                @apply text-secondary bg-blue-50 font-semibold; 
-            }
-
-            .modal {
-                @apply fixed inset-0 z-50 overflow-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4;
-            }
-            .modal-content {
-                @apply bg-white w-full max-w-lg rounded-2xl shadow-2xl relative p-6;
-            }
-        }
-        
-        body {
-            @apply bg-bg text-slate-800 font-sans antialiased;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            @apply font-heading text-primary;
-        }
-    </style>
-    
+    <link rel="stylesheet" href="/style/css/tailwind.production.min.css">
     <link rel="stylesheet" href="style/css/style.css">
 </head>
 <body class="flex flex-col min-h-screen">
@@ -187,9 +136,9 @@ $isLoggedIn = isset($_SESSION['user']);
             <div class="flex justify-between items-center h-16">
                 
                 <a href="/" class="flex items-center gap-3 group focus:outline-none">
-                    <img src="/style/images/logo.png" alt="NorthPoint 360" class="h-8 w-auto transition-transform duration-300 group-hover:scale-105">
+                    <img src="/style/images/logo.png" alt="Sentry OHS" class="h-8 w-auto transition-transform duration-300 group-hover:scale-105">
                     <div class="hidden sm:flex flex-col justify-center">
-                        <span class="text-[1.15rem] font-extrabold text-primary leading-none tracking-tight font-heading">NORTHPOINT<span class="text-secondary">360</span></span>
+                        <span class="text-[1.15rem] font-extrabold text-primary leading-none tracking-tight font-heading">SENTRY<span class="text-secondary">OHS</span></span>
                     </div>
                 </a>
 
@@ -201,6 +150,15 @@ $isLoggedIn = isset($_SESSION['user']);
                     <div class="flex items-center border-l border-slate-200 ml-3 pl-3 gap-2">
                         <?php if ($isLoggedIn): ?>
                             <a href="/dashboard" class="nav-link <?php echo ($currentPage == 'dashboard') ? 'active' : ''; ?>">Dashboard</a>
+                            <?php if ($canMeetings): ?>
+                                <a href="/meetings-list" class="nav-link <?php echo ($currentPage == 'meetings-list') ? 'active' : ''; ?>">Meetings</a>
+                            <?php endif; ?>
+                            <?php if ($canMetrics): ?>
+                                <a href="/metrics" class="nav-link <?php echo ($currentPage == 'metrics') ? 'active' : ''; ?>">Metrics</a>
+                            <?php endif; ?>
+                            <?php if (!empty($adminShortcutRoute)): ?>
+                                <a href="<?php echo $adminShortcutRoute; ?>" class="nav-link <?php echo ($currentPage == 'admin' || $currentPage == 'company-admin') ? 'active' : ''; ?>"><?php echo htmlspecialchars($adminShortcutLabel); ?></a>
+                            <?php endif; ?>
                             
                             <a href="/profile" class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all group focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                                 <div class="w-6 h-6 rounded-full bg-secondary text-white flex items-center justify-center text-[10px] font-bold shadow-sm group-hover:scale-105 transition-transform">
@@ -248,6 +206,31 @@ $isLoggedIn = isset($_SESSION['user']);
                     <a href="/dashboard" class="flex items-center px-3 py-2.5 rounded-md text-base font-bold text-secondary bg-blue-50/50 hover:bg-blue-50 transition-colors">
                         <i class="fas fa-chart-line w-6"></i> Dashboard
                     </a>
+                    <?php if ($canMeetings): ?>
+                        <a href="/meetings-list" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
+                            <i class="fas fa-users w-6 text-slate-400"></i> Meetings
+                        </a>
+                    <?php endif; ?>
+                    <?php if ($canMetrics): ?>
+                        <a href="/metrics" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
+                            <i class="fas fa-chart-pie w-6 text-slate-400"></i> Metrics
+                        </a>
+                    <?php endif; ?>
+                    <?php if ($canHazardReview): ?>
+                        <a href="/store-reports" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
+                            <i class="fas fa-store w-6 text-slate-400"></i> Hazard Reviews
+                        </a>
+                    <?php endif; ?>
+                    <?php if ($canIncidentReview): ?>
+                        <a href="/store-incidents" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
+                            <i class="fas fa-file-medical-alt w-6 text-slate-400"></i> Incident Reviews
+                        </a>
+                    <?php endif; ?>
+                    <?php if (!empty($adminShortcutRoute)): ?>
+                        <a href="<?php echo $adminShortcutRoute; ?>" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
+                            <i class="fas fa-cogs w-6 text-slate-400"></i> <?php echo htmlspecialchars($adminShortcutLabel); ?>
+                        </a>
+                    <?php endif; ?>
                     <a href="/profile" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
                         <i class="fas fa-user-circle w-6 text-slate-400"></i> My Profile
                     </a>

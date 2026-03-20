@@ -5,8 +5,8 @@
  * Provides a high-level overview of EHS compliance, pulling data from
  * equipment inventory, pre-shift checklists, and the training matrix.
  *
- * @package   NorthPoint360
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @package   Sentry OHS
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 if (!isset($_SESSION['user'])) {

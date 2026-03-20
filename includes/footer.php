@@ -2,9 +2,9 @@
 /**
  * Footer Template - includes/footer.php
  *
- * @package   NorthPoint360
- * @author    macweb.ca
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 ?>
     </main> <!-- Closes the <main> tag opened in header.php -->
@@ -21,9 +21,9 @@
                 <!-- Brand & About Section -->
                 <div class="md:col-span-1 lg:col-span-2">
                     <a href="/" class="flex items-center gap-3 mb-5 group w-fit focus:outline-none">
-                        <img src="/style/images/logo.png" alt="NorthPoint 360" class="h-8 w-auto grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+                        <img src="/style/images/logo.png" alt="Sentry OHS" class="h-8 w-auto grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
                         <div class="flex flex-col justify-center">
-                            <span class="text-[1.15rem] font-extrabold text-white leading-none tracking-tight font-heading">NORTHPOINT<span class="text-secondary">360</span></span>
+                            <span class="text-[1.15rem] font-extrabold text-white leading-none tracking-tight font-heading">SENTRY<span class="text-secondary">OHS</span></span>
                         </div>
                     </a>
                     <p class="text-sm text-slate-400 leading-relaxed max-w-md">
@@ -45,7 +45,7 @@
                 <div>
                     <h4 class="text-white font-bold mb-5 uppercase tracking-widest text-xs">Support</h4>
                     <ul class="space-y-3 text-sm font-medium">
-                        <li><a href="/about" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> About NorthPoint</a></li>
+                        <li><a href="/about" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> About Sentry OHS</a></li>
                         <li><a href="/contact" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> Contact Us</a></li>
                         <li><a href="mailto:support@macweb.ca" class="hover:text-blue-400 transition-colors flex items-center"><i class="fas fa-angle-right text-[10px] mr-2 text-slate-600"></i> support@macweb.ca</a></li>
                     </ul>
@@ -56,7 +56,7 @@
             <!-- Bottom Row: Copyright & Legal -->
             <div class="pt-8 border-t border-slate-800/80 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p class="text-xs text-slate-500 font-medium">
-                    &copy; <?php echo date('Y'); ?> macweb.ca. All Rights Reserved. <span class="hidden sm:inline">|</span> <span class="block sm:inline mt-1 sm:mt-0 text-slate-600">NorthPoint 360 Beta 10</span>
+                    &copy; <?php echo date('Y'); ?> macweb.ca. All Rights Reserved. <span class="hidden sm:inline">|</span> <span class="block sm:inline mt-1 sm:mt-0 text-slate-600">Sentry OHS Beta 10</span>
                 </p>
                 <div class="flex gap-6 text-xs font-medium">
                     <a href="#" class="text-slate-500 hover:text-slate-300 transition-colors">Privacy Policy</a>
@@ -200,8 +200,14 @@
                     saveNewLocationBtn.addEventListener('click', () => {
                         const storeId = storeSelect.value;
                         const locName = newLocationNameInput.value.trim();
+                        const csrfInput = document.querySelector('input[name="_csrf_token"]');
+                        const csrfToken = csrfInput ? csrfInput.value : '';
                         if (!storeId || !locName) {
                             alert("Please enter a location name.");
+                            return;
+                        }
+                        if (!csrfToken) {
+                            alert("Security token missing. Please refresh the page and try again.");
                             return;
                         }
 
@@ -212,7 +218,7 @@
                         fetch('/api/hazard_reporting.php?action=add_location', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ store_id: storeId, location_name: locName })
+                            body: JSON.stringify({ store_id: storeId, location_name: locName, csrf_token: csrfToken })
                         })
                         .then(res => res.json())
                         .then(data => {

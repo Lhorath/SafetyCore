@@ -15,92 +15,16 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
--- Dumping database structure for u971098166_safetysite
-CREATE DATABASE IF NOT EXISTS `u971098166_safetysite` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
-USE `u971098166_safetysite`;
+-- Dumping database structure for u971098166_ad9a31
+CREATE DATABASE IF NOT EXISTS `u971098166_ad9a31` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
+USE `u971098166_ad9a31`;
 
--- Dumping structure for table u971098166_safetysite.checklist_items
-CREATE TABLE IF NOT EXISTS `checklist_items` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `template_id` int(10) unsigned NOT NULL,
-  `label` varchar(255) NOT NULL,
-  `field_type` enum('pass_fail','yes_no','checkbox','text','numeric') NOT NULL DEFAULT 'pass_fail',
-  `is_required` tinyint(1) NOT NULL DEFAULT 1,
-  `order_index` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  KEY `template_id` (`template_id`),
-  CONSTRAINT `checklist_items_ibfk_1` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Dumping data for table u971098166_safetysite.checklist_items: ~0 rows (approximately)
-REPLACE INTO `checklist_items` (`id`, `template_id`, `label`, `field_type`, `is_required`, `order_index`) VALUES
-	(1, 1, 'Is good?', 'pass_fail', 1, 0);
-
--- Dumping structure for table u971098166_safetysite.checklist_responses
-CREATE TABLE IF NOT EXISTS `checklist_responses` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `submission_id` int(10) unsigned NOT NULL,
-  `item_id` int(10) unsigned NOT NULL,
-  `response_value` text DEFAULT NULL,
-  `notes` text DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `submission_id` (`submission_id`),
-  KEY `item_id` (`item_id`),
-  CONSTRAINT `checklist_responses_ibfk_1` FOREIGN KEY (`submission_id`) REFERENCES `checklist_submissions` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `checklist_responses_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `checklist_items` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Dumping data for table u971098166_safetysite.checklist_responses: ~0 rows (approximately)
-REPLACE INTO `checklist_responses` (`id`, `submission_id`, `item_id`, `response_value`, `notes`) VALUES
-	(1, 1, 1, 'Pass', '');
-
--- Dumping structure for table u971098166_safetysite.checklist_submissions
-CREATE TABLE IF NOT EXISTS `checklist_submissions` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `company_id` int(10) unsigned NOT NULL,
-  `user_id` int(10) unsigned NOT NULL,
-  `equipment_id` int(10) unsigned NOT NULL,
-  `template_id` int(10) unsigned NOT NULL,
-  `shift_date` date NOT NULL,
-  `meter_reading` varchar(100) DEFAULT NULL,
-  `overall_status` enum('Safe','Unsafe') NOT NULL,
-  `general_comments` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `equipment_id` (`equipment_id`),
-  KEY `template_id` (`template_id`),
-  CONSTRAINT `checklist_submissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `checklist_submissions_ibfk_2` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `checklist_submissions_ibfk_3` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Dumping data for table u971098166_safetysite.checklist_submissions: ~0 rows (approximately)
-REPLACE INTO `checklist_submissions` (`id`, `company_id`, `user_id`, `equipment_id`, `template_id`, `shift_date`, `meter_reading`, `overall_status`, `general_comments`, `created_at`) VALUES
-	(1, 1, 1, 2, 1, '2026-03-13', NULL, 'Safe', '', '2026-03-13 04:20:03');
-
--- Dumping structure for table u971098166_safetysite.checklist_templates
-CREATE TABLE IF NOT EXISTS `checklist_templates` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `company_id` int(10) unsigned NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `company_id` (`company_id`),
-  CONSTRAINT `checklist_templates_ibfk_1` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Dumping data for table u971098166_safetysite.checklist_templates: ~0 rows (approximately)
-REPLACE INTO `checklist_templates` (`id`, `company_id`, `name`, `description`, `created_at`) VALUES
-	(1, 1, 'Fork', '1', '2026-03-13 03:00:18');
-
--- Dumping structure for table u971098166_safetysite.companies
+-- Dumping structure for table u971098166_ad9a31.companies
 CREATE TABLE IF NOT EXISTS `companies` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `company_name` varchar(255) NOT NULL,
   `company_type` enum('multi_location','job_based') NOT NULL DEFAULT 'multi_location',
-  `is_system` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 = NorthPoint 360 system/platform company',
+  `is_system` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 = Sentry OHS system/platform company',
   `industry` varchar(100) DEFAULT NULL,
   `contact_email` varchar(255) DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
@@ -114,13 +38,13 @@ CREATE TABLE IF NOT EXISTS `companies` (
   KEY `idx_is_active` (`is_active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.companies: ~3 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.companies: ~3 rows (approximately)
 REPLACE INTO `companies` (`id`, `company_name`, `company_type`, `is_system`, `industry`, `contact_email`, `is_active`, `created_at`, `updated_at`, `company_code`) VALUES
-	(1, 'MacWeb Canada', 'multi_location', 1, NULL, NULL, 1, '2026-02-18 13:00:12', '2026-03-13 11:52:38', '0001'),
+	(1, 'MacWeb Canada', 'multi_location', 0, NULL, NULL, 1, '2026-02-18 13:00:12', '2026-03-12 12:15:02', '0001'),
 	(2, 'Elmwood Group', 'multi_location', 0, 'Hardware Retail', NULL, 1, '2026-03-12 12:08:37', '2026-03-12 12:15:02', '0002'),
 	(3, 'Ridgeline Construction Inc.', 'job_based', 0, 'General Contracting', NULL, 1, '2026-03-12 12:08:37', '2026-03-12 12:15:02', '0003');
 
--- Dumping structure for table u971098166_safetysite.contact_messages
+-- Dumping structure for table u971098166_ad9a31.contact_messages
 CREATE TABLE IF NOT EXISTS `contact_messages` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned DEFAULT NULL,
@@ -134,15 +58,15 @@ CREATE TABLE IF NOT EXISTS `contact_messages` (
   CONSTRAINT `contact_messages_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.contact_messages: ~0 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.contact_messages: ~0 rows (approximately)
 
--- Dumping structure for table u971098166_safetysite.equipment
+-- Dumping structure for table u971098166_ad9a31.equipment
 CREATE TABLE IF NOT EXISTS `equipment` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `company_id` int(10) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
   `category` enum('Heavy Machinery','Vehicles','Power Tools','PPE/Harnesses','Other') NOT NULL DEFAULT 'Other',
-  `checklist_template_id` int(10) unsigned DEFAULT NULL,
+  `checklist_template_id` int(10) unsigned DEFAULT NULL COMMENT 'Assigned pre-shift template (optional)',
   `serial_number` varchar(100) DEFAULT NULL,
   `status` enum('Active','Maintenance','Out of Service') NOT NULL DEFAULT 'Active',
   `next_inspection_date` date DEFAULT NULL,
@@ -151,21 +75,20 @@ CREATE TABLE IF NOT EXISTS `equipment` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_company_id` (`company_id`),
-  KEY `fk_equipment_template` (`checklist_template_id`),
-  CONSTRAINT `fk_equip_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_equipment_template` FOREIGN KEY (`checklist_template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `idx_checklist_template_id` (`checklist_template_id`),
+  CONSTRAINT `fk_equip_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.equipment: ~2 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.equipment: ~1 rows (approximately)
 REPLACE INTO `equipment` (`id`, `company_id`, `name`, `category`, `checklist_template_id`, `serial_number`, `status`, `next_inspection_date`, `notes`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'Linde 30', 'Heavy Machinery', 1, '123231', 'Active', '2026-03-12', NULL, '2026-03-13 02:27:08', '2026-03-13 04:19:56'),
-	(2, 1, 'a', 'Heavy Machinery', 1, 'w', 'Active', NULL, NULL, '2026-03-13 03:09:24', '2026-03-13 03:09:24');
+	(1, 1, 'Linde 30', 'Heavy Machinery', NULL, '123231', 'Active', '2026-03-12', NULL, '2026-03-13 02:27:08', '2026-03-13 02:27:08');
 
--- Dumping structure for table u971098166_safetysite.equipment_inspections
+-- Dumping structure for table u971098166_ad9a31.equipment_inspections
 CREATE TABLE IF NOT EXISTS `equipment_inspections` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `equipment_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL COMMENT 'Worker who performed inspection',
+  `inspection_type` varchar(50) NOT NULL DEFAULT 'Maintenance',
   `inspection_date` datetime NOT NULL,
   `result` enum('Pass','Fail','Needs Repair') NOT NULL,
   `comments` text DEFAULT NULL,
@@ -177,11 +100,11 @@ CREATE TABLE IF NOT EXISTS `equipment_inspections` (
   CONSTRAINT `fk_insp_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.equipment_inspections: ~0 rows (approximately)
-REPLACE INTO `equipment_inspections` (`id`, `equipment_id`, `user_id`, `inspection_date`, `result`, `comments`, `created_at`) VALUES
-	(1, 1, 1, '2026-03-13 03:27:49', 'Pass', 'g', '2026-03-13 02:27:49');
+-- Dumping data for table u971098166_ad9a31.equipment_inspections: ~1 rows (approximately)
+REPLACE INTO `equipment_inspections` (`id`, `equipment_id`, `user_id`, `inspection_type`, `inspection_date`, `result`, `comments`, `created_at`) VALUES
+	(1, 1, 1, 'Maintenance', '2026-03-13 03:27:49', 'Pass', 'g', '2026-03-13 02:27:49');
 
--- Dumping structure for table u971098166_safetysite.flha_checklists
+-- Dumping structure for table u971098166_ad9a31.flha_checklists
 CREATE TABLE IF NOT EXISTS `flha_checklists` (
   `flha_id` int(10) unsigned NOT NULL,
   `type` enum('hazard','ppe') NOT NULL,
@@ -191,9 +114,9 @@ CREATE TABLE IF NOT EXISTS `flha_checklists` (
   CONSTRAINT `flha_checklists_ibfk_1` FOREIGN KEY (`flha_id`) REFERENCES `flha_records` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.flha_checklists: ~0 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.flha_checklists: ~0 rows (approximately)
 
--- Dumping structure for table u971098166_safetysite.flha_records
+-- Dumping structure for table u971098166_ad9a31.flha_records
 CREATE TABLE IF NOT EXISTS `flha_records` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `company_id` int(10) unsigned NOT NULL,
@@ -223,9 +146,9 @@ CREATE TABLE IF NOT EXISTS `flha_records` (
   CONSTRAINT `flha_records_ibfk_2` FOREIGN KEY (`creator_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.flha_records: ~0 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.flha_records: ~0 rows (approximately)
 
--- Dumping structure for table u971098166_safetysite.flha_tasks
+-- Dumping structure for table u971098166_ad9a31.flha_tasks
 CREATE TABLE IF NOT EXISTS `flha_tasks` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `flha_id` int(10) unsigned NOT NULL,
@@ -237,9 +160,9 @@ CREATE TABLE IF NOT EXISTS `flha_tasks` (
   CONSTRAINT `flha_tasks_ibfk_1` FOREIGN KEY (`flha_id`) REFERENCES `flha_records` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.flha_tasks: ~0 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.flha_tasks: ~0 rows (approximately)
 
--- Dumping structure for table u971098166_safetysite.flha_workers
+-- Dumping structure for table u971098166_ad9a31.flha_workers
 CREATE TABLE IF NOT EXISTS `flha_workers` (
   `flha_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
@@ -249,9 +172,9 @@ CREATE TABLE IF NOT EXISTS `flha_workers` (
   CONSTRAINT `flha_workers_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.flha_workers: ~0 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.flha_workers: ~0 rows (approximately)
 
--- Dumping structure for table u971098166_safetysite.hazard_locations
+-- Dumping structure for table u971098166_ad9a31.hazard_locations
 CREATE TABLE IF NOT EXISTS `hazard_locations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `store_id` int(10) unsigned NOT NULL,
@@ -263,12 +186,12 @@ CREATE TABLE IF NOT EXISTS `hazard_locations` (
   CONSTRAINT `hazard_locations_ibfk_1` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.hazard_locations: ~2 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.hazard_locations: ~2 rows (approximately)
 REPLACE INTO `hazard_locations` (`id`, `store_id`, `location_name`, `is_active`, `created_at`) VALUES
 	(1, 1, 'Test Location', 1, '2026-02-18 13:07:28'),
 	(2, 1, 'test 2', 1, '2026-02-18 13:56:27');
 
--- Dumping structure for table u971098166_safetysite.incidents
+-- Dumping structure for table u971098166_ad9a31.incidents
 CREATE TABLE IF NOT EXISTS `incidents` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `company_id` int(10) unsigned NOT NULL,
@@ -298,9 +221,9 @@ CREATE TABLE IF NOT EXISTS `incidents` (
   CONSTRAINT `incidents_ibfk_4` FOREIGN KEY (`reviewed_by_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.incidents: ~0 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.incidents: ~0 rows (approximately)
 
--- Dumping structure for table u971098166_safetysite.job_sites
+-- Dumping structure for table u971098166_ad9a31.job_sites
 CREATE TABLE IF NOT EXISTS `job_sites` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `company_id` int(10) unsigned NOT NULL,
@@ -328,9 +251,9 @@ CREATE TABLE IF NOT EXISTS `job_sites` (
   CONSTRAINT `fk_job_sites_supervisor` FOREIGN KEY (`supervisor_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Temporary/project job sites for Job-Based companies';
 
--- Dumping data for table u971098166_safetysite.job_sites: ~0 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.job_sites: ~0 rows (approximately)
 
--- Dumping structure for table u971098166_safetysite.login_attempts
+-- Dumping structure for table u971098166_ad9a31.login_attempts
 CREATE TABLE IF NOT EXISTS `login_attempts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(45) NOT NULL COMMENT 'IPv4 or IPv6 address',
@@ -342,11 +265,11 @@ CREATE TABLE IF NOT EXISTS `login_attempts` (
   KEY `idx_attempted_at` (`attempted_at`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='DB-backed failed login tracking for rate limiting';
 
--- Dumping data for table u971098166_safetysite.login_attempts: ~0 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.login_attempts: ~1 rows (approximately)
 REPLACE INTO `login_attempts` (`id`, `ip_address`, `identifier`, `attempted_at`) VALUES
 	(1, '207.112.31.154', 'ad8c02f43fefbad1dd631f0d58a23346325975f5624d8e7d694f732cf93d75bf', '2026-03-12 23:39:26');
 
--- Dumping structure for table u971098166_safetysite.meeting_attendees
+-- Dumping structure for table u971098166_ad9a31.meeting_attendees
 CREATE TABLE IF NOT EXISTS `meeting_attendees` (
   `meeting_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
@@ -356,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `meeting_attendees` (
   CONSTRAINT `meeting_attendees_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.meeting_attendees: ~15 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.meeting_attendees: ~15 rows (approximately)
 REPLACE INTO `meeting_attendees` (`meeting_id`, `user_id`) VALUES
 	(1, 1),
 	(1, 2),
@@ -374,7 +297,7 @@ REPLACE INTO `meeting_attendees` (`meeting_id`, `user_id`) VALUES
 	(1, 14),
 	(1, 15);
 
--- Dumping structure for table u971098166_safetysite.meetings
+-- Dumping structure for table u971098166_ad9a31.meetings
 CREATE TABLE IF NOT EXISTS `meetings` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `company_id` int(10) unsigned NOT NULL,
@@ -394,11 +317,11 @@ CREATE TABLE IF NOT EXISTS `meetings` (
   CONSTRAINT `meetings_ibfk_3` FOREIGN KEY (`host_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.meetings: ~1 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.meetings: ~1 rows (approximately)
 REPLACE INTO `meetings` (`id`, `company_id`, `store_id`, `host_user_id`, `topic`, `meeting_date`, `comments`, `created_at`, `job_site_id`) VALUES
 	(1, 1, 1, 1, 'TEST', '2026-02-24', 'TEST', '2026-02-24 20:48:29', NULL);
 
--- Dumping structure for table u971098166_safetysite.modules
+-- Dumping structure for table u971098166_ad9a31.modules
 CREATE TABLE IF NOT EXISTS `modules` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `module_key` varchar(50) NOT NULL,
@@ -419,7 +342,7 @@ CREATE TABLE IF NOT EXISTS `modules` (
   KEY `idx_active` (`is_active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Master catalogue of dashboard modules';
 
--- Dumping data for table u971098166_safetysite.modules: ~12 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.modules: ~12 rows (approximately)
 REPLACE INTO `modules` (`id`, `module_key`, `module_name`, `description`, `icon_class`, `icon_bg`, `icon_color`, `btn_class`, `btn_label`, `route`, `area`, `sort_order`, `is_active`) VALUES
 	(1, 'hazard_report', 'Report a Hazard', 'Log a proactive safety concern, near miss, or hazard.', 'fa-exclamation-triangle', 'bg-orange-50', 'text-orange-500', 'bg-orange-500 text-white hover:bg-orange-600', 'Submit Hazard', '/hazard-report', 'employee', 1, 1),
 	(2, 'incident_report', 'Report an Incident', 'Log injuries, accidents, and property damage.', 'fa-ambulance', 'bg-red-50', 'text-accent-red', 'btn-accent', 'Submit Incident', '/incident-report', 'employee', 2, 1),
@@ -434,7 +357,7 @@ REPLACE INTO `modules` (`id`, `module_key`, `module_name`, `description`, `icon_
 	(11, 'company_structure', 'Company Structure', 'Configure branches and job sites.', 'fa-building', 'bg-teal-50', 'text-teal-700', 'bg-teal-600 text-white hover:bg-teal-700', 'Configure', '/company-admin?view=structure', 'company_admin', 15, 1),
 	(12, 'platform_admin', 'Platform Admin Panel', 'System-level administration.', 'fa-cogs', 'bg-slate-800', 'text-white', 'bg-primary text-white hover:bg-slate-900', 'System Administration', '/admin', 'platform_admin', 20, 1);
 
--- Dumping structure for table u971098166_safetysite.page_seo
+-- Dumping structure for table u971098166_ad9a31.page_seo
 CREATE TABLE IF NOT EXISTS `page_seo` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `page_route` varchar(100) NOT NULL COMMENT 'Matches the ?page= parameter',
@@ -445,40 +368,35 @@ CREATE TABLE IF NOT EXISTS `page_seo` (
   `requires_login` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 if behind authentication',
   PRIMARY KEY (`id`),
   UNIQUE KEY `page_route` (`page_route`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.page_seo: ~28 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.page_seo: ~20 rows (approximately)
 REPLACE INTO `page_seo` (`id`, `page_route`, `meta_title`, `meta_description`, `meta_keywords`, `og_image`, `requires_login`) VALUES
-	(1, 'home', 'Home', 'NorthPoint 360 is the ultimate enterprise EHS management platform for the modern workforce.', 'EHS, safety, compliance, workplace, NorthPoint 360', '/style/images/logo.png', 0),
-	(2, 'services', 'Solutions & Features', 'Explore NorthPoint 360\'s core EHS modules including FLHAs, hazard reporting, equipment management, and training tracking.', 'EHS solutions, digital FLHA, equipment management, safety meetings', '/style/images/logo.png', 0),
-	(3, 'contact', 'Contact Support', 'Get in touch with NorthPoint 360 support, request technical assistance, or schedule a sales demo.', 'contact, support, EHS demo', '/style/images/logo.png', 0),
-	(4, 'login', 'Log In', 'Sign in to your secure NorthPoint 360 EHS dashboard.', 'login, sign in, secure portal', '/style/images/logo.png', 0),
-	(5, 'dashboard', 'Dashboard', 'Your centralized EHS dashboard. Monitor personal stats, active FLHAs, and access quick field tools.', 'dashboard, EHS hub, employee portal', '/style/images/logo.png', 1),
-	(6, 'hazard-report', 'Report a Hazard', 'Log unsafe conditions, property damage, or near misses directly from the field with photo evidence.', 'hazard reporting, near miss, safety log, EHS observation', '/style/images/logo.png', 1),
-	(7, 'my-reports', 'My Reports', 'View the history and resolution status of safety hazards you have reported.', 'my hazard reports, safety history, observation log', '/style/images/logo.png', 1),
-	(8, 'store-reports', 'Branch Hazard Review', 'Management tool to investigate, assign corrective actions, and close out branch hazards.', 'hazard review, branch safety, manager tools, corrective actions', '/style/images/logo.png', 1),
-	(9, 'incident-report', 'Log an Incident', 'Report actual injuries, illnesses, or major property damage requiring immediate management attention.', 'incident reporting, OSHA, WCB, injury log', '/style/images/logo.png', 1),
-	(10, 'store-incidents', 'Compliance Log', 'Classify and monitor OSHA/WCB recordable incidents, lost time, and medical interventions.', 'incident log, compliance tracking, recordable incidents', '/style/images/logo.png', 1),
-	(11, 'flha-list', 'FLHA Logs', 'View open, active, and completed Field Level Hazard Assessments for your team.', 'FLHA log, field level hazard assessment, safety forms', '/style/images/logo.png', 1),
-	(12, 'flha-form', 'Start FLHA', 'Complete a new digital Field Level Hazard Assessment before starting your shift.', 'new FLHA, hazard assessment form, pre-task hazard assessment', '/style/images/logo.png', 1),
-	(13, 'flha-close', 'Close FLHA', 'Sign off, verify job completion, and close out an active Field Level Hazard Assessment.', 'close FLHA, shift sign off', '/style/images/logo.png', 1),
-	(14, 'metrics', 'Analytics & Metrics', 'Real-time executive oversight of equipment health, field compliance, and training readiness via interactive charts.', 'EHS metrics, safety analytics, compliance dashboard, KPIs', '/style/images/logo.png', 1),
-	(15, 'meetings-list', 'Safety Meetings', 'Host toolbox talks, document safety topics, and track verified team attendance digitally.', 'toolbox talks, safety meetings, attendance logs', '/style/images/logo.png', 1),
-	(16, 'host-meeting', 'Host a Meeting', 'Start a new safety meeting, attach presentation materials, and gather digital signatures.', 'host toolbox talk, safety presentation, digital sign-in', '/style/images/logo.png', 1),
-	(17, 'company-admin', 'Company Administration', 'Manage your company\'s users, assign branches, and control Role-Based Access Control (RBAC).', 'company admin, user management, branch management', '/style/images/logo.png', 1),
-	(18, 'admin-edit-user', 'Edit User', 'Modify an existing user account including role and location assignment.', 'edit user, role assignment, platform admin, NorthPoint 360', '/style/images/logo.png', 1),
-	(19, 'training-matrix', 'Training Matrix', 'Monitor employee compliance, track certifications, and manage upcoming expiry dates across the branch.', 'training matrix, safety certifications, compliance tracking', '/style/images/logo.png', 1),
-	(20, 'equipment-management', 'Equipment Hub', 'Track asset inventory, manage active status, and review daily pre-shift inspection logs.', 'equipment management, asset inventory, safety checks', '/style/images/logo.png', 1),
-	(21, 'checklist-builder', 'Checklist Builder', 'Create custom, dynamic pre-shift inspection templates with intelligent Pass/Fail logic.', 'custom checklists, form builder, equipment inspection template', '/style/images/logo.png', 1),
-	(22, 'preshift-checklist', 'Pre-Shift Checklist', 'Complete your mandatory daily pre-shift equipment inspections and instantly flag unsafe assets.', 'pre-shift inspection, daily equipment check, fleet safety', '/style/images/logo.png', 1),
-	(23, 'about', 'About Us', 'Learn about NorthPoint 360\'s mission to replace paper trails and build proactive safety cultures.', 'about NorthPoint 360, EHS software, safety culture', '/style/images/logo.png', 0),
-	(24, '404', 'Page Not Found', 'The requested page could not be found.', '404, error, not found', '/style/images/logo.png', 0),
-	(25, 'profile', 'My Profile', 'View your user profile, job site assignments, and personal training records.', 'profile, user account, training records', '/style/images/logo.png', 1),
-	(26, 'profile-edit', 'Edit Profile', 'Update your NorthPoint 360 user details, password, and preferences.', 'edit profile, account settings', '/style/images/logo.png', 1),
-	(27, 'edit-report', 'Edit Report', 'Update details, add supervisor notes, or close out an existing hazard report.', 'edit hazard, resolve report', '/style/images/logo.png', 1),
-	(28, 'admin', 'Platform Administration', 'Advanced system administration, multi-tenant company management, and global platform oversight.', 'super admin, platform management, NorthPoint 360 admin', '/style/images/logo.png', 1);
+	(1, 'home', 'Sentry OHS | Occupational Health and Safety Software', 'Sentry OHS is an occupational health and safety software platform for digital hazard reporting, incident management, FLHA workflows, safety meetings, and compliance tracking.', 'occupational health and safety software, OHS software, EHS software, hazard reporting software, incident management, FLHA, safety compliance, Sentry OHS', '/style/images/logo.png', 0),
+	(2, 'services', 'Sentry OHS Solutions | OHS Software Modules', 'Explore Sentry OHS solutions for digital hazard reporting, incident management, FLHA workflows, toolbox talks, equipment checks, and compliance tracking.', 'Sentry OHS solutions, OHS software modules, EHS solutions, hazard reporting, incident management, FLHA, toolbox talks, safety compliance software', '/style/images/logo.png', 0),
+	(3, 'contact', 'Contact Sentry OHS | Sales and Support', 'Contact Sentry OHS for OHS software support, product demos, implementation guidance, and pricing information.', 'contact Sentry OHS, OHS software support, EHS software support, safety software demo, implementation support, pricing inquiry', '/style/images/logo.png', 0),
+	(4, 'login', 'Secure Login', 'Log in to your Sentry OHS portal to manage your workplace safety and reports.', 'login, secure portal, EHS software', '/style/images/logo.png', 0),
+	(5, 'dashboard', 'Dashboard', 'Centralized safety dashboard providing real-time insights and quick actions.', 'dashboard, safety metrics, portal', '/style/images/logo.png', 1),
+	(6, 'hazard-report', 'Report a Hazard', 'Submit a new workplace hazard, near miss, or safety observation.', 'hazard reporting, safety form', '/style/images/logo.png', 1),
+	(7, 'my-reports', 'My History', 'Review and track the status of safety reports you have submitted.', 'my reports, history, safety tracking', '/style/images/logo.png', 1),
+	(8, 'store-reports', 'Store Hazard Reports', 'Manage, investigate, and close hazard reports for your specific branch.', 'store reports, hazard management, branch safety', '/style/images/logo.png', 1),
+	(9, 'incident-report', 'Report Incident', 'Log workplace injuries, property damage, and severe incidents.', 'incident reporting, injury log, OSHA', '/style/images/logo.png', 1),
+	(10, 'store-incidents', 'Incident Management', 'Review, classify, and track recordable incidents and lost-time data.', 'incident management, OSHA compliance, lost time', '/style/images/logo.png', 1),
+	(11, 'flha-list', 'FLHA Dashboard', 'Manage your daily Field Level Hazard Assessments (FLHA) for remote job sites.', 'FLHA, field hazard assessment, remote safety', '/style/images/logo.png', 1),
+	(12, 'flha-form', 'New Field Assessment', 'Complete your mandatory pre-shift Field Level Hazard Assessment.', 'FLHA form, hazard assessment wizard', '/style/images/logo.png', 1),
+	(13, 'flha-close', 'Close FLHA Record', 'Finalize your Field Level Hazard Assessment and log end-of-shift compliance conditions.', 'FLHA close out, safety compliance', '/style/images/logo.png', 1),
+	(14, 'metrics', 'Statistics & Metrics', 'Deep dive into hazard trends, resolution times, and risk analytics.', 'safety metrics, EHS analytics, KPI', '/style/images/logo.png', 1),
+	(15, 'meetings-list', 'Meetings & Talks', 'Review safety meetings, toolbox talks, and attendance records.', 'safety meetings, toolbox talks, attendance', '/style/images/logo.png', 1),
+	(16, 'host-meeting', 'Host a Meeting', 'Log a new safety meeting, define topics, and track employee attendance.', 'host meeting, safety talk form', '/style/images/logo.png', 1),
+	(17, 'company-admin', 'Company Administration', 'Manage users, roles, and location structure for your organisation.', 'company admin, user management, job sites, branches, Sentry OHS', '/style/images/logo.png', 1),
+	(18, 'admin-edit-user', 'Edit User', 'Modify an existing user account including role and location assignment.', 'edit user, role assignment, platform admin, Sentry OHS', '/style/images/logo.png', 1),
+	(19, 'training-matrix', 'Training & Certifications', 'Monitor employee training certifications, manage expiry dates, and ensure compliance.', 'training matrix, certifications, safety compliance', '/style/images/logo.png', 1),
+	(20, 'equipment-management', 'Equipment Management', 'Track equipment inventory, maintenance statuses, and log pre-use inspections.', 'equipment, maintenance, inspection, safety logs', '/style/images/logo.png', 1),
+	(21, 'checklist-builder', 'Checklist Builder', 'Create dynamic pre-shift equipment checklists.', NULL, '/style/images/logo.png', 1),
+	(22, 'preshift-checklist', 'Pre-Shift Checklist', 'Complete daily equipment logs.', NULL, '/style/images/logo.png', 1),
+	(23, 'about', 'About Sentry OHS | OHS Software Platform', 'Learn about Sentry OHS, an occupational health and safety software platform for hazard reporting, incident management, FLHA workflows, and compliance tracking.', 'about Sentry OHS, occupational health and safety software, OHS platform, EHS software, hazard reporting, incident management, FLHA, compliance tracking', '/style/images/logo.png', 0);
 
--- Dumping structure for table u971098166_safetysite.permissions
+-- Dumping structure for table u971098166_ad9a31.permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `permission_name` varchar(100) NOT NULL,
@@ -487,7 +405,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   UNIQUE KEY `permission_name` (`permission_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.permissions: ~8 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.permissions: ~8 rows (approximately)
 REPLACE INTO `permissions` (`id`, `permission_name`, `permission_description`) VALUES
 	(1, 'create_user', 'Allows user to create new user accounts.'),
 	(2, 'edit_user', 'Allows user to edit existing user accounts.'),
@@ -498,7 +416,7 @@ REPLACE INTO `permissions` (`id`, `permission_name`, `permission_description`) V
 	(7, 'delete_user', 'Allows permanent deletion of user accounts.'),
 	(8, 'manage_stores', 'Allows creation and modification of store branches.');
 
--- Dumping structure for table u971098166_safetysite.report_files
+-- Dumping structure for table u971098166_ad9a31.report_files
 CREATE TABLE IF NOT EXISTS `report_files` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `report_id` int(10) unsigned NOT NULL,
@@ -511,13 +429,13 @@ CREATE TABLE IF NOT EXISTS `report_files` (
   CONSTRAINT `report_files_ibfk_1` FOREIGN KEY (`report_id`) REFERENCES `reports` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.report_files: ~3 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.report_files: ~3 rows (approximately)
 REPLACE INTO `report_files` (`id`, `report_id`, `file_path`, `file_type`, `file_size`, `uploaded_at`) VALUES
 	(1, 2, 'reports/uploads/photos/photo_6995bbf50fdce2.98553343.jpg', 'photo', 362177, '2026-02-18 13:17:41'),
 	(2, 1, 'reports/uploads/photos/photo_6995bbf50fdce2.98553343.jpg', 'photo', 362177, '2026-02-18 13:31:35'),
 	(3, 5, 'reports/uploads/photos/photo_699e104ed4d642.45334214.jpeg', 'photo', 59779, '2026-02-24 20:55:42');
 
--- Dumping structure for table u971098166_safetysite.reports
+-- Dumping structure for table u971098166_ad9a31.reports
 CREATE TABLE IF NOT EXISTS `reports` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `reporter_user_id` int(10) unsigned NOT NULL COMMENT 'User who submitted the report',
@@ -549,7 +467,7 @@ CREATE TABLE IF NOT EXISTS `reports` (
   CONSTRAINT `reports_ibfk_4` FOREIGN KEY (`notified_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.reports: ~5 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.reports: ~5 rows (approximately)
 REPLACE INTO `reports` (`id`, `reporter_user_id`, `store_id`, `status`, `report_date`, `hazard_location_id`, `risk_level`, `hazard_observed_at`, `hazard_type`, `hazard_description`, `potential_consequences`, `action_taken`, `action_description`, `equipment_locked_out`, `lockout_key_holder`, `notified_user_id`, `additional_comments`, `created_at`, `job_site_id`) VALUES
 	(1, 1, 1, 'Closed', '2026-02-18 09:07:00', 1, 1, '0000-00-00 00:00:00', 'physical', '23', '2', 1, 'Fixed', 0, NULL, 1, '=== HAZARD RESOLVED ON February 24, 2026 at 8:07 PM BY WEB  ===\nde', '2026-02-18 13:08:04', NULL),
 	(2, 2, 1, 'Closed', '2026-02-18 09:15:00', 1, 1, '0000-00-00 00:00:00', 'physical', 'Crap left all over the floor, blocking exits', 'Trip and break my neck and die', 1, 'Cleaned it all up', 0, NULL, 1, 'This is good now\n\n=== HAZARD RESOLVED ON February 24, 2026 at 6:32 PM BY WEB  ===\nGood', '2026-02-18 13:17:41', NULL),
@@ -557,7 +475,7 @@ REPLACE INTO `reports` (`id`, `reporter_user_id`, `store_id`, `status`, `report_
 	(4, 2, 1, 'Closed', '2026-02-19 17:53:00', 2, 3, '0000-00-00 00:00:00', 'electrical', 'Gfff', 'Gfgh', 1, 'Fgf', 1, 'Jin', 4, '=== HAZARD RESOLVED ON February 24, 2026 at 6:32 PM BY WEB  ===\nGood', '2026-02-19 21:55:48', NULL),
 	(5, 15, 1, 'Open', '2026-02-24 16:52:00', 1, 2, '0000-00-00 00:00:00', 'psychological', 'People keep telling me I pooped my pants but I didn’t :(((', 'I’ll actually do it', 0, 'I scared :(((', 0, NULL, 10, '!:(!', '2026-02-24 20:55:42', NULL);
 
--- Dumping structure for table u971098166_safetysite.role_module_permissions
+-- Dumping structure for table u971098166_ad9a31.role_module_permissions
 CREATE TABLE IF NOT EXISTS `role_module_permissions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` int(10) unsigned NOT NULL,
@@ -568,9 +486,9 @@ CREATE TABLE IF NOT EXISTS `role_module_permissions` (
   KEY `idx_module_id` (`module_id`),
   CONSTRAINT `fk_rmp_module` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_rmp_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=182 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Role based access to dashboard modules';
+) ENGINE=InnoDB AUTO_INCREMENT=185 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Role based access to dashboard modules';
 
--- Dumping data for table u971098166_safetysite.role_module_permissions: ~134 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.role_module_permissions: ~134 rows (approximately)
 REPLACE INTO `role_module_permissions` (`id`, `role_id`, `module_id`) VALUES
 	(1, 1, 1),
 	(2, 1, 2),
@@ -707,7 +625,7 @@ REPLACE INTO `role_module_permissions` (`id`, `role_id`, `module_id`) VALUES
 	(180, 16, 8),
 	(181, 16, 9);
 
--- Dumping structure for table u971098166_safetysite.role_permissions
+-- Dumping structure for table u971098166_ad9a31.role_permissions
 CREATE TABLE IF NOT EXISTS `role_permissions` (
   `role_id` int(10) unsigned NOT NULL,
   `permission_id` int(10) unsigned NOT NULL,
@@ -717,7 +635,7 @@ CREATE TABLE IF NOT EXISTS `role_permissions` (
   CONSTRAINT `role_permissions_ibfk_2` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.role_permissions: ~40 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.role_permissions: ~40 rows (approximately)
 REPLACE INTO `role_permissions` (`role_id`, `permission_id`) VALUES
 	(1, 1),
 	(1, 2),
@@ -760,15 +678,15 @@ REPLACE INTO `role_permissions` (`role_id`, `permission_id`) VALUES
 	(11, 4),
 	(11, 6);
 
--- Dumping structure for table u971098166_safetysite.roles
+-- Dumping structure for table u971098166_ad9a31.roles
 CREATE TABLE IF NOT EXISTS `roles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `role_name` varchar(100) NOT NULL COMMENT 'Unique identifier for role logic',
   PRIMARY KEY (`id`),
   UNIQUE KEY `role_name` (`role_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.roles: ~16 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.roles: ~16 rows (approximately)
 REPLACE INTO `roles` (`id`, `role_name`) VALUES
 	(1, 'Admin'),
 	(2, 'Manager'),
@@ -787,7 +705,7 @@ REPLACE INTO `roles` (`id`, `role_name`) VALUES
 	(15, 'Site Supervisor'),
 	(16, 'JHSC Leader');
 
--- Dumping structure for table u971098166_safetysite.stores
+-- Dumping structure for table u971098166_ad9a31.stores
 CREATE TABLE IF NOT EXISTS `stores` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `company_id` int(10) unsigned NOT NULL DEFAULT 1,
@@ -813,11 +731,11 @@ CREATE TABLE IF NOT EXISTS `stores` (
   CONSTRAINT `stores_ibfk_2` FOREIGN KEY (`jhsc_leader_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.stores: ~0 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.stores: ~1 rows (approximately)
 REPLACE INTO `stores` (`id`, `company_id`, `store_name`, `store_number`, `location_type`, `address`, `city`, `province_state`, `is_active`, `manager_user_id`, `jhsc_leader_user_id`, `created_at`, `updated_at`) VALUES
 	(1, 1, 'Office', '1', 'store', NULL, NULL, NULL, 1, 3, 6, '2026-02-18 13:05:30', '2026-02-18 13:30:18');
 
--- Dumping structure for table u971098166_safetysite.training_categories
+-- Dumping structure for table u971098166_ad9a31.training_categories
 CREATE TABLE IF NOT EXISTS `training_categories` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `company_id` int(10) unsigned NOT NULL,
@@ -829,12 +747,12 @@ CREATE TABLE IF NOT EXISTS `training_categories` (
   CONSTRAINT `training_categories_ibfk_1` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.training_categories: ~2 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.training_categories: ~2 rows (approximately)
 REPLACE INTO `training_categories` (`id`, `company_id`, `name`, `description`, `validity_months`) VALUES
 	(1, 1, 'Fall Arrest', NULL, 36),
 	(2, 1, 'First Aid', NULL, 36);
 
--- Dumping structure for table u971098166_safetysite.user_job_sites
+-- Dumping structure for table u971098166_ad9a31.user_job_sites
 CREATE TABLE IF NOT EXISTS `user_job_sites` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL,
@@ -848,9 +766,9 @@ CREATE TABLE IF NOT EXISTS `user_job_sites` (
   CONSTRAINT `fk_ujs_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Many-to-many: users assigned to job sites';
 
--- Dumping data for table u971098166_safetysite.user_job_sites: ~0 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.user_job_sites: ~0 rows (approximately)
 
--- Dumping structure for table u971098166_safetysite.user_stores
+-- Dumping structure for table u971098166_ad9a31.user_stores
 CREATE TABLE IF NOT EXISTS `user_stores` (
   `user_id` int(10) unsigned NOT NULL,
   `store_id` int(10) unsigned NOT NULL,
@@ -861,7 +779,7 @@ CREATE TABLE IF NOT EXISTS `user_stores` (
   CONSTRAINT `fk_user_stores_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.user_stores: ~15 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.user_stores: ~15 rows (approximately)
 REPLACE INTO `user_stores` (`user_id`, `store_id`, `assigned_at`) VALUES
 	(1, 1, '2026-02-18 13:06:12'),
 	(2, 1, '2026-02-18 13:05:59'),
@@ -879,7 +797,7 @@ REPLACE INTO `user_stores` (`user_id`, `store_id`, `assigned_at`) VALUES
 	(14, 1, '2026-02-18 13:21:50'),
 	(15, 1, '2026-02-24 20:45:16');
 
--- Dumping structure for table u971098166_safetysite.user_training_records
+-- Dumping structure for table u971098166_ad9a31.user_training_records
 CREATE TABLE IF NOT EXISTS `user_training_records` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL,
@@ -898,11 +816,11 @@ CREATE TABLE IF NOT EXISTS `user_training_records` (
   CONSTRAINT `user_training_records_ibfk_3` FOREIGN KEY (`logged_by_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_safetysite.user_training_records: ~0 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.user_training_records: ~1 rows (approximately)
 REPLACE INTO `user_training_records` (`id`, `user_id`, `category_id`, `issue_date`, `expiry_date`, `certificate_number`, `logged_by_user_id`, `created_at`) VALUES
 	(1, 15, 1, '2025-05-23', '2028-05-23', '12345', 1, '2026-03-13 02:07:20');
 
--- Dumping structure for table u971098166_safetysite.users
+-- Dumping structure for table u971098166_ad9a31.users
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` int(10) unsigned NOT NULL,
@@ -920,7 +838,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_safetysite.users: ~15 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.users: ~15 rows (approximately)
 REPLACE INTO `users` (`id`, `role_id`, `email`, `password`, `first_name`, `last_name`, `employee_position`, `created_at`, `updated_at`, `is_platform_admin`) VALUES
 	(1, 1, 'admin@macweb.ca', '$2y$10$4EjAQ.FKXAMQ38nCMKK0TuXrDbUMjpdy2KUeP0W5w0jdw16JsdD52', 'Web', 'Admin', 'System Administrator', '2026-02-18 13:00:13', '2026-03-12 12:17:15', 1),
 	(2, 1, 'justin@bizolver.com', '$2y$10$QGKE3U5PJJEQNhyvtp3umeQU.yYaV.0ix6olJdIoyrgGbaxwHgHDK', 'Justin', 'Weir', 'Admin', '2026-02-18 13:05:59', '2026-03-12 12:17:15', 1),
@@ -937,6 +855,70 @@ REPLACE INTO `users` (`id`, `role_id`, `email`, `password`, `first_name`, `last_
 	(13, 12, 'operator@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Operator', 'Forklift Driver', '2026-02-18 13:21:50', '2026-02-18 13:21:50', 0),
 	(14, 13, 'custom@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Custom', 'Contractor', '2026-02-18 13:21:50', '2026-02-18 13:21:50', 0),
 	(15, 1, 'skybordage@hotmail.com', '$2y$10$A/s.41TPZAqpDKKSTJrMoujg97Fr7h/fo6bBNgX7Be0pdsWpIuvYq', 'Caleb', 'Bordage', 'Tester', '2026-02-24 20:45:16', '2026-03-12 12:17:15', 1);
+
+-- Dumping structure for table u971098166_ad9a31.checklist_templates
+CREATE TABLE IF NOT EXISTS `checklist_templates` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `company_id` int(10) unsigned NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_company_id` (`company_id`),
+  CONSTRAINT `fk_ct_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Reusable dynamic pre-shift checklist templates';
+
+-- Dumping structure for table u971098166_ad9a31.checklist_items
+CREATE TABLE IF NOT EXISTS `checklist_items` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `template_id` int(10) unsigned NOT NULL,
+  `label` varchar(255) NOT NULL,
+  `field_type` enum('pass_fail','yes_no','checkbox','numeric','text') NOT NULL,
+  `is_required` tinyint(1) NOT NULL DEFAULT 1,
+  `order_index` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_template_id` (`template_id`),
+  CONSTRAINT `fk_ci_template` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Fields/questions for each checklist template';
+
+-- Dumping structure for table u971098166_ad9a31.checklist_submissions
+CREATE TABLE IF NOT EXISTS `checklist_submissions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `company_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `equipment_id` int(10) unsigned NOT NULL,
+  `template_id` int(10) unsigned NOT NULL,
+  `shift_date` date NOT NULL,
+  `overall_status` enum('Safe','Unsafe') NOT NULL DEFAULT 'Safe',
+  `general_comments` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_company_shift` (`company_id`,`shift_date`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_equipment_id` (`equipment_id`),
+  KEY `idx_template_id` (`template_id`),
+  CONSTRAINT `fk_cs_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_cs_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_cs_equipment` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_cs_template` FOREIGN KEY (`template_id`) REFERENCES `checklist_templates` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Submitted pre-shift checklist sessions';
+
+-- Dumping structure for table u971098166_ad9a31.checklist_responses
+CREATE TABLE IF NOT EXISTS `checklist_responses` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `submission_id` int(10) unsigned NOT NULL,
+  `item_id` int(10) unsigned NOT NULL,
+  `response_value` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_submission_id` (`submission_id`),
+  KEY `idx_item_id` (`item_id`),
+  CONSTRAINT `fk_cr_submission` FOREIGN KEY (`submission_id`) REFERENCES `checklist_submissions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_cr_item` FOREIGN KEY (`item_id`) REFERENCES `checklist_items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Per-item answers for each checklist submission';
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

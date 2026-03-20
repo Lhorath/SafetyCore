@@ -17,16 +17,17 @@
  *   - All queries scoped to session company_id (Audit F-04 pattern)
  *   - Prepared statements throughout
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 session_start();
 header('Content-Type: application/json');
 require_once '../includes/db.php';
 require_once '../includes/company_context.php';
+require_once '../includes/csrf.php';
 
 // ── Auth gate (Audit F-03 fix applied to all actions) ─────────────────────
 if (!isset($_SESSION['user'])) {
@@ -101,6 +102,11 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Invalid payload.']);
             break;
         }
+        if (!validate_csrf_token($input['csrf_token'] ?? '')) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Invalid security token.']);
+            break;
+        }
 
         $jobNumber   = trim($input['job_number'] ?? '');
         $jobName     = trim($input['job_name'] ?? '');
@@ -145,6 +151,11 @@ switch ($action) {
         }
 
         $input     = json_decode(file_get_contents('php://input'), true);
+        if (!validate_csrf_token($input['csrf_token'] ?? '')) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Invalid security token.']);
+            break;
+        }
         $jobSiteId = isset($input['job_site_id']) ? (int)$input['job_site_id'] : 0;
         $newStatus = $input['status'] ?? '';
 

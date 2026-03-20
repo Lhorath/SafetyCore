@@ -1,5 +1,5 @@
 # =============================================================================
-# NorthPoint 360 — reports/uploads/.htaccess
+# Sentry OHS — reports/uploads/.htaccess
 # =============================================================================
 # Deploy this file to BOTH upload directories:
 #   reports/uploads/photos/
@@ -12,7 +12,7 @@
 #   .htaccess ensures it cannot be run — the server will refuse to execute it.
 #
 # @author  macweb.ca
-# @version 9.0.0 (NorthPoint Beta 09)
+# @version 10.2.0 (Sentry OHS Beta 10)
 # =============================================================================
 
 # Disable PHP execution for all files in this directory (Apache + mod_php)

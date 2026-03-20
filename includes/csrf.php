@@ -24,10 +24,10 @@
  * - Token is stored in $_SESSION['csrf_token'] and verified server-side.
  * - Accepted via POST field "_csrf_token" OR header "X-CSRF-Token".
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // ── Token generation ──────────────────────────────────────────────────────────
@@ -68,6 +68,29 @@ function csrf_meta_tag(): void {
 // ── Validation ────────────────────────────────────────────────────────────────
 
 /**
+ * Returns CSRF token sent via request headers.
+ * Works even when getallheaders() is unavailable (e.g. some CGI/FastCGI setups).
+ */
+function csrf_header_token(): string {
+    $headers = [];
+    if (function_exists('getallheaders')) {
+        $headers = getallheaders();
+    } else {
+        foreach ($_SERVER as $key => $value) {
+            if (str_starts_with($key, 'HTTP_')) {
+                $headerName = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
+                $headers[$headerName] = $value;
+            }
+        }
+    }
+
+    return $headers['X-CSRF-Token']
+        ?? $headers['x-csrf-token']
+        ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '')
+        ?? '';
+}
+
+/**
  * Validates the incoming CSRF token from POST field or X-CSRF-Token header.
  *
  * @return bool  True on valid token, false otherwise.
@@ -79,8 +102,7 @@ function csrf_valid(): bool {
 
     // Accept token from POST field or from JSON body (read via header check)
     $incoming = $_POST['_csrf_token']
-        ?? getallheaders()['X-CSRF-Token']
-        ?? getallheaders()['x-csrf-token']
+        ?? csrf_header_token()
         ?? '';
 
     return hash_equals($_SESSION['csrf_token'], $incoming);

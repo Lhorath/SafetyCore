@@ -2,8 +2,8 @@
 /**
  * Dynamic Checklist API - api/checklists.php
  *
- * @package   NorthPoint360
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @package   Sentry OHS
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 session_start();
 header('Content-Type: application/json');
@@ -60,6 +60,19 @@ switch ($action) {
         $templateId = (int)$data['template_id'];
         $label = trim($data['label']);
         $type = $data['field_type'];
+
+        // Ensure template belongs to caller's company.
+        $tplScopeStmt = $conn->prepare("SELECT 1 FROM checklist_templates WHERE id = ? AND company_id = ? LIMIT 1");
+        $tplScopeStmt->bind_param("ii", $templateId, $companyId);
+        $tplScopeStmt->execute();
+        $templateOwned = $tplScopeStmt->get_result()->fetch_assoc() !== null;
+        $tplScopeStmt->close();
+
+        if (!$templateOwned) {
+            http_response_code(403);
+            echo json_encode(['success'=>false, 'message'=>'Access denied.']);
+            break;
+        }
         
         $stmt = $conn->prepare("INSERT INTO checklist_items (template_id, label, field_type) VALUES (?, ?, ?)");
         $stmt->bind_param("iss", $templateId, $label, $type);
@@ -98,10 +111,28 @@ switch ($action) {
         if (!validate_csrf_token($data['csrf_token'] ?? '')) exit(json_encode(['success'=>false, 'message'=>'Invalid security token.']));
 
         $equipId = (int)$data['equipment_id'];
-        $templateId = (int)$data['template_id'];
         $responses = $data['responses'] ?? [];
         $comments = $data['general_comments'] ?? '';
         $shiftDate = date('Y-m-d');
+
+        // Resolve trusted template from equipment assignment (not client payload).
+        $eqStmt = $conn->prepare("SELECT checklist_template_id FROM equipment WHERE id = ? AND company_id = ? LIMIT 1");
+        $eqStmt->bind_param("ii", $equipId, $companyId);
+        $eqStmt->execute();
+        $eqRes = $eqStmt->get_result()->fetch_assoc();
+        $eqStmt->close();
+
+        if (!$eqRes) {
+            http_response_code(403);
+            echo json_encode(['success'=>false, 'message'=>'Access denied.']);
+            break;
+        }
+
+        $templateId = (int)($eqRes['checklist_template_id'] ?? 0);
+        if ($templateId <= 0) {
+            echo json_encode(['success'=>false, 'message'=>'No checklist assigned to this equipment.']);
+            break;
+        }
         
         // Validation loop to determine Safe/Unsafe
         $isSafe = true;
@@ -132,7 +163,13 @@ switch ($action) {
             $rStmt->close();
 
             if (!$isSafe) {
-                $conn->query("UPDATE equipment SET status = 'Out of Service' WHERE id = $equipId");
+                $equipStatus = 'Out of Service';
+                $statusStmt = $conn->prepare("UPDATE equipment SET status = ? WHERE id = ? AND company_id = ?");
+                if ($statusStmt) {
+                    $statusStmt->bind_param("sii", $equipStatus, $equipId, $companyId);
+                    $statusStmt->execute();
+                    $statusStmt->close();
+                }
             }
 
             $conn->commit();

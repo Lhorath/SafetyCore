@@ -2,10 +2,10 @@
 /**
  * Solutions / Services Page - pages/services.php
  *
- * Details the core modules and capabilities of the NorthPoint 360 platform.
+ * Details the core modules and capabilities of the Sentry OHS platform.
  *
- * @package   NorthPoint360
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @package   Sentry OHS
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 ?>
 
@@ -24,10 +24,10 @@
             Platform Capabilities
         </span>
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">
-            Comprehensive <span class="text-blue-500">EHS Solutions</span>
+            Occupational Health and Safety <span class="text-blue-500">Solutions</span>
         </h1>
         <p class="text-lg md:text-xl text-gray-300 font-light max-w-3xl mx-auto leading-relaxed">
-            Replace fragmented paper trails with a unified, cloud-based safety ecosystem. NorthPoint 360 connects your field operators with management in real-time.
+            Sentry OHS provides digital OHS software for hazard reporting, incident management, FLHA workflows, safety meetings, training records, and compliance tracking.
         </p>
     </div>
 </div>
@@ -39,7 +39,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="mb-16 text-center">
-            <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Core Modules</h2>
+            <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Core OHS Modules</h2>
             <div class="w-24 h-1 bg-blue-500 mx-auto mt-4 rounded-full"></div>
         </div>
 
@@ -53,7 +53,7 @@
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 mb-3">Field Level Hazard Assessments</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    Digitize your daily FLHAs. Guide workers through task identification, hazard recognition, and mandatory PPE selection before work begins. 
+                    Digitize daily FLHAs with guided job steps, hazard identification, and required controls so work starts with clear risk mitigation.
                 </p>
                 <ul class="text-sm text-gray-500 space-y-2 font-medium">
                     <li><i class="fas fa-check text-blue-500 mr-2"></i> Custom job steps & hazard tagging</li>
@@ -70,7 +70,7 @@
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 mb-3">Equipment Management</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    Maintain a real-time asset inventory and enforce compliance with dynamic, custom-built pre-shift inspection checklists.
+                    Maintain a real-time asset inventory and standardize pre-shift inspections with configurable checklists and documented outcomes.
                 </p>
                 <ul class="text-sm text-gray-500 space-y-2 font-medium">
                     <li><i class="fas fa-check text-emerald-500 mr-2"></i> Custom Checklist Builder</li>
@@ -87,7 +87,7 @@
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 mb-3">Training Matrix</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    Never let a certification lapse again. Track employee training records, manage expiry dates, and ensure your workforce is qualified.
+                    Track certifications and training records by worker and role, monitor expiries, and keep teams qualified for regulated tasks.
                 </p>
                 <ul class="text-sm text-gray-500 space-y-2 font-medium">
                     <li><i class="fas fa-check text-purple-500 mr-2"></i> Expiry date tracking</li>
@@ -104,7 +104,7 @@
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 mb-3">Hazard Reporting</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    Empower your team to report unsafe conditions and near-misses instantly from the field. Turn observations into actionable insights.
+                    Enable workers to report unsafe conditions and near misses from the field with structured forms and evidence attachments.
                 </p>
                 <ul class="text-sm text-gray-500 space-y-2 font-medium">
                     <li><i class="fas fa-check text-orange-500 mr-2"></i> Photo & video evidence uploads</li>
@@ -121,7 +121,7 @@
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 mb-3">Incident Management</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    When accidents happen, collect vital data immediately. Log injuries, property damage, and first-aid interventions securely.
+                    Capture injuries, property damage, and first-aid events with consistent documentation that supports investigations and reporting.
                 </p>
                 <ul class="text-sm text-gray-500 space-y-2 font-medium">
                     <li><i class="fas fa-check text-red-500 mr-2"></i> OSHA/WCB compliance tracking</li>
@@ -138,7 +138,7 @@
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 mb-3">Toolbox Talks & Meetings</h3>
                 <p class="text-gray-600 leading-relaxed mb-4">
-                    Host safety meetings digitally. Document discussed topics and generate verified attendance logs to prove compliance during audits.
+                    Run toolbox talks digitally, capture attendance, and maintain searchable records for internal reviews and external audits.
                 </p>
                 <ul class="text-sm text-gray-500 space-y-2 font-medium">
                     <li><i class="fas fa-check text-teal-500 mr-2"></i> Digital sign-in sheets</li>
@@ -160,20 +160,20 @@
             
             <div class="py-4 md:py-0">
                 <div class="text-blue-400 mb-3"><i class="fas fa-leaf text-4xl"></i></div>
-                <h4 class="text-white font-bold text-xl mb-2">100% Paperless</h4>
-                <p class="text-slate-400 text-sm max-w-xs mx-auto">Eliminate lost forms, smudged ink, and filing cabinets. Everything is stored securely in the cloud.</p>
+                <h4 class="text-white font-bold text-xl mb-2">Digital-First Workflows</h4>
+                <p class="text-slate-400 text-sm max-w-xs mx-auto">Replace manual forms with standardized digital processes, faster submissions, and complete record visibility.</p>
             </div>
             
             <div class="py-4 md:py-0">
                 <div class="text-blue-400 mb-3"><i class="fas fa-bolt text-4xl"></i></div>
-                <h4 class="text-white font-bold text-xl mb-2">Real-Time Sync</h4>
-                <p class="text-slate-400 text-sm max-w-xs mx-auto">As soon as a worker submits an FLHA or reports a hazard, management sees it on their dashboard.</p>
+                <h4 class="text-white font-bold text-xl mb-2">Real-Time Visibility</h4>
+                <p class="text-slate-400 text-sm max-w-xs mx-auto">Give supervisors immediate insight when FLHAs, hazards, or incidents are submitted from the field.</p>
             </div>
             
             <div class="py-4 md:py-0">
-                <div class="text-blue-400 mb-3"><i class="fas fa-shield-check text-4xl"></i></div>
-                <h4 class="text-white font-bold text-xl mb-2">Audit-Ready</h4>
-                <p class="text-slate-400 text-sm max-w-xs mx-auto">Export beautifully formatted PDFs of incident reports and training matrices for external safety auditors instantly.</p>
+                <div class="text-blue-400 mb-3"><i class="fas fa-shield-alt text-4xl"></i></div>
+                <h4 class="text-white font-bold text-xl mb-2">Compliance Ready</h4>
+                <p class="text-slate-400 text-sm max-w-xs mx-auto">Keep complete, searchable records that support inspections, audits, and internal compliance reviews.</p>
             </div>
 
         </div>
@@ -186,9 +186,9 @@
 <div class="bg-gray-50 py-20 text-center">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <i class="fas fa-hard-hat text-5xl text-blue-300 mb-6 block"></i>
-        <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4 tracking-tight">Protect your most valuable assets.</h2>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4 tracking-tight">Build a stronger safety culture with better data.</h2>
         <p class="text-lg text-gray-500 mb-8">
-            Safety isn't just a compliance requirement—it's a culture. Give your team the tools they need to build that culture today.
+            Centralize OHS workflows, improve accountability, and give leadership the visibility needed to reduce risk and improve performance.
         </p>
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
             <a href="/login" class="inline-flex justify-center items-center bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg text-lg transition-all shadow-md w-full sm:w-auto">

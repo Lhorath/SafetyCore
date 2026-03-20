@@ -9,12 +9,12 @@
  * Features:
  * - Secure session validation.
  * - Multi-Store Support: Uses GROUP_CONCAT to list all assigned branches from the `user_stores` table.
- * - Tailwind CSS styling consistent with the NorthPoint 360 brand.
+ * - Tailwind CSS styling consistent with the Sentry OHS brand.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // --- 1. Security & Access Control ---

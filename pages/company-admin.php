@@ -22,10 +22,10 @@
  *   users     — list, create, and quick-edit users in this company
  *   structure — manage branches / job sites (delegates to manage-company.php logic)
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // ── Auth & access gate ────────────────────────────────────────────────────────
@@ -36,6 +36,7 @@ if (!isset($_SESSION['user'])) {
 
 require_once __DIR__ . '/../includes/permissions.php';
 require_once __DIR__ . '/../includes/company_context.php';
+require_once __DIR__ . '/../includes/csrf.php';
 
 if (!is_company_admin()) {
     header('Location: /');
@@ -62,155 +63,156 @@ $errorMessage   = '';
 
 // ── POST handler ──────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (csrf_check($errorMessage)) {
+        // ── A: Create new user ────────────────────────────────────────────────
+        if ($view === 'add-user') {
+            $firstName  = trim($_POST['first_name'] ?? '');
+            $lastName   = trim($_POST['last_name'] ?? '');
+            $email      = trim($_POST['email'] ?? '');
+            $position   = trim($_POST['employee_position'] ?? '');
+            $password   = $_POST['password'] ?? '';
+            $roleId     = filter_input(INPUT_POST, 'role_id', FILTER_VALIDATE_INT);
+            $locationId = filter_input(INPUT_POST, 'location_id', FILTER_VALIDATE_INT);
 
-    // ── A: Create new user ────────────────────────────────────────────────────
-    if ($view === 'add-user') {
-        $firstName  = trim($_POST['first_name'] ?? '');
-        $lastName   = trim($_POST['last_name'] ?? '');
-        $email      = trim($_POST['email'] ?? '');
-        $position   = trim($_POST['employee_position'] ?? '');
-        $password   = $_POST['password'] ?? '';
-        $roleId     = filter_input(INPUT_POST, 'role_id', FILTER_VALIDATE_INT);
-        $locationId = filter_input(INPUT_POST, 'location_id', FILTER_VALIDATE_INT);
-
-        // Basic validation
-        if (empty($firstName) || empty($lastName) || empty($email) || !$roleId || empty($password)) {
-            $errorMessage = "Please fill out all required fields.";
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errorMessage = "Invalid email address format.";
-        } elseif (strlen($password) < 8) {
-            $errorMessage = "Password must be at least 8 characters.";
-        } elseif (!role_is_company_assignable($conn, $roleId)) {
-            // Privilege escalation guard — never allow assigning platform Admin
-            $errorMessage = "The selected role cannot be assigned at the company level.";
-        } else {
-            // Validate location belongs to this company
-            $locationValid = false;
-            if ($locationId) {
-                $locationValid = validate_location_ownership($conn, $locationId, $companyId, $companyCtx['type']);
-                if (!$locationValid) {
-                    $errorMessage = "Invalid location selected.";
-                }
-            }
-
-            if (empty($errorMessage)) {
-                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-                $conn->begin_transaction();
-                try {
-                    // Insert user
-                    $stmt = $conn->prepare(
-                        "INSERT INTO users (first_name, last_name, email, password, employee_position, role_id)
-                         VALUES (?, ?, ?, ?, ?, ?)"
-                    );
-                    $stmt->bind_param("sssssi", $firstName, $lastName, $email, $hashedPassword, $position, $roleId);
-                    $stmt->execute();
-                    $newUserId = (int)$stmt->insert_id;
-                    $stmt->close();
-
-                    // Assign to location
-                    if ($locationId && $locationValid) {
-                        if ($isJobBased) {
-                            $locStmt = $conn->prepare(
-                                "INSERT INTO user_job_sites (user_id, job_site_id) VALUES (?, ?)"
-                            );
-                        } else {
-                            $locStmt = $conn->prepare(
-                                "INSERT INTO user_stores (user_id, store_id) VALUES (?, ?)"
-                            );
-                        }
-                        $locStmt->bind_param("ii", $newUserId, $locationId);
-                        $locStmt->execute();
-                        $locStmt->close();
-                    }
-
-                    $conn->commit();
-                    $successMessage = "User '{$firstName} {$lastName}' created successfully.";
-                    $view = 'users'; // redirect view back to user list on success
-
-                } catch (Exception $e) {
-                    $conn->rollback();
-                    $errorMessage = ($conn->errno === 1062)
-                        ? "An account with this email already exists."
-                        : "Database error. Please try again.";
-                }
-            }
-        }
-    }
-
-    // ── B: Edit user basic details + role ─────────────────────────────────────
-    if ($view === 'edit-user') {
-        $editUserId = filter_input(INPUT_POST, 'user_id', FILTER_VALIDATE_INT);
-        $firstName  = trim($_POST['first_name'] ?? '');
-        $lastName   = trim($_POST['last_name'] ?? '');
-        $email      = trim($_POST['email'] ?? '');
-        $position   = trim($_POST['employee_position'] ?? '');
-        $roleId     = filter_input(INPUT_POST, 'role_id', FILTER_VALIDATE_INT);
-        $newPassword = $_POST['new_password'] ?? '';
-
-        if (!$editUserId || empty($firstName) || empty($lastName) || empty($email) || !$roleId) {
-            $errorMessage = "Please fill out all required fields.";
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errorMessage = "Invalid email address format.";
-        } elseif (!role_is_company_assignable($conn, $roleId)) {
-            $errorMessage = "The selected role cannot be assigned at the company level.";
-        } else {
-            // Confirm this user actually belongs to this company (IDOR guard)
-            $ownerCheck = $conn->prepare(
-                "SELECT u.id FROM users u
-                 JOIN user_stores us ON u.id = us.user_id
-                 JOIN stores s ON us.store_id = s.id
-                 WHERE u.id = ? AND s.company_id = ?
-                 LIMIT 1"
-            );
-            $ownerCheck->bind_param("ii", $editUserId, $companyId);
-            $ownerCheck->execute();
-            $ownerValid = $ownerCheck->get_result()->fetch_assoc() !== null;
-            $ownerCheck->close();
-
-            if (!$ownerValid && $isJobBased) {
-                $ownerCheck2 = $conn->prepare(
-                    "SELECT u.id FROM users u
-                     JOIN user_job_sites ujs ON u.id = ujs.user_id
-                     JOIN job_sites js ON ujs.job_site_id = js.id
-                     WHERE u.id = ? AND js.company_id = ?
-                     LIMIT 1"
-                );
-                $ownerCheck2->bind_param("ii", $editUserId, $companyId);
-                $ownerCheck2->execute();
-                $ownerValid = $ownerCheck2->get_result()->fetch_assoc() !== null;
-                $ownerCheck2->close();
-            }
-
-            if (!$ownerValid) {
-                $errorMessage = "Access denied. This user does not belong to your company.";
+            // Basic validation
+            if (empty($firstName) || empty($lastName) || empty($email) || !$roleId || empty($password)) {
+                $errorMessage = "Please fill out all required fields.";
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errorMessage = "Invalid email address format.";
+            } elseif (strlen($password) < 8) {
+                $errorMessage = "Password must be at least 8 characters.";
+            } elseif (!role_is_company_assignable($conn, $roleId)) {
+                // Privilege escalation guard — never allow assigning platform Admin
+                $errorMessage = "The selected role cannot be assigned at the company level.";
             } else {
-                // Build update — optionally include password
-                if (!empty($newPassword)) {
-                    if (strlen($newPassword) < 8) {
-                        $errorMessage = "Password must be at least 8 characters.";
-                    } else {
-                        $hashed = password_hash($newPassword, PASSWORD_DEFAULT);
-                        $stmt = $conn->prepare(
-                            "UPDATE users SET first_name=?, last_name=?, email=?, employee_position=?, role_id=?, password=? WHERE id=?"
-                        );
-                        $stmt->bind_param("sssssii", $firstName, $lastName, $email, $position, $roleId, $hashed, $editUserId);
+                // Validate location belongs to this company
+                $locationValid = false;
+                if ($locationId) {
+                    $locationValid = validate_location_ownership($conn, $locationId, $companyId, $companyCtx['type']);
+                    if (!$locationValid) {
+                        $errorMessage = "Invalid location selected.";
                     }
-                } else {
-                    $stmt = $conn->prepare(
-                        "UPDATE users SET first_name=?, last_name=?, email=?, employee_position=?, role_id=? WHERE id=?"
-                    );
-                    $stmt->bind_param("ssssii", $firstName, $lastName, $email, $position, $roleId, $editUserId);
                 }
 
                 if (empty($errorMessage)) {
-                    if ($stmt->execute()) {
-                        $successMessage = "User updated successfully.";
-                    } else {
+                    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                    $conn->begin_transaction();
+                    try {
+                        // Insert user
+                        $stmt = $conn->prepare(
+                            "INSERT INTO users (first_name, last_name, email, password, employee_position, role_id)
+                             VALUES (?, ?, ?, ?, ?, ?)"
+                        );
+                        $stmt->bind_param("sssssi", $firstName, $lastName, $email, $hashedPassword, $position, $roleId);
+                        $stmt->execute();
+                        $newUserId = (int)$stmt->insert_id;
+                        $stmt->close();
+
+                        // Assign to location
+                        if ($locationId && $locationValid) {
+                            if ($isJobBased) {
+                                $locStmt = $conn->prepare(
+                                    "INSERT INTO user_job_sites (user_id, job_site_id) VALUES (?, ?)"
+                                );
+                            } else {
+                                $locStmt = $conn->prepare(
+                                    "INSERT INTO user_stores (user_id, store_id) VALUES (?, ?)"
+                                );
+                            }
+                            $locStmt->bind_param("ii", $newUserId, $locationId);
+                            $locStmt->execute();
+                            $locStmt->close();
+                        }
+
+                        $conn->commit();
+                        $successMessage = "User '{$firstName} {$lastName}' created successfully.";
+                        $view = 'users'; // redirect view back to user list on success
+
+                    } catch (Exception $e) {
+                        $conn->rollback();
                         $errorMessage = ($conn->errno === 1062)
-                            ? "This email address is already in use."
+                            ? "An account with this email already exists."
                             : "Database error. Please try again.";
                     }
-                    $stmt->close();
+                }
+            }
+        }
+
+        // ── B: Edit user basic details + role ─────────────────────────────────
+        if ($view === 'edit-user') {
+            $editUserId = filter_input(INPUT_POST, 'user_id', FILTER_VALIDATE_INT);
+            $firstName  = trim($_POST['first_name'] ?? '');
+            $lastName   = trim($_POST['last_name'] ?? '');
+            $email      = trim($_POST['email'] ?? '');
+            $position   = trim($_POST['employee_position'] ?? '');
+            $roleId     = filter_input(INPUT_POST, 'role_id', FILTER_VALIDATE_INT);
+            $newPassword = $_POST['new_password'] ?? '';
+
+            if (!$editUserId || empty($firstName) || empty($lastName) || empty($email) || !$roleId) {
+                $errorMessage = "Please fill out all required fields.";
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errorMessage = "Invalid email address format.";
+            } elseif (!role_is_company_assignable($conn, $roleId)) {
+                $errorMessage = "The selected role cannot be assigned at the company level.";
+            } else {
+                // Confirm this user actually belongs to this company (IDOR guard)
+                $ownerCheck = $conn->prepare(
+                    "SELECT u.id FROM users u
+                     JOIN user_stores us ON u.id = us.user_id
+                     JOIN stores s ON us.store_id = s.id
+                     WHERE u.id = ? AND s.company_id = ?
+                     LIMIT 1"
+                );
+                $ownerCheck->bind_param("ii", $editUserId, $companyId);
+                $ownerCheck->execute();
+                $ownerValid = $ownerCheck->get_result()->fetch_assoc() !== null;
+                $ownerCheck->close();
+
+                if (!$ownerValid && $isJobBased) {
+                    $ownerCheck2 = $conn->prepare(
+                        "SELECT u.id FROM users u
+                         JOIN user_job_sites ujs ON u.id = ujs.user_id
+                         JOIN job_sites js ON ujs.job_site_id = js.id
+                         WHERE u.id = ? AND js.company_id = ?
+                         LIMIT 1"
+                    );
+                    $ownerCheck2->bind_param("ii", $editUserId, $companyId);
+                    $ownerCheck2->execute();
+                    $ownerValid = $ownerCheck2->get_result()->fetch_assoc() !== null;
+                    $ownerCheck2->close();
+                }
+
+                if (!$ownerValid) {
+                    $errorMessage = "Access denied. This user does not belong to your company.";
+                } else {
+                    // Build update — optionally include password
+                    if (!empty($newPassword)) {
+                        if (strlen($newPassword) < 8) {
+                            $errorMessage = "Password must be at least 8 characters.";
+                        } else {
+                            $hashed = password_hash($newPassword, PASSWORD_DEFAULT);
+                            $stmt = $conn->prepare(
+                                "UPDATE users SET first_name=?, last_name=?, email=?, employee_position=?, role_id=?, password=? WHERE id=?"
+                            );
+                            $stmt->bind_param("ssssisi", $firstName, $lastName, $email, $position, $roleId, $hashed, $editUserId);
+                        }
+                    } else {
+                        $stmt = $conn->prepare(
+                            "UPDATE users SET first_name=?, last_name=?, email=?, employee_position=?, role_id=? WHERE id=?"
+                        );
+                        $stmt->bind_param("ssssii", $firstName, $lastName, $email, $position, $roleId, $editUserId);
+                    }
+
+                    if (empty($errorMessage)) {
+                        if ($stmt->execute()) {
+                            $successMessage = "User updated successfully.";
+                        } else {
+                            $errorMessage = ($conn->errno === 1062)
+                                ? "This email address is already in use."
+                                : "Database error. Please try again.";
+                        }
+                        $stmt->close();
+                    }
                 }
             }
         }
@@ -258,11 +260,26 @@ $editUser = null;
 if ($view === 'edit-user') {
     $editId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
     if ($editId) {
-        $stmt = $conn->prepare(
-            "SELECT u.id, u.first_name, u.last_name, u.email, u.employee_position, u.role_id
-             FROM users u WHERE u.id = ? LIMIT 1"
-        );
-        $stmt->bind_param("i", $editId);
+        if ($isJobBased) {
+            $stmt = $conn->prepare(
+                "SELECT u.id, u.first_name, u.last_name, u.email, u.employee_position, u.role_id
+                 FROM users u
+                 JOIN user_job_sites ujs ON u.id = ujs.user_id
+                 JOIN job_sites js ON ujs.job_site_id = js.id
+                 WHERE u.id = ? AND js.company_id = ?
+                 LIMIT 1"
+            );
+        } else {
+            $stmt = $conn->prepare(
+                "SELECT u.id, u.first_name, u.last_name, u.email, u.employee_position, u.role_id
+                 FROM users u
+                 JOIN user_stores us ON u.id = us.user_id
+                 JOIN stores s ON us.store_id = s.id
+                 WHERE u.id = ? AND s.company_id = ?
+                 LIMIT 1"
+            );
+        }
+        $stmt->bind_param("ii", $editId, $companyId);
         $stmt->execute();
         $editUser = $stmt->get_result()->fetch_assoc();
         $stmt->close();
@@ -426,6 +443,7 @@ if ($view === 'edit-user') {
             </div>
 
             <form action="/company-admin?view=add-user" method="POST" class="space-y-8 max-w-3xl">
+                <?php csrf_field(); ?>
 
                 <!-- Personal info -->
                 <div class="card">
@@ -514,6 +532,7 @@ if ($view === 'edit-user') {
             </div>
 
             <form action="/company-admin?view=edit-user" method="POST" class="space-y-8 max-w-3xl">
+                <?php csrf_field(); ?>
                 <input type="hidden" name="user_id" value="<?php echo (int)$editUser['id']; ?>">
 
                 <div class="card">
@@ -571,6 +590,7 @@ if ($view === 'edit-user') {
             elseif ($view === 'structure'):
                 // Reuse the Beta 06 manage-company view (already supports dual types)
                 $adminView = 'manage-company';
+                $adminBaseRoute = '/company-admin';
                 require_once __DIR__ . '/admin-views/manage-company.php';
 
             else:

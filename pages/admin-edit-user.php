@@ -16,10 +16,10 @@
  * depending on the company_type, matching the same dual-path logic used in
  * company-admin.php from Beta 08.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 require_once __DIR__ . '/../includes/permissions.php';
@@ -243,7 +243,10 @@ if ($companyType === 'job_based') {
 // Locations dropdown (scoped to company)
 $locations = [];
 if ($companyType === 'job_based') {
-    $locSql   = "SELECT id, site_name AS location_name FROM job_sites WHERE company_id = ? AND is_active = 1 ORDER BY site_name ASC";
+    $locSql   = "SELECT id, job_name AS location_name
+                 FROM job_sites
+                 WHERE company_id = ? AND status IN ('Planning', 'Active')
+                 ORDER BY job_name ASC";
 } else {
     $locSql   = "SELECT id, store_name AS location_name FROM stores WHERE company_id = ? ORDER BY store_name ASC";
 }

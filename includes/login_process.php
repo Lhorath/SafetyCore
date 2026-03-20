@@ -14,10 +14,10 @@
  *           session. The token is consumed and re-verified on each form submit
  *           via csrf_verify_or_die() / csrf_check().
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 session_start();
@@ -32,6 +32,12 @@ const RATE_LIMIT_LOCKOUT_MINUTES = 30;
 // ── Only accept POST ───────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: /login');
+    exit();
+}
+
+// ── CSRF check ────────────────────────────────────────────────────────────────
+if (!csrf_valid()) {
+    header('Location: /login?error=1');
     exit();
 }
 
@@ -112,7 +118,7 @@ $companyStmt->close();
 // ── 4. User lookup ────────────────────────────────────────────────────────────
 // F-07 FIX: include last_name in the SELECT so it can be stored in the session.
 $userStmt = $conn->prepare(
-    "SELECT u.id, u.first_name, u.last_name, u.password, r.role_name
+    "SELECT u.id, u.first_name, u.last_name, u.email, u.password, r.role_name
      FROM users u
      JOIN roles r ON u.role_id = r.id
      WHERE u.email = ?
@@ -212,6 +218,7 @@ $_SESSION['user'] = [
     'id'           => (int)$user['id'],
     'first_name'   => $user['first_name'],
     'last_name'    => $user['last_name'],      // F-07 FIX: was missing, broke audit trail
+    'email'        => $user['email'],
     'role_name'    => $user['role_name'],
     'company_id'   => $companyId,
     'company_name' => $company['company_name'],

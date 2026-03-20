@@ -10,10 +10,10 @@
  *   1       — Generic failure (bad code, email, or password — deliberately vague)
  *   locked  — Too many failed attempts; lockout in effect
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // ── Error message mapping ──────────────────────────────────────────────────────
@@ -65,6 +65,7 @@ if (isset($_GET['code'])) {
 
         <!-- Login Form -->
         <form action="/includes/login_process.php" method="POST" class="space-y-5" autocomplete="off" novalidate>
+            <?php csrf_field(); ?>
 
             <!-- Company ID -->
             <div>

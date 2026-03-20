@@ -10,10 +10,10 @@
  * - Integrated dynamic API fetching for co-workers.
  * - Added client-side validation and secure JSON payload assembly.
  *
- * @package   NorthPoint360
- * @author    macweb.ca
+ * @package   Sentry OHS
+ * @author    macweb.ca (sentryohs.com)
  * @copyright Copyright (c) 2026 macweb.ca. All Rights Reserved.
- * @version   10.0.0 (NorthPoint Beta 10)
+ * @version   Version 11.0.0 (sentry ohs launch)
  */
 
 // --- 1. Security & Authentication ---
@@ -21,6 +21,9 @@ if (!isset($_SESSION['user'])) {
     header('Location: /login');
     exit();
 }
+
+require_once __DIR__ . '/../includes/csrf.php';
+$csrfToken = generate_csrf_token();
 
 // --- 2. Data Definitions ---
 // Pre-defined Hazard Categories for UI Generation
@@ -287,6 +290,7 @@ $ppeList = [
             </div>
 
             <div class="mt-10 flex justify-between border-t border-gray-100 pt-6">
+                <input type="hidden" id="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                 <button type="button" class="btn btn-secondary px-6 flex items-center group" onclick="nextStep(3)">
                     <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i> Previous
                 </button>
@@ -421,6 +425,8 @@ $ppeList = [
      * Gathers all data, performs final validation, and submits the JSON payload to the API.
      */
     function submitFLHA(btnElement) {
+        const csrfToken = document.getElementById('csrf_token').value;
+
         // Final Validation Check
         const ppeConfirmed = document.getElementById('employerPPEConfirm').checked;
         if (!ppeConfirmed) { 
@@ -504,7 +510,10 @@ $ppeList = [
         // Submit via AJAX Fetch API
         fetch('/api/flha.php?action=save_open', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
             body: JSON.stringify(payload)
         })
         .then(response => response.json())

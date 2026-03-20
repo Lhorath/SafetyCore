@@ -1,6 +1,6 @@
-# 🛡️ NorthPoint 360 (SafetyCore)
+# 🛡️ Sentry OHS
 
-**NorthPoint 360** is a proprietary, enterprise-grade **Environment,
+**Sentry OHS** is a proprietary, enterprise-grade **Environment,
 Health, and Safety (EHS)** management platform. Built for modern
 workforces, it seamlessly connects remote field workers with management
 to ensure regulatory compliance, track incidents, and foster a proactive
@@ -100,7 +100,7 @@ and SEO optimization.
 The application follows a **custom Front Controller pattern**, routing
 all traffic through `index.php`.
 
-SafetyCore/ ├── index.php ├── .htaccess ├── schema.sql ├── api/ │ ├──
+Sentry OHS/ ├── index.php ├── .htaccess ├── schema.sql ├── api/ │ ├──
 flha.php │ ├── incidents.php │ ├── hazard_reporting.php │ ├──
 meetings.php │ └── job_sites.php ├── includes/ │ ├── config.php │ ├──
 db.php │ ├── header.php │ ├── footer.php │ ├── login_process.php │ └──
@@ -112,22 +112,22 @@ uploads/ └── style/ ├── css/style.css └── images/logo.png
 
 # 💻 Local Development Setup
 
-To run **NorthPoint 360 locally**, you need a standard
+To run **Sentry OHS locally**, you need a standard
 LAMP/WAMP/MAMP/XAMPP stack.
 
 ## 1. Clone the Repository
 
-git clone git@github.com:YourOrg/SafetyCore.git cd SafetyCore
+git clone git@github.com:YourOrg/SentryOHS.git cd SentryOHS
 
 ## 2. Database Configuration
 
 Create a database:
 
-northpoint_dev
+sentryohs_dev
 
 Import schema:
 
-mysql -u root -p northpoint_dev \< schema.sql
+mysql -u root -p sentryohs_dev \< schema.sql
 
 Example configuration:
 
@@ -136,12 +136,12 @@ Example configuration:
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'northpoint_dev');
+define('DB_NAME', 'sentryohs_dev');
 ```
 
 ## 3. Server Configuration
 
-Ensure the document root points to the `SafetyCore/` directory.
+Ensure the document root points to the `Sentry OHS/` directory.
 
 Apache requirements:
 
@@ -217,4 +217,4 @@ htmlspecialchars()
 
 ------------------------------------------------------------------------
 
-Maintained by the **NorthPoint 360 Development Team**
+Maintained by the **Sentry OHS Development Team**
