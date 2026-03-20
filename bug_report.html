@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sentry OHS Bug Report</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 34px;
+      color: #1f2937;
+      line-height: 1.45;
+      font-size: 11pt;
+    }
+    h1, h2, h3 { margin: 0 0 10px 0; }
+    h1 { font-size: 20pt; color: #111827; }
+    h2 { font-size: 14pt; color: #0f172a; border-bottom: 1px solid #d1d5db; padding-bottom: 4px; margin-top: 20px; }
+    h3 { font-size: 12pt; margin-top: 14px; }
+    p { margin: 7px 0; }
+    .meta { color: #4b5563; margin-bottom: 14px; }
+    .sev {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 9pt;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    .critical { background: #fee2e2; color: #991b1b; }
+    .high { background: #ffedd5; color: #9a3412; }
+    .medium { background: #fef9c3; color: #854d0e; }
+    .finding { margin: 10px 0 14px 0; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; }
+    .paths { color: #374151; font-family: "Courier New", monospace; font-size: 9.5pt; }
+    ol { margin: 8px 0 0 22px; }
+    li { margin-bottom: 8px; }
+    .small { color: #6b7280; font-size: 9.5pt; }
+  </style>
+</head>
+<body>
+  <h1>Sentry OHS Bug & Consistency Report</h1>
+  <p class="meta">Generated: March 20, 2026</p>
+
+  <h2>Executive Summary</h2>
+  <p>Review focused on security, tenant isolation, authorization consistency, and runtime reliability across PHP pages and APIs.</p>
+  <p>Total confirmed findings: <strong>7</strong> (1 Critical, 3 High, 3 Medium).</p>
+
+  <h2>Confirmed Findings</h2>
+
+  <div class="finding">
+    <h3><span class="sev critical">Critical</span> Incident review update is blocked by CSRF mismatch</h3>
+    <p><strong>Issue:</strong> The incident review API requires CSRF validation, but the management page posts JSON without a CSRF token/header, causing update failures.</p>
+    <p><strong>Risk:</strong> Managers cannot reliably save investigation/classification changes (functional outage).</p>
+    <p><strong>Files:</strong></p>
+    <p class="paths">api/incidents.php, pages/store-incidents.php</p>
+    <p><strong>Suggested fix:</strong> Add CSRF token to the page and send it via <code>X-CSRF-Token</code> (or <code>_csrf_token</code> in JSON body) on update request.</p>
+  </div>
+
+  <div class="finding">
+    <h3><span class="sev high">High</span> Meeting attendee IDs are not scope-validated before insert</h3>
+    <p><strong>Issue:</strong> API validates meeting store ownership but inserts attendee IDs directly from client payload.</p>
+    <p><strong>Risk:</strong> A crafted request can associate unintended users to meetings (cross-tenant or out-of-location integrity issue).</p>
+    <p><strong>Files:</strong></p>
+    <p class="paths">api/meetings.php</p>
+    <p><strong>Suggested fix:</strong> Validate each attendee ID belongs to the same company and permitted location before <code>meeting_attendees</code> insert.</p>
+  </div>
+
+  <div class="finding">
+    <h3><span class="sev high">High</span> FLHA <code>other_workers</code> IDs are inserted without tenant checks</h3>
+    <p><strong>Issue:</strong> FLHA API accepts worker IDs from payload and writes them directly to <code>flha_workers</code>.</p>
+    <p><strong>Risk:</strong> Forged requests can link out-of-scope users to FLHA records.</p>
+    <p><strong>Files:</strong></p>
+    <p class="paths">api/flha.php</p>
+    <p><strong>Suggested fix:</strong> Validate submitted worker IDs against company scope (store-based or job-based path) before insertion.</p>
+  </div>
+
+  <div class="finding">
+    <h3><span class="sev high">High</span> Unsafe fallback to <code>company_id = 1</code></h3>
+    <p><strong>Issue:</strong> Several files default to tenant/company 1 when company resolution fails.</p>
+    <p><strong>Risk:</strong> Can expose/modify wrong-tenant data instead of failing closed.</p>
+    <p><strong>Files:</strong></p>
+    <p class="paths">api/checklists.php, api/equipment.php, api/training.php, pages/store-reports.php</p>
+    <p><strong>Suggested fix:</strong> Remove fallback-to-1 behavior and return 403/session error when company context is missing.</p>
+  </div>
+
+  <div class="finding">
+    <h3><span class="sev medium">Medium</span> Authorization model inconsistencies across modules/pages</h3>
+    <p><strong>Issue:</strong> Dashboard uses permission-driven module visibility while many pages use hardcoded role arrays (including role-name drift like <code>JHSC Leader</code> vs <code>JHSC Member</code>).</p>
+    <p><strong>Risk:</strong> Users may see links but be blocked, or role behavior may diverge by page.</p>
+    <p><strong>Files:</strong></p>
+    <p class="paths">pages/dashboard.php, includes/permissions.php, pages/meetings-list.php, pages/host-meeting.php, pages/training-matrix.php, pages/store-incidents.php</p>
+    <p><strong>Suggested fix:</strong> Centralize route checks via permission helper (e.g., <code>can_access_module()</code>) and normalize role names/constants.</p>
+  </div>
+
+  <div class="finding">
+    <h3><span class="sev medium">Medium</span> SQL internals exposed in API responses</h3>
+    <p><strong>Issue:</strong> Raw DB errors are returned to clients.</p>
+    <p><strong>Risk:</strong> Leaks schema/internal details useful for reconnaissance.</p>
+    <p><strong>Files:</strong></p>
+    <p class="paths">api/equipment.php</p>
+    <p><strong>Suggested fix:</strong> Return generic errors to clients; log detailed SQL errors server-side only.</p>
+  </div>
+
+  <div class="finding">
+    <h3><span class="sev medium">Medium</span> No explicit deny rule for <code>.env</code> / dotfiles in root .htaccess</h3>
+    <p><strong>Issue:</strong> Root rewrite/security config does not explicitly block direct access to sensitive dotfiles.</p>
+    <p><strong>Risk:</strong> If server allows dotfile access, secrets may be exposed.</p>
+    <p><strong>Files:</strong></p>
+    <p class="paths">.htaccess, .env</p>
+    <p><strong>Suggested fix:</strong> Add deny rules for <code>.env</code> and dotfiles (except <code>.well-known</code> if needed), or move <code>.env</code> outside web root.</p>
+  </div>
+
+  <h2>Suggested Fix Order</h2>
+  <ol>
+    <li><strong>Restore critical functionality first:</strong> fix CSRF mismatch in incident review update flow.</li>
+    <li><strong>Close direct data-integrity vectors:</strong> validate meeting attendee IDs and FLHA worker IDs server-side.</li>
+    <li><strong>Remove tenant fallback risk:</strong> eliminate <code>company_id = 1</code> fallback and fail closed on missing context.</li>
+    <li><strong>Harden secrets and response exposure:</strong> block <code>.env</code>/dotfiles and stop returning raw SQL errors to clients.</li>
+    <li><strong>Unify authorization logic:</strong> migrate page gates to centralized permission checks and standardize role naming.</li>
+    <li><strong>Add regression tests:</strong> verify CSRF-protected writes, tenant isolation for IDs, and permission-route consistency.</li>
+  </ol>
+
+  <h2>Validation Notes</h2>
+  <p class="small">PHP syntax lint passed for all PHP files using <code>C:\xampp\php\php.exe -l</code>. This report reflects static review + targeted API/page inspection; run-time browser and database integration tests are still recommended after fixes.</p>
+</body>
+</html>

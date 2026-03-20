@@ -99,6 +99,47 @@ if ($isLoggedIn) {
 
 $isAdminPage = ($currentPage === 'admin' || $currentPage === 'company-admin');
 $hasWorkspaceMenu = $isLoggedIn && ($canMeetings || $canMetrics || $canHazardReview || $canIncidentReview || !empty($adminShortcutRoute));
+
+// Build app-relative URLs so links/assets work at domain root and in subfolders.
+$docRoot = isset($_SERVER['DOCUMENT_ROOT']) ? realpath($_SERVER['DOCUMENT_ROOT']) : false;
+$projectRoot = realpath(dirname(__DIR__));
+$appBasePath = '';
+
+if ($docRoot && $projectRoot) {
+    $normalizedDocRoot = rtrim(str_replace('\\', '/', $docRoot), '/');
+    $normalizedProjectRoot = rtrim(str_replace('\\', '/', $projectRoot), '/');
+
+    if ($normalizedDocRoot !== '' && str_starts_with($normalizedProjectRoot, $normalizedDocRoot)) {
+        $relativePath = substr($normalizedProjectRoot, strlen($normalizedDocRoot));
+        $appBasePath = $relativePath === '' ? '' : '/' . trim($relativePath, '/');
+    }
+}
+
+// Fallback for environments where DOCUMENT_ROOT is unavailable/unreliable.
+if ($appBasePath === '') {
+    $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+    $appBasePath = ($scriptDir === '/' || $scriptDir === '.') ? '' : rtrim($scriptDir, '/');
+}
+
+$appHref = static function (string $path = '/') use ($appBasePath): string {
+    if ($path === '') {
+        $path = '/';
+    }
+
+    if (preg_match('#^(?:https?:)?//#i', $path) || str_starts_with($path, 'mailto:') || str_starts_with($path, '#')) {
+        return $path;
+    }
+
+    $normalizedPath = '/' . ltrim($path, '/');
+    return $appBasePath . $normalizedPath;
+};
+
+// Add filemtime-based cache busting for critical CSS assets.
+$assetVersion = static function (string $relativePath): string {
+    $assetFile = dirname(__DIR__) . '/' . ltrim($relativePath, '/');
+    $mtime = @filemtime($assetFile);
+    return $mtime ? '?v=' . $mtime : '';
+};
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -123,24 +164,24 @@ $hasWorkspaceMenu = $isLoggedIn && ($canMeetings || $canMetrics || $canHazardRev
     <meta name="twitter:title" content="Sentry OHS - <?php echo htmlspecialchars($seo['title']); ?>">
     <meta name="twitter:description" content="<?php echo htmlspecialchars($seo['description']); ?>">
     <meta name="twitter:image" content="<?php echo htmlspecialchars($seo['og_image']); ?>">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/x-icon" href="<?php echo $appHref('/favicon.ico'); ?>">
+    <link rel="shortcut icon" href="<?php echo $appHref('/favicon.ico'); ?>" type="image/x-icon">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="/style/css/tailwind.production.min.css">
-    <link rel="stylesheet" href="style/css/style.css">
+    <link rel="stylesheet" href="<?php echo $appHref('/style/css/tailwind.production.min.css') . $assetVersion('/style/css/tailwind.production.min.css'); ?>">
+    <link rel="stylesheet" href="<?php echo $appHref('/style/css/style.css') . $assetVersion('/style/css/style.css'); ?>">
 </head>
 <body class="flex flex-col min-h-screen">
 
     <nav class="app-topbar sticky top-0 z-50 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="h-16 flex items-center justify-between gap-4">
-                <a href="/" class="app-brand flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 rounded-md">
-                    <img src="/style/images/logo.png" alt="Sentry OHS" class="h-8 w-auto transition-transform duration-300 group-hover:scale-105">
+                <a href="<?php echo $appHref('/'); ?>" class="app-brand flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 rounded-md">
+                    <img src="<?php echo $appHref('/style/images/logo.png'); ?>" alt="Sentry OHS" class="h-8 w-auto transition-transform duration-300 group-hover:scale-105">
                     <span class="text-[1.05rem] font-extrabold leading-none tracking-tight font-heading whitespace-nowrap">
                         <span style="color: #0F172A;">Sentry</span>
                         <span style="color: #2563EB;">OHS</span>
@@ -148,12 +189,12 @@ $hasWorkspaceMenu = $isLoggedIn && ($canMeetings || $canMetrics || $canHazardRev
                 </a>
 
                 <div class="hidden md:flex items-center gap-1 min-w-0">
-                    <a href="/" class="navbar-link <?php echo ($currentPage === 'home') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'home') ? 'aria-current="page"' : ''; ?>>Home</a>
-                    <a href="/about" class="navbar-link <?php echo ($currentPage === 'about') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'about') ? 'aria-current="page"' : ''; ?>>About</a>
-                    <a href="/services" class="navbar-link <?php echo ($currentPage === 'services') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'services') ? 'aria-current="page"' : ''; ?>>Services</a>
-                    <a href="/contact" class="navbar-link <?php echo ($currentPage === 'contact') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'contact') ? 'aria-current="page"' : ''; ?>>Contact</a>
+                    <a href="<?php echo $appHref('/'); ?>" class="navbar-link <?php echo ($currentPage === 'home') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'home') ? 'aria-current="page"' : ''; ?>>Home</a>
+                    <a href="<?php echo $appHref('/about'); ?>" class="navbar-link <?php echo ($currentPage === 'about') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'about') ? 'aria-current="page"' : ''; ?>>About</a>
+                    <a href="<?php echo $appHref('/services'); ?>" class="navbar-link <?php echo ($currentPage === 'services') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'services') ? 'aria-current="page"' : ''; ?>>Services</a>
+                    <a href="<?php echo $appHref('/contact'); ?>" class="navbar-link <?php echo ($currentPage === 'contact') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'contact') ? 'aria-current="page"' : ''; ?>>Contact</a>
                     <?php if ($isLoggedIn): ?>
-                        <a href="/dashboard" class="navbar-link <?php echo ($currentPage === 'dashboard') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'dashboard') ? 'aria-current="page"' : ''; ?>>Dashboard</a>
+                        <a href="<?php echo $appHref('/dashboard'); ?>" class="navbar-link <?php echo ($currentPage === 'dashboard') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'dashboard') ? 'aria-current="page"' : ''; ?>>Dashboard</a>
                         <?php if ($hasWorkspaceMenu): ?>
                             <details class="navbar-more">
                                 <summary class="navbar-link list-none">
@@ -162,19 +203,19 @@ $hasWorkspaceMenu = $isLoggedIn && ($canMeetings || $canMetrics || $canHazardRev
                                 </summary>
                                 <div class="navbar-more-menu">
                                     <?php if ($canMeetings): ?>
-                                        <a href="/meetings-list" class="navbar-more-item <?php echo ($currentPage === 'meetings-list') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'meetings-list') ? 'aria-current="page"' : ''; ?>>Meetings</a>
+                                        <a href="<?php echo $appHref('/meetings-list'); ?>" class="navbar-more-item <?php echo ($currentPage === 'meetings-list') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'meetings-list') ? 'aria-current="page"' : ''; ?>>Meetings</a>
                                     <?php endif; ?>
                                     <?php if ($canMetrics): ?>
-                                        <a href="/metrics" class="navbar-more-item <?php echo ($currentPage === 'metrics') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'metrics') ? 'aria-current="page"' : ''; ?>>Executive Metrics</a>
+                                        <a href="<?php echo $appHref('/metrics'); ?>" class="navbar-more-item <?php echo ($currentPage === 'metrics') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'metrics') ? 'aria-current="page"' : ''; ?>>Executive Metrics</a>
                                     <?php endif; ?>
                                     <?php if ($canHazardReview): ?>
-                                        <a href="/store-reports" class="navbar-more-item <?php echo ($currentPage === 'store-reports') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-reports') ? 'aria-current="page"' : ''; ?>>Hazard Reviews</a>
+                                        <a href="<?php echo $appHref('/store-reports'); ?>" class="navbar-more-item <?php echo ($currentPage === 'store-reports') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-reports') ? 'aria-current="page"' : ''; ?>>Hazard Reviews</a>
                                     <?php endif; ?>
                                     <?php if ($canIncidentReview): ?>
-                                        <a href="/store-incidents" class="navbar-more-item <?php echo ($currentPage === 'store-incidents') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-incidents') ? 'aria-current="page"' : ''; ?>>Incident Reviews</a>
+                                        <a href="<?php echo $appHref('/store-incidents'); ?>" class="navbar-more-item <?php echo ($currentPage === 'store-incidents') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-incidents') ? 'aria-current="page"' : ''; ?>>Incident Reviews</a>
                                     <?php endif; ?>
                                     <?php if (!empty($adminShortcutRoute)): ?>
-                                        <a href="<?php echo $adminShortcutRoute; ?>" class="navbar-more-item <?php echo $isAdminPage ? 'is-active' : ''; ?>" <?php echo $isAdminPage ? 'aria-current="page"' : ''; ?>><?php echo htmlspecialchars($adminShortcutLabel); ?></a>
+                                        <a href="<?php echo $appHref($adminShortcutRoute); ?>" class="navbar-more-item <?php echo $isAdminPage ? 'is-active' : ''; ?>" <?php echo $isAdminPage ? 'aria-current="page"' : ''; ?>><?php echo htmlspecialchars($adminShortcutLabel); ?></a>
                                     <?php endif; ?>
                                 </div>
                             </details>
@@ -184,13 +225,13 @@ $hasWorkspaceMenu = $isLoggedIn && ($canMeetings || $canMetrics || $canHazardRev
 
                 <div class="hidden md:flex items-center gap-2 shrink-0">
                     <?php if ($isLoggedIn): ?>
-                        <a href="/profile" class="navbar-profile <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'aria-current="page"' : ''; ?>>
+                        <a href="<?php echo $appHref('/profile'); ?>" class="navbar-profile <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'aria-current="page"' : ''; ?>>
                             <span class="saas-user-avatar"><?php echo strtoupper(substr($_SESSION['user']['first_name'], 0, 1)); ?></span>
                             <span class="text-sm font-semibold text-slate-700"><?php echo htmlspecialchars($_SESSION['user']['first_name']); ?></span>
                         </a>
-                        <a href="/logout.php" class="navbar-logout">Sign Out</a>
+                        <a href="<?php echo $appHref('/logout.php'); ?>" class="navbar-logout">Sign Out</a>
                     <?php else: ?>
-                        <a href="/login" class="btn bg-primary text-white hover:bg-secondary !px-5 !py-2 !text-sm shadow-sm transition-colors focus:ring-2 focus:ring-secondary/50 focus:outline-none">
+                        <a href="<?php echo $appHref('/login'); ?>" class="btn bg-primary text-white hover:bg-secondary !px-5 !py-2 !text-sm shadow-sm transition-colors focus:ring-2 focus:ring-secondary/50 focus:outline-none">
                             Log In
                         </a>
                     <?php endif; ?>
@@ -208,12 +249,12 @@ $hasWorkspaceMenu = $isLoggedIn && ($canMeetings || $canMetrics || $canHazardRev
             <div class="px-4 py-4 space-y-1.5">
                 <div class="mobile-nav-group">
                     <p class="mobile-nav-label">Main Navigation</p>
-                    <a href="/" class="mobile-nav-link <?php echo ($currentPage === 'home') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'home') ? 'aria-current="page"' : ''; ?>>Home</a>
-                    <a href="/about" class="mobile-nav-link <?php echo ($currentPage === 'about') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'about') ? 'aria-current="page"' : ''; ?>>About</a>
-                    <a href="/services" class="mobile-nav-link <?php echo ($currentPage === 'services') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'services') ? 'aria-current="page"' : ''; ?>>Services</a>
-                    <a href="/contact" class="mobile-nav-link <?php echo ($currentPage === 'contact') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'contact') ? 'aria-current="page"' : ''; ?>>Contact</a>
+                    <a href="<?php echo $appHref('/'); ?>" class="mobile-nav-link <?php echo ($currentPage === 'home') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'home') ? 'aria-current="page"' : ''; ?>>Home</a>
+                    <a href="<?php echo $appHref('/about'); ?>" class="mobile-nav-link <?php echo ($currentPage === 'about') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'about') ? 'aria-current="page"' : ''; ?>>About</a>
+                    <a href="<?php echo $appHref('/services'); ?>" class="mobile-nav-link <?php echo ($currentPage === 'services') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'services') ? 'aria-current="page"' : ''; ?>>Services</a>
+                    <a href="<?php echo $appHref('/contact'); ?>" class="mobile-nav-link <?php echo ($currentPage === 'contact') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'contact') ? 'aria-current="page"' : ''; ?>>Contact</a>
                     <?php if ($isLoggedIn): ?>
-                        <a href="/dashboard" class="mobile-nav-link <?php echo ($currentPage === 'dashboard') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'dashboard') ? 'aria-current="page"' : ''; ?>>Dashboard</a>
+                        <a href="<?php echo $appHref('/dashboard'); ?>" class="mobile-nav-link <?php echo ($currentPage === 'dashboard') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'dashboard') ? 'aria-current="page"' : ''; ?>>Dashboard</a>
                     <?php endif; ?>
                 </div>
 
@@ -222,19 +263,19 @@ $hasWorkspaceMenu = $isLoggedIn && ($canMeetings || $canMetrics || $canHazardRev
                     <div class="mobile-nav-group">
                         <p class="mobile-nav-label">More</p>
                         <?php if ($canMeetings): ?>
-                            <a href="/meetings-list" class="mobile-nav-link <?php echo ($currentPage === 'meetings-list') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'meetings-list') ? 'aria-current="page"' : ''; ?>>Meetings</a>
+                            <a href="<?php echo $appHref('/meetings-list'); ?>" class="mobile-nav-link <?php echo ($currentPage === 'meetings-list') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'meetings-list') ? 'aria-current="page"' : ''; ?>>Meetings</a>
                         <?php endif; ?>
                         <?php if ($canMetrics): ?>
-                            <a href="/metrics" class="mobile-nav-link <?php echo ($currentPage === 'metrics') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'metrics') ? 'aria-current="page"' : ''; ?>>Executive Metrics</a>
+                            <a href="<?php echo $appHref('/metrics'); ?>" class="mobile-nav-link <?php echo ($currentPage === 'metrics') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'metrics') ? 'aria-current="page"' : ''; ?>>Executive Metrics</a>
                         <?php endif; ?>
                         <?php if ($canHazardReview): ?>
-                            <a href="/store-reports" class="mobile-nav-link <?php echo ($currentPage === 'store-reports') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-reports') ? 'aria-current="page"' : ''; ?>>Hazard Reviews</a>
+                            <a href="<?php echo $appHref('/store-reports'); ?>" class="mobile-nav-link <?php echo ($currentPage === 'store-reports') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-reports') ? 'aria-current="page"' : ''; ?>>Hazard Reviews</a>
                         <?php endif; ?>
                         <?php if ($canIncidentReview): ?>
-                            <a href="/store-incidents" class="mobile-nav-link <?php echo ($currentPage === 'store-incidents') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-incidents') ? 'aria-current="page"' : ''; ?>>Incident Reviews</a>
+                            <a href="<?php echo $appHref('/store-incidents'); ?>" class="mobile-nav-link <?php echo ($currentPage === 'store-incidents') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-incidents') ? 'aria-current="page"' : ''; ?>>Incident Reviews</a>
                         <?php endif; ?>
                         <?php if (!empty($adminShortcutRoute)): ?>
-                            <a href="<?php echo $adminShortcutRoute; ?>" class="mobile-nav-link <?php echo $isAdminPage ? 'is-active' : ''; ?>" <?php echo $isAdminPage ? 'aria-current="page"' : ''; ?>><?php echo htmlspecialchars($adminShortcutLabel); ?></a>
+                            <a href="<?php echo $appHref($adminShortcutRoute); ?>" class="mobile-nav-link <?php echo $isAdminPage ? 'is-active' : ''; ?>" <?php echo $isAdminPage ? 'aria-current="page"' : ''; ?>><?php echo htmlspecialchars($adminShortcutLabel); ?></a>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
@@ -243,12 +284,12 @@ $hasWorkspaceMenu = $isLoggedIn && ($canMeetings || $canMetrics || $canHazardRev
                     <div class="mobile-nav-divider"></div>
                     <div class="mobile-nav-group">
                         <p class="mobile-nav-label">Account</p>
-                        <a href="/profile" class="mobile-nav-link <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'aria-current="page"' : ''; ?>>Profile</a>
-                        <a href="/logout.php" class="mobile-nav-link text-red-600 hover:bg-red-50">Sign Out</a>
+                        <a href="<?php echo $appHref('/profile'); ?>" class="mobile-nav-link <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'aria-current="page"' : ''; ?>>Profile</a>
+                        <a href="<?php echo $appHref('/logout.php'); ?>" class="mobile-nav-link text-red-600 hover:bg-red-50">Sign Out</a>
                     </div>
                 <?php else: ?>
                     <div class="mobile-nav-divider"></div>
-                    <a href="/login" class="mt-2 flex w-full justify-center items-center px-4 py-2 rounded-lg shadow-sm text-sm font-semibold text-white bg-primary hover:bg-secondary transition-colors">
+                    <a href="<?php echo $appHref('/login'); ?>" class="mt-2 flex w-full justify-center items-center px-4 py-2 rounded-lg shadow-sm text-sm font-semibold text-white bg-primary hover:bg-secondary transition-colors">
                         Log In
                     </a>
                 <?php endif; ?>
