@@ -29,7 +29,7 @@ $page = isset($_GET['page']) && !empty($_GET['page']) ? basename($_GET['page']) 
 // Strict whitelist to prevent Local File Inclusion (LFI) vulnerabilities
 $allowedPages = [
     // Public Pages
-    'home', 'services', 'about', 'contact', 'login', '404',
+    'home', 'services', 'about', 'contact', 'terms', 'privacy', 'login', '404',
     
     // Employee Hub & Profiling
     'dashboard', 'profile', 'profile-edit',

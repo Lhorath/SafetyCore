@@ -57,7 +57,7 @@ if ($stmt = $conn->prepare($seoSql)) {
 }
 
 // Ensure the description clearly states if a login is required for external web crawlers
-$publicPages = ['home', 'about', 'contact', 'services', 'login'];
+$publicPages = ['home', 'about', 'contact', 'services', 'terms', 'privacy', 'login'];
 $isProtected = !in_array($currentPage, $publicPages) || $seo['requires_login'];
 
 if ($isProtected) {
@@ -96,6 +96,9 @@ if ($isLoggedIn) {
         $adminShortcutLabel = 'Company Admin';
     }
 }
+
+$isAdminPage = ($currentPage === 'admin' || $currentPage === 'company-admin');
+$hasWorkspaceMenu = $isLoggedIn && ($canMeetings || $canMetrics || $canHazardReview || $canIncidentReview || !empty($adminShortcutRoute));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -133,114 +136,119 @@ if ($isLoggedIn) {
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-slate-200 transition-all">
+    <nav class="app-topbar sticky top-0 z-50 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                
-                <a href="/" class="flex items-center gap-3 group focus:outline-none">
+            <div class="h-16 flex items-center justify-between gap-4">
+                <a href="/" class="app-brand flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 rounded-md">
                     <img src="/style/images/logo.png" alt="Sentry OHS" class="h-8 w-auto transition-transform duration-300 group-hover:scale-105">
-                    <div class="hidden sm:flex flex-col justify-center">
-                        <span class="text-[1.15rem] font-extrabold text-primary leading-none tracking-tight font-heading">SENTRY<span class="text-secondary">OHS</span></span>
-                    </div>
+                    <span class="text-[1.05rem] font-extrabold leading-none tracking-tight font-heading whitespace-nowrap">
+                        <span style="color: #0F172A;">Sentry</span>
+                        <span style="color: #2563EB;">OHS</span>
+                    </span>
                 </a>
 
-                <div class="hidden md:flex items-center space-x-1">
-                    <a href="/" class="nav-link <?php echo ($currentPage == 'home') ? 'active' : ''; ?>">Home</a>
-                    <a href="/services" class="nav-link <?php echo ($currentPage == 'services') ? 'active' : ''; ?>">Solutions</a>
-                    <a href="/contact" class="nav-link <?php echo ($currentPage == 'contact') ? 'active' : ''; ?>">Contact</a>
-                    
-                    <div class="flex items-center border-l border-slate-200 ml-3 pl-3 gap-2">
-                        <?php if ($isLoggedIn): ?>
-                            <a href="/dashboard" class="nav-link <?php echo ($currentPage == 'dashboard') ? 'active' : ''; ?>">Dashboard</a>
-                            <?php if ($canMeetings): ?>
-                                <a href="/meetings-list" class="nav-link <?php echo ($currentPage == 'meetings-list') ? 'active' : ''; ?>">Meetings</a>
-                            <?php endif; ?>
-                            <?php if ($canMetrics): ?>
-                                <a href="/metrics" class="nav-link <?php echo ($currentPage == 'metrics') ? 'active' : ''; ?>">Metrics</a>
-                            <?php endif; ?>
-                            <?php if (!empty($adminShortcutRoute)): ?>
-                                <a href="<?php echo $adminShortcutRoute; ?>" class="nav-link <?php echo ($currentPage == 'admin' || $currentPage == 'company-admin') ? 'active' : ''; ?>"><?php echo htmlspecialchars($adminShortcutLabel); ?></a>
-                            <?php endif; ?>
-                            
-                            <a href="/profile" class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all group focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-                                <div class="w-6 h-6 rounded-full bg-secondary text-white flex items-center justify-center text-[10px] font-bold shadow-sm group-hover:scale-105 transition-transform">
-                                    <?php echo strtoupper(substr($_SESSION['user']['first_name'], 0, 1)); ?>
+                <div class="hidden md:flex items-center gap-1 min-w-0">
+                    <a href="/" class="navbar-link <?php echo ($currentPage === 'home') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'home') ? 'aria-current="page"' : ''; ?>>Home</a>
+                    <a href="/about" class="navbar-link <?php echo ($currentPage === 'about') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'about') ? 'aria-current="page"' : ''; ?>>About</a>
+                    <a href="/services" class="navbar-link <?php echo ($currentPage === 'services') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'services') ? 'aria-current="page"' : ''; ?>>Services</a>
+                    <a href="/contact" class="navbar-link <?php echo ($currentPage === 'contact') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'contact') ? 'aria-current="page"' : ''; ?>>Contact</a>
+                    <?php if ($isLoggedIn): ?>
+                        <a href="/dashboard" class="navbar-link <?php echo ($currentPage === 'dashboard') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'dashboard') ? 'aria-current="page"' : ''; ?>>Dashboard</a>
+                        <?php if ($hasWorkspaceMenu): ?>
+                            <details class="navbar-more">
+                                <summary class="navbar-link list-none">
+                                    More
+                                    <i class="fas fa-chevron-down text-[10px]"></i>
+                                </summary>
+                                <div class="navbar-more-menu">
+                                    <?php if ($canMeetings): ?>
+                                        <a href="/meetings-list" class="navbar-more-item <?php echo ($currentPage === 'meetings-list') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'meetings-list') ? 'aria-current="page"' : ''; ?>>Meetings</a>
+                                    <?php endif; ?>
+                                    <?php if ($canMetrics): ?>
+                                        <a href="/metrics" class="navbar-more-item <?php echo ($currentPage === 'metrics') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'metrics') ? 'aria-current="page"' : ''; ?>>Executive Metrics</a>
+                                    <?php endif; ?>
+                                    <?php if ($canHazardReview): ?>
+                                        <a href="/store-reports" class="navbar-more-item <?php echo ($currentPage === 'store-reports') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-reports') ? 'aria-current="page"' : ''; ?>>Hazard Reviews</a>
+                                    <?php endif; ?>
+                                    <?php if ($canIncidentReview): ?>
+                                        <a href="/store-incidents" class="navbar-more-item <?php echo ($currentPage === 'store-incidents') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-incidents') ? 'aria-current="page"' : ''; ?>>Incident Reviews</a>
+                                    <?php endif; ?>
+                                    <?php if (!empty($adminShortcutRoute)): ?>
+                                        <a href="<?php echo $adminShortcutRoute; ?>" class="navbar-more-item <?php echo $isAdminPage ? 'is-active' : ''; ?>" <?php echo $isAdminPage ? 'aria-current="page"' : ''; ?>><?php echo htmlspecialchars($adminShortcutLabel); ?></a>
+                                    <?php endif; ?>
                                 </div>
-                                <span class="text-sm font-semibold text-slate-700 group-hover:text-secondary transition-colors">
-                                    <?php echo htmlspecialchars($_SESSION['user']['first_name']); ?>
-                                </span>
-                            </a>
-
-                            <a href="/logout.php" class="p-2 text-slate-400 hover:text-accent-red hover:bg-red-50 rounded-full transition-colors focus:outline-none" title="Sign Out">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </a>
-                        <?php else: ?>
-                            <a href="/login" class="btn bg-primary text-white hover:bg-secondary !px-5 !py-2 !text-sm shadow-sm transition-colors focus:ring-2 focus:ring-secondary/50 focus:outline-none">
-                                Log In
-                            </a>
+                            </details>
                         <?php endif; ?>
-                    </div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="hidden md:flex items-center gap-2 shrink-0">
+                    <?php if ($isLoggedIn): ?>
+                        <a href="/profile" class="navbar-profile <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'aria-current="page"' : ''; ?>>
+                            <span class="saas-user-avatar"><?php echo strtoupper(substr($_SESSION['user']['first_name'], 0, 1)); ?></span>
+                            <span class="text-sm font-semibold text-slate-700"><?php echo htmlspecialchars($_SESSION['user']['first_name']); ?></span>
+                        </a>
+                        <a href="/logout.php" class="navbar-logout">Sign Out</a>
+                    <?php else: ?>
+                        <a href="/login" class="btn bg-primary text-white hover:bg-secondary !px-5 !py-2 !text-sm shadow-sm transition-colors focus:ring-2 focus:ring-secondary/50 focus:outline-none">
+                            Log In
+                        </a>
+                    <?php endif; ?>
                 </div>
 
                 <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-slate-500 hover:text-primary focus:outline-none p-2 rounded-md hover:bg-slate-100 transition-colors">
-                        <i class="fas fa-bars text-xl"></i>
+                    <button id="mobile-menu-btn" class="saas-mobile-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu">
+                        <i class="fas fa-bars text-base"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 shadow-xl absolute w-full left-0 z-50">
-            <div class="px-4 py-4 space-y-1">
-                <a href="/" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
-                    <i class="fas fa-home w-6 text-slate-400"></i> Home
-                </a>
-                <a href="/services" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
-                    <i class="fas fa-layer-group w-6 text-slate-400"></i> Solutions
-                </a>
-                <a href="/contact" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
-                    <i class="fas fa-envelope w-6 text-slate-400"></i> Contact
-                </a>
-                
-                <div class="border-t border-slate-100 my-2"></div>
+        <div id="mobile-menu" class="app-mobile-menu hidden md:hidden bg-white border-t border-slate-100 shadow-xl w-full left-0 z-50">
+            <div class="px-4 py-4 space-y-1.5">
+                <div class="mobile-nav-group">
+                    <p class="mobile-nav-label">Main Navigation</p>
+                    <a href="/" class="mobile-nav-link <?php echo ($currentPage === 'home') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'home') ? 'aria-current="page"' : ''; ?>>Home</a>
+                    <a href="/about" class="mobile-nav-link <?php echo ($currentPage === 'about') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'about') ? 'aria-current="page"' : ''; ?>>About</a>
+                    <a href="/services" class="mobile-nav-link <?php echo ($currentPage === 'services') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'services') ? 'aria-current="page"' : ''; ?>>Services</a>
+                    <a href="/contact" class="mobile-nav-link <?php echo ($currentPage === 'contact') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'contact') ? 'aria-current="page"' : ''; ?>>Contact</a>
+                    <?php if ($isLoggedIn): ?>
+                        <a href="/dashboard" class="mobile-nav-link <?php echo ($currentPage === 'dashboard') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'dashboard') ? 'aria-current="page"' : ''; ?>>Dashboard</a>
+                    <?php endif; ?>
+                </div>
+
+                <?php if ($isLoggedIn && $hasWorkspaceMenu): ?>
+                    <div class="mobile-nav-divider"></div>
+                    <div class="mobile-nav-group">
+                        <p class="mobile-nav-label">More</p>
+                        <?php if ($canMeetings): ?>
+                            <a href="/meetings-list" class="mobile-nav-link <?php echo ($currentPage === 'meetings-list') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'meetings-list') ? 'aria-current="page"' : ''; ?>>Meetings</a>
+                        <?php endif; ?>
+                        <?php if ($canMetrics): ?>
+                            <a href="/metrics" class="mobile-nav-link <?php echo ($currentPage === 'metrics') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'metrics') ? 'aria-current="page"' : ''; ?>>Executive Metrics</a>
+                        <?php endif; ?>
+                        <?php if ($canHazardReview): ?>
+                            <a href="/store-reports" class="mobile-nav-link <?php echo ($currentPage === 'store-reports') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-reports') ? 'aria-current="page"' : ''; ?>>Hazard Reviews</a>
+                        <?php endif; ?>
+                        <?php if ($canIncidentReview): ?>
+                            <a href="/store-incidents" class="mobile-nav-link <?php echo ($currentPage === 'store-incidents') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'store-incidents') ? 'aria-current="page"' : ''; ?>>Incident Reviews</a>
+                        <?php endif; ?>
+                        <?php if (!empty($adminShortcutRoute)): ?>
+                            <a href="<?php echo $adminShortcutRoute; ?>" class="mobile-nav-link <?php echo $isAdminPage ? 'is-active' : ''; ?>" <?php echo $isAdminPage ? 'aria-current="page"' : ''; ?>><?php echo htmlspecialchars($adminShortcutLabel); ?></a>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
 
                 <?php if ($isLoggedIn): ?>
-                    <a href="/dashboard" class="flex items-center px-3 py-2.5 rounded-md text-base font-bold text-secondary bg-blue-50/50 hover:bg-blue-50 transition-colors">
-                        <i class="fas fa-chart-line w-6"></i> Dashboard
-                    </a>
-                    <?php if ($canMeetings): ?>
-                        <a href="/meetings-list" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
-                            <i class="fas fa-users w-6 text-slate-400"></i> Meetings
-                        </a>
-                    <?php endif; ?>
-                    <?php if ($canMetrics): ?>
-                        <a href="/metrics" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
-                            <i class="fas fa-chart-pie w-6 text-slate-400"></i> Metrics
-                        </a>
-                    <?php endif; ?>
-                    <?php if ($canHazardReview): ?>
-                        <a href="/store-reports" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
-                            <i class="fas fa-store w-6 text-slate-400"></i> Hazard Reviews
-                        </a>
-                    <?php endif; ?>
-                    <?php if ($canIncidentReview): ?>
-                        <a href="/store-incidents" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
-                            <i class="fas fa-file-medical-alt w-6 text-slate-400"></i> Incident Reviews
-                        </a>
-                    <?php endif; ?>
-                    <?php if (!empty($adminShortcutRoute)): ?>
-                        <a href="<?php echo $adminShortcutRoute; ?>" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
-                            <i class="fas fa-cogs w-6 text-slate-400"></i> <?php echo htmlspecialchars($adminShortcutLabel); ?>
-                        </a>
-                    <?php endif; ?>
-                    <a href="/profile" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-secondary transition-colors">
-                        <i class="fas fa-user-circle w-6 text-slate-400"></i> My Profile
-                    </a>
-                    <a href="/logout.php" class="flex items-center px-3 py-2.5 rounded-md text-base font-medium text-accent-red hover:bg-red-50 transition-colors mt-2">
-                        <i class="fas fa-sign-out-alt w-6"></i> Sign Out
-                    </a>
+                    <div class="mobile-nav-divider"></div>
+                    <div class="mobile-nav-group">
+                        <p class="mobile-nav-label">Account</p>
+                        <a href="/profile" class="mobile-nav-link <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'is-active' : ''; ?>" <?php echo ($currentPage === 'profile' || $currentPage === 'profile-edit') ? 'aria-current="page"' : ''; ?>>Profile</a>
+                        <a href="/logout.php" class="mobile-nav-link text-red-600 hover:bg-red-50">Sign Out</a>
+                    </div>
                 <?php else: ?>
-                    <a href="/login" class="mt-4 flex w-full justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary hover:bg-secondary transition-colors">
+                    <div class="mobile-nav-divider"></div>
+                    <a href="/login" class="mt-2 flex w-full justify-center items-center px-4 py-2 rounded-lg shadow-sm text-sm font-semibold text-white bg-primary hover:bg-secondary transition-colors">
                         Log In
                     </a>
                 <?php endif; ?>
@@ -248,7 +256,7 @@ if ($isLoggedIn) {
         </div>
     </nav>
     
-    <div class="bg-primary text-white py-2 border-b border-slate-800">
+    <div class="app-subheader bg-primary text-white py-2 border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <div class="flex items-center gap-2.5 text-xs sm:text-sm">
                 <i class="fas fa-compass text-secondary/80"></i>
@@ -258,4 +266,4 @@ if ($isLoggedIn) {
         </div>
     </div>
 
-    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+    <main class="app-main flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">

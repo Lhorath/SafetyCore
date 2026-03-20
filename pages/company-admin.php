@@ -49,10 +49,10 @@ $companyId = (int)($user['company_id'] ?? 0);
 $userRole  = $user['role_name'] ?? '';
 
 // ── View routing ──────────────────────────────────────────────────────────────
-$view = $_GET['view'] ?? 'users';
-$allowedViews = ['users', 'add-user', 'edit-user', 'structure'];
+$view = $_GET['view'] ?? 'overview';
+$allowedViews = ['overview', 'users', 'add-user', 'edit-user', 'structure'];
 if (!in_array($view, $allowedViews, true)) {
-    $view = 'users';
+    $view = 'overview';
 }
 
 $companyCtx  = get_company_context($conn, $companyId);
@@ -61,6 +61,47 @@ $allowedRoles = get_allowed_roles_for_company($conn);
 
 $successMessage = '';
 $errorMessage   = '';
+
+$searchTerm = trim((string)($_GET['q'] ?? ''));
+$filterRoleId = filter_input(INPUT_GET, 'role_id', FILTER_VALIDATE_INT) ?: null;
+$filterLocationId = filter_input(INPUT_GET, 'location_id', FILTER_VALIDATE_INT) ?: null;
+$filterStatus = strtolower(trim((string)($_GET['status'] ?? '')));
+$sortKey = trim((string)($_GET['sort'] ?? 'name'));
+$sortDir = strtolower(trim((string)($_GET['dir'] ?? 'asc')));
+$page = max(1, (int)($_GET['page'] ?? 1));
+$perPage = (int)($_GET['per_page'] ?? 25);
+$allowedPerPage = [10, 25, 50, 100];
+if (!in_array($perPage, $allowedPerPage, true)) {
+    $perPage = 25;
+}
+$allowedStatuses = ['active', 'inactive', 'suspended', 'terminated'];
+if (!in_array($filterStatus, $allowedStatuses, true)) {
+    $filterStatus = '';
+}
+if ($sortDir !== 'desc') {
+    $sortDir = 'asc';
+}
+
+/**
+ * Bind a dynamic list of params to a mysqli prepared statement.
+ *
+ * @param mysqli_stmt $stmt
+ * @param string      $types
+ * @param array       $params
+ * @return void
+ */
+function company_admin_bind_params(mysqli_stmt $stmt, string $types, array &$params): void
+{
+    if ($types === '' || empty($params)) {
+        return;
+    }
+    $refs = [];
+    foreach ($params as $k => $value) {
+        $refs[$k] = &$params[$k];
+    }
+    array_unshift($refs, $types);
+    call_user_func_array([$stmt, 'bind_param'], $refs);
+}
 
 // ── POST handler ──────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -302,39 +343,182 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Users list (scoped to company)
 $companyUsers = [];
+$totalUsersCount = 0;
+$totalPages = 1;
+$rowStart = 0;
+$rowEnd = 0;
 if ($view === 'users') {
-    $sql = "SELECT u.id, u.first_name, u.last_name, u.email, u.employee_position,
-                   u.status, u.department, u.employment_type,
-                   r.role_name,
-                   GROUP_CONCAT(DISTINCT s.store_name SEPARATOR ', ') AS locations
-            FROM users u
-            JOIN roles r ON u.role_id = r.id
-            LEFT JOIN user_stores us ON u.id = us.user_id
-            LEFT JOIN stores s ON us.store_id = s.id AND s.company_id = ?
-            WHERE s.company_id = ?
-            GROUP BY u.id
-            ORDER BY u.last_name, u.first_name";
+    $fromSql = "";
+    $whereClauses = [];
+    $types = "";
+    $params = [];
 
     if ($isJobBased) {
-        $sql = "SELECT u.id, u.first_name, u.last_name, u.email, u.employee_position,
-                       u.status, u.department, u.employment_type,
-                       r.role_name,
-                       GROUP_CONCAT(DISTINCT js.job_name SEPARATOR ', ') AS locations
-                FROM users u
-                JOIN roles r ON u.role_id = r.id
-                LEFT JOIN user_job_sites ujs ON u.id = ujs.user_id
-                LEFT JOIN job_sites js ON ujs.job_site_id = js.id AND js.company_id = ?
-                WHERE js.company_id = ?
-                GROUP BY u.id
-                ORDER BY u.last_name, u.first_name";
+        $fromSql = " FROM users u
+                     JOIN roles r ON u.role_id = r.id
+                     LEFT JOIN user_job_sites ujs ON u.id = ujs.user_id
+                     LEFT JOIN job_sites js ON ujs.job_site_id = js.id";
+        $whereClauses[] = "js.company_id = ?";
+    } else {
+        $fromSql = " FROM users u
+                     JOIN roles r ON u.role_id = r.id
+                     LEFT JOIN user_stores us ON u.id = us.user_id
+                     LEFT JOIN stores s ON us.store_id = s.id";
+        $whereClauses[] = "s.company_id = ?";
     }
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $companyId, $companyId);
+    $types .= "i";
+    $params = [$companyId];
+
+    if ($searchTerm !== '') {
+        $whereClauses[] = "(u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ? OR u.employee_position LIKE ?)";
+        $like = '%' . $searchTerm . '%';
+        $types .= "ssss";
+        $params[] = $like;
+        $params[] = $like;
+        $params[] = $like;
+        $params[] = $like;
+    }
+
+    if ($filterRoleId) {
+        $whereClauses[] = "u.role_id = ?";
+        $types .= "i";
+        $params[] = $filterRoleId;
+    }
+
+    if ($filterStatus !== '') {
+        $whereClauses[] = "u.status = ?";
+        $types .= "s";
+        $params[] = $filterStatus;
+    }
+
+    if ($filterLocationId) {
+        if ($isJobBased) {
+            $whereClauses[] = "js.id = ?";
+        } else {
+            $whereClauses[] = "s.id = ?";
+        }
+        $types .= "i";
+        $params[] = $filterLocationId;
+    }
+
+    $whereSql = " WHERE " . implode(" AND ", $whereClauses);
+
+    $sortMap = [
+        'name' => "u.last_name",
+        'email' => "u.email",
+        'role' => "r.role_name",
+        'status' => "u.status",
+        'location' => $isJobBased ? "MIN(js.job_name)" : "MIN(s.store_name)",
+    ];
+    if (!isset($sortMap[$sortKey])) {
+        $sortKey = 'name';
+    }
+    $sortExpr = $sortMap[$sortKey];
+    $secondaryDir = ($sortDir === 'desc') ? 'DESC' : 'ASC';
+    $orderSql = " ORDER BY {$sortExpr} " . strtoupper($sortDir) . ", u.first_name {$secondaryDir}";
+
+    $countSql = "SELECT COUNT(DISTINCT u.id) AS total_users" . $fromSql . $whereSql;
+    $countStmt = $conn->prepare($countSql);
+    company_admin_bind_params($countStmt, $types, $params);
+    $countStmt->execute();
+    $countRow = $countStmt->get_result()->fetch_assoc();
+    $countStmt->close();
+    $totalUsersCount = (int)($countRow['total_users'] ?? 0);
+    $totalPages = max(1, (int)ceil($totalUsersCount / $perPage));
+    if ($page > $totalPages) {
+        $page = $totalPages;
+    }
+    $offset = ($page - 1) * $perPage;
+
+    $selectSql = "SELECT u.id, u.first_name, u.last_name, u.email, u.employee_position,
+                         u.status, u.department, u.employment_type,
+                         r.role_name,
+                         " . ($isJobBased
+                            ? "GROUP_CONCAT(DISTINCT js.job_name SEPARATOR ', ')"
+                            : "GROUP_CONCAT(DISTINCT s.store_name SEPARATOR ', ')")
+                            . " AS locations"
+                    . $fromSql
+                    . $whereSql
+                    . " GROUP BY u.id";
+
+    if ((($_GET['export'] ?? '') === 'csv')) {
+        $csvSql = $selectSql . $orderSql;
+        $csvStmt = $conn->prepare($csvSql);
+        company_admin_bind_params($csvStmt, $types, $params);
+        $csvStmt->execute();
+        $csvUsers = $csvStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $csvStmt->close();
+
+        $csvName = 'company-users-' . date('Ymd-His') . '.csv';
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $csvName . '"');
+        $out = fopen('php://output', 'w');
+        fputcsv($out, ['Name', 'Email', 'Role', 'Status', ($isJobBased ? 'Job Sites' : 'Locations')]);
+        foreach ($csvUsers as $u) {
+            fputcsv($out, [
+                trim(($u['first_name'] ?? '') . ' ' . ($u['last_name'] ?? '')),
+                $u['email'] ?? '',
+                $u['role_name'] ?? '',
+                ucfirst($u['status'] ?? ''),
+                $u['locations'] ?? '',
+            ]);
+        }
+        fclose($out);
+        exit();
+    }
+
+    $listSql = $selectSql . $orderSql . " LIMIT ? OFFSET ?";
+    $listTypes = $types . "ii";
+    $listParams = $params;
+    $listParams[] = $perPage;
+    $listParams[] = $offset;
+
+    $stmt = $conn->prepare($listSql);
+    company_admin_bind_params($stmt, $listTypes, $listParams);
     $stmt->execute();
     $companyUsers = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
+
+    if ($totalUsersCount > 0) {
+        $rowStart = $offset + 1;
+        $rowEnd = min($offset + $perPage, $totalUsersCount);
+    }
 }
+
+$stats = [
+    'total_users' => 0,
+    'active_users' => 0,
+    'inactive_users' => 0,
+    'supervisors' => 0,
+    'locations' => count($companyCtx['locations']),
+];
+
+$statsSql = "SELECT
+                COUNT(DISTINCT u.id) AS total_users,
+                SUM(CASE WHEN u.status = 'active' THEN 1 ELSE 0 END) AS active_users,
+                SUM(CASE WHEN u.status <> 'active' THEN 1 ELSE 0 END) AS inactive_users,
+                SUM(CASE WHEN r.role_name IN ('Manager', 'Safety Manager', 'Site Supervisor', 'Company Admin', 'Owner / CEO') THEN 1 ELSE 0 END) AS supervisors
+            FROM users u
+            JOIN roles r ON u.role_id = r.id";
+if ($isJobBased) {
+    $statsSql .= " JOIN user_job_sites ujs ON u.id = ujs.user_id
+                   JOIN job_sites js ON ujs.job_site_id = js.id
+                   WHERE js.company_id = ?";
+} else {
+    $statsSql .= " JOIN user_stores us ON u.id = us.user_id
+                   JOIN stores s ON us.store_id = s.id
+                   WHERE s.company_id = ?";
+}
+$statsStmt = $conn->prepare($statsSql);
+$statsStmt->bind_param("i", $companyId);
+$statsStmt->execute();
+$statsRow = $statsStmt->get_result()->fetch_assoc() ?: [];
+$statsStmt->close();
+$stats['total_users'] = (int)($statsRow['total_users'] ?? 0);
+$stats['active_users'] = (int)($statsRow['active_users'] ?? 0);
+$stats['inactive_users'] = (int)($statsRow['inactive_users'] ?? 0);
+$stats['supervisors'] = (int)($statsRow['supervisors'] ?? 0);
 
 // Single user for edit view
 $editUser = null;
@@ -372,14 +556,14 @@ if ($view === 'edit-user') {
 $supervisors = upf_get_supervisor_candidates_by_type($conn, (int)$companyId, $companyCtx['type']);
 ?>
 
-<div class="flex flex-col md:flex-row gap-6">
+<div class="flex flex-col md:flex-row gap-6 admin-shell">
 
     <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
     <aside class="w-full md:w-64 shrink-0">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden sticky top-6">
+        <div class="admin-sidebar-panel bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden sticky top-6">
 
             <!-- Sidebar header -->
-            <div class="p-4 bg-purple-700 text-white">
+            <div class="p-4 bg-gradient-to-r from-primary to-secondary text-white">
                 <div class="flex items-center gap-2 mb-1">
                     <i class="fas fa-building text-purple-200"></i>
                     <h3 class="font-bold text-sm uppercase tracking-wider">Company Admin</h3>
@@ -388,18 +572,25 @@ $supervisors = upf_get_supervisor_candidates_by_type($conn, (int)$companyId, $co
             </div>
 
             <nav class="p-2 space-y-1">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider px-4 pt-3 pb-1">Overview</p>
+                <a href="/company-admin?view=overview"
+                   class="admin-nav-link flex items-center px-4 py-3 rounded-lg transition font-medium
+                          <?php echo ($view === 'overview') ? 'is-active bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
+                    <i class="fas fa-chart-line w-6 text-center mr-2"></i> Dashboard
+                </a>
+
                 <!-- Users section -->
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider px-4 pt-3 pb-1">User Management</p>
 
                 <a href="/company-admin?view=users"
-                   class="flex items-center px-4 py-3 rounded-lg transition font-medium
-                          <?php echo ($view === 'users') ? 'bg-purple-700 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
+                   class="admin-nav-link flex items-center px-4 py-3 rounded-lg transition font-medium
+                          <?php echo ($view === 'users') ? 'is-active bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
                     <i class="fas fa-users w-6 text-center mr-2"></i> All Users
                 </a>
 
                 <a href="/company-admin?view=add-user"
-                   class="flex items-center px-4 py-3 rounded-lg transition font-medium
-                          <?php echo ($view === 'add-user') ? 'bg-purple-700 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
+                   class="admin-nav-link flex items-center px-4 py-3 rounded-lg transition font-medium
+                          <?php echo ($view === 'add-user') ? 'is-active bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
                     <i class="fas fa-user-plus w-6 text-center mr-2"></i> Add New User
                 </a>
 
@@ -408,15 +599,15 @@ $supervisors = upf_get_supervisor_candidates_by_type($conn, (int)$companyId, $co
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider px-4 pt-1 pb-1">Company</p>
 
                 <a href="/company-admin?view=structure"
-                   class="flex items-center px-4 py-3 rounded-lg transition font-medium
-                          <?php echo ($view === 'structure') ? 'bg-purple-700 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
+                   class="admin-nav-link flex items-center px-4 py-3 rounded-lg transition font-medium
+                          <?php echo ($view === 'structure') ? 'is-active bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
                     <i class="fas <?php echo htmlspecialchars($companyCtx['location_icon']); ?> w-6 text-center mr-2"></i>
                     <?php echo $isJobBased ? 'Job Sites' : 'Branches'; ?>
                 </a>
 
                 <!-- Back to Dashboard -->
                 <div class="border-t border-gray-100 my-2"></div>
-                <a href="/dashboard" class="flex items-center px-4 py-3 rounded-lg text-gray-500 hover:bg-gray-100 text-sm transition">
+                <a href="/dashboard" class="admin-nav-link flex items-center px-4 py-3 rounded-lg text-gray-500 hover:bg-gray-100 text-sm transition">
                     <i class="fas fa-arrow-left w-6 text-center mr-2"></i> Back to Dashboard
                 </a>
             </nav>
@@ -425,7 +616,7 @@ $supervisors = upf_get_supervisor_candidates_by_type($conn, (int)$companyId, $co
 
     <!-- ── Main content ─────────────────────────────────────────────────────── -->
     <main class="flex-1 min-w-0">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
+        <div class="admin-content-panel bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
 
             <!-- Feedback messages -->
             <?php if (!empty($successMessage)): ?>
@@ -443,40 +634,211 @@ $supervisors = upf_get_supervisor_candidates_by_type($conn, (int)$companyId, $co
 
             <?php
 
-            // ── VIEW: Users list ───────────────────────────────────────────
-            if ($view === 'users'):
+            // ── VIEW: Overview ─────────────────────────────────────────────
+            if ($view === 'overview'):
             ?>
 
-            <div class="mb-8 flex items-center justify-between">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-primary border-b-2 border-primary pb-2 inline-block">Company Admin Overview</h2>
+                <p class="text-sm text-gray-500 mt-1">Quick health check and shortcuts for your company workspace.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+                <div class="rounded-xl border border-gray-200 p-4 bg-gradient-to-br from-slate-50 to-white">
+                    <p class="text-xs uppercase tracking-wide text-gray-400 font-semibold mb-1">Total Users</p>
+                    <p class="text-3xl font-extrabold text-primary"><?php echo (int)$stats['total_users']; ?></p>
+                </div>
+                <div class="rounded-xl border border-green-200 p-4 bg-gradient-to-br from-green-50 to-white">
+                    <p class="text-xs uppercase tracking-wide text-green-700 font-semibold mb-1">Active Users</p>
+                    <p class="text-3xl font-extrabold text-green-700"><?php echo (int)$stats['active_users']; ?></p>
+                </div>
+                <div class="rounded-xl border border-amber-200 p-4 bg-gradient-to-br from-amber-50 to-white">
+                    <p class="text-xs uppercase tracking-wide text-amber-700 font-semibold mb-1">Non-Active Users</p>
+                    <p class="text-3xl font-extrabold text-amber-700"><?php echo (int)$stats['inactive_users']; ?></p>
+                </div>
+                <div class="rounded-xl border border-blue-200 p-4 bg-gradient-to-br from-blue-50 to-white">
+                    <p class="text-xs uppercase tracking-wide text-blue-700 font-semibold mb-1"><?php echo $isJobBased ? 'Job Sites' : 'Locations'; ?></p>
+                    <p class="text-3xl font-extrabold text-blue-700"><?php echo (int)$stats['locations']; ?></p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="card">
+                    <h3 class="font-bold text-primary mb-3">Quick Actions</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <a href="/company-admin?view=users" class="rounded-lg border border-gray-200 px-4 py-3 hover:border-primary hover:bg-blue-50 transition">
+                            <i class="fas fa-users text-primary mr-2"></i> Manage Users
+                        </a>
+                        <a href="/company-admin?view=add-user" class="rounded-lg border border-gray-200 px-4 py-3 hover:border-primary hover:bg-blue-50 transition">
+                            <i class="fas fa-user-plus text-primary mr-2"></i> Add User
+                        </a>
+                        <a href="/company-admin?view=structure" class="rounded-lg border border-gray-200 px-4 py-3 hover:border-primary hover:bg-blue-50 transition">
+                            <i class="fas <?php echo htmlspecialchars($companyCtx['location_icon']); ?> text-primary mr-2"></i>
+                            Manage <?php echo $isJobBased ? 'Job Sites' : 'Locations'; ?>
+                        </a>
+                        <a href="/dashboard" class="rounded-lg border border-gray-200 px-4 py-3 hover:border-primary hover:bg-blue-50 transition">
+                            <i class="fas fa-arrow-left text-primary mr-2"></i> Return to Dashboard
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="font-bold text-primary mb-3">Role Coverage</h3>
+                    <p class="text-sm text-gray-600 mb-4">Supervisor-capable roles currently assigned in your company.</p>
+                    <div class="inline-flex items-end gap-2">
+                        <span class="text-3xl font-extrabold text-primary"><?php echo (int)$stats['supervisors']; ?></span>
+                        <span class="text-gray-500 text-sm pb-1">users</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3">Includes Company Admin, Owner / CEO, Manager, Safety Manager, and Site Supervisor.</p>
+                </div>
+            </div>
+
+            <?php
+            // ── VIEW: Users list ───────────────────────────────────────────
+            elseif ($view === 'users'):
+                $baseQueryParams = ['view' => 'users'];
+                if ($searchTerm !== '') { $baseQueryParams['q'] = $searchTerm; }
+                if ($filterRoleId) { $baseQueryParams['role_id'] = $filterRoleId; }
+                if ($filterStatus !== '') { $baseQueryParams['status'] = $filterStatus; }
+                if ($filterLocationId) { $baseQueryParams['location_id'] = $filterLocationId; }
+                if ($perPage !== 25) { $baseQueryParams['per_page'] = $perPage; }
+                $sortLink = function (string $key) use ($baseQueryParams, $sortKey, $sortDir): string {
+                    $params = $baseQueryParams;
+                    $params['sort'] = $key;
+                    $params['dir'] = ($sortKey === $key && $sortDir === 'asc') ? 'desc' : 'asc';
+                    return '/company-admin?' . http_build_query($params);
+                };
+                $arrowFor = function (string $key) use ($sortKey, $sortDir): string {
+                    if ($sortKey !== $key) {
+                        return '';
+                    }
+                    return $sortDir === 'asc' ? ' <i class="fas fa-sort-up ml-1"></i>' : ' <i class="fas fa-sort-down ml-1"></i>';
+                };
+            ?>
+
+            <div class="mb-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>
                     <h2 class="text-2xl font-bold text-primary border-b-2 border-primary pb-2 inline-block">Users</h2>
                     <p class="text-sm text-gray-500 mt-1">All users within your company workspace.</p>
                 </div>
-                <a href="/company-admin?view=add-user" class="btn bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-2 shadow">
-                    <i class="fas fa-user-plus"></i> Add User
-                </a>
+                <div class="flex flex-wrap items-center gap-2">
+                    <?php
+                        $exportParams = $baseQueryParams;
+                        $exportParams['sort'] = $sortKey;
+                        $exportParams['dir'] = $sortDir;
+                        $exportParams['export'] = 'csv';
+                    ?>
+                    <a href="/company-admin?<?php echo htmlspecialchars(http_build_query($exportParams)); ?>"
+                       class="btn btn-secondary text-sm flex items-center gap-2">
+                        <i class="fas fa-file-csv"></i> Export CSV
+                    </a>
+                    <a href="/company-admin?view=add-user" class="btn bg-primary text-white hover:bg-secondary flex items-center gap-2 shadow">
+                        <i class="fas fa-user-plus"></i> Add User
+                    </a>
+                </div>
             </div>
+
+            <form method="GET" action="/company-admin" class="card mb-6">
+                <input type="hidden" name="view" value="users">
+                <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sortKey); ?>">
+                <input type="hidden" name="dir" value="<?php echo htmlspecialchars($sortDir); ?>">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
+                    <div class="xl:col-span-2">
+                        <label class="form-label" for="q">Search</label>
+                        <input type="text" id="q" name="q" class="form-input" placeholder="Name, email, or position..." value="<?php echo htmlspecialchars($searchTerm); ?>">
+                    </div>
+                    <div>
+                        <label class="form-label" for="role_id">Role</label>
+                        <select id="role_id" name="role_id" class="form-input cursor-pointer">
+                            <option value="">All Roles</option>
+                            <?php foreach ($allowedRoles as $role): ?>
+                                <option value="<?php echo (int)$role['id']; ?>" <?php echo ($filterRoleId === (int)$role['id']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($role['role_name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label" for="status">Status</label>
+                        <select id="status" name="status" class="form-input cursor-pointer">
+                            <option value="">All Statuses</option>
+                            <option value="active" <?php echo ($filterStatus === 'active') ? 'selected' : ''; ?>>Active</option>
+                            <option value="inactive" <?php echo ($filterStatus === 'inactive') ? 'selected' : ''; ?>>Inactive</option>
+                            <option value="suspended" <?php echo ($filterStatus === 'suspended') ? 'selected' : ''; ?>>Suspended</option>
+                            <option value="terminated" <?php echo ($filterStatus === 'terminated') ? 'selected' : ''; ?>>Terminated</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label" for="location_id"><?php echo $isJobBased ? 'Job Site' : 'Location'; ?></label>
+                        <select id="location_id" name="location_id" class="form-input cursor-pointer">
+                            <option value="">All</option>
+                            <?php foreach ($companyCtx['locations'] as $loc): ?>
+                                <?php
+                                $locId = (int)$loc['id'];
+                                $locName = $isJobBased
+                                    ? ($loc['job_name'] ?? '')
+                                    : ($loc['store_name'] ?? '');
+                                ?>
+                                <option value="<?php echo $locId; ?>" <?php echo ($filterLocationId === $locId) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars((string)$locName); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-4">
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs font-semibold uppercase tracking-wide text-gray-400" for="per_page">Rows</label>
+                        <select id="per_page" name="per_page" class="form-input cursor-pointer !py-2 !px-3 text-sm w-24">
+                            <option value="10" <?php echo ($perPage === 10) ? 'selected' : ''; ?>>10</option>
+                            <option value="25" <?php echo ($perPage === 25) ? 'selected' : ''; ?>>25</option>
+                            <option value="50" <?php echo ($perPage === 50) ? 'selected' : ''; ?>>50</option>
+                            <option value="100" <?php echo ($perPage === 100) ? 'selected' : ''; ?>>100</option>
+                        </select>
+                    </div>
+                    <a href="/company-admin?view=users" class="btn btn-secondary text-sm">Reset</a>
+                    <button type="submit" class="btn bg-primary text-white hover:bg-secondary text-sm">
+                        <i class="fas fa-filter mr-1"></i> Apply Filters
+                    </button>
+                </div>
+            </form>
 
             <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full text-sm text-left">
+                    <table class="saas-table min-w-full text-sm text-left">
                         <thead class="bg-gray-50 border-b border-gray-200 text-gray-500 text-xs uppercase tracking-wider font-bold">
                             <tr>
-                                <th class="px-6 py-4">Name</th>
-                                <th class="px-6 py-4">Email</th>
-                                <th class="px-6 py-4">Role</th>
-                                <th class="px-6 py-4"><?php echo $isJobBased ? 'Job Site(s)' : 'Location(s)'; ?></th>
+                                <th class="px-6 py-4">
+                                    <a href="<?php echo htmlspecialchars($sortLink('name')); ?>" class="inline-flex items-center hover:text-primary">
+                                        Name<?php echo $arrowFor('name'); ?>
+                                    </a>
+                                </th>
+                                <th class="px-6 py-4">
+                                    <a href="<?php echo htmlspecialchars($sortLink('email')); ?>" class="inline-flex items-center hover:text-primary">
+                                        Email<?php echo $arrowFor('email'); ?>
+                                    </a>
+                                </th>
+                                <th class="px-6 py-4">
+                                    <a href="<?php echo htmlspecialchars($sortLink('role')); ?>" class="inline-flex items-center hover:text-primary">
+                                        Role<?php echo $arrowFor('role'); ?>
+                                    </a>
+                                </th>
+                                <th class="px-6 py-4">
+                                    <a href="<?php echo htmlspecialchars($sortLink('location')); ?>" class="inline-flex items-center hover:text-primary">
+                                        <?php echo $isJobBased ? 'Job Site(s)' : 'Location(s)'; ?><?php echo $arrowFor('location'); ?>
+                                    </a>
+                                </th>
                                 <th class="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             <?php if (empty($companyUsers)): ?>
                                 <tr><td colspan="5" class="px-6 py-12 text-center text-gray-400 italic">
-                                    No users found. <a href="/company-admin?view=add-user" class="text-purple-600 font-semibold hover:underline">Add the first user.</a>
+                                    No users found. <a href="/company-admin?view=add-user" class="text-primary font-semibold hover:underline">Add the first user.</a>
                                 </td></tr>
                             <?php else: ?>
                                 <?php foreach ($companyUsers as $u): ?>
-                                    <tr class="hover:bg-purple-50 transition group">
+                                    <tr class="hover:bg-blue-50 transition group">
                                         <td class="px-6 py-4 font-bold text-gray-900">
                                             <?php echo htmlspecialchars($u['first_name'] . ' ' . $u['last_name']); ?>
                                             <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold <?php echo (($u['status'] ?? 'active') === 'active') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'; ?>">
@@ -508,7 +870,7 @@ $supervisors = upf_get_supervisor_candidates_by_type($conn, (int)$companyId, $co
                                         </td>
                                         <td class="px-6 py-4 text-right">
                                             <a href="/company-admin?view=edit-user&id=<?php echo (int)$u['id']; ?>"
-                                               class="text-purple-600 hover:text-purple-800 font-bold text-xs uppercase tracking-wide border border-purple-200 rounded px-3 py-1.5 hover:bg-purple-50 transition">
+                                               class="text-primary hover:text-secondary font-bold text-xs uppercase tracking-wide border border-blue-200 rounded px-3 py-1.5 hover:bg-blue-50 transition">
                                                 <i class="fas fa-pencil-alt mr-1"></i> Edit
                                             </a>
                                         </td>
@@ -518,10 +880,42 @@ $supervisors = upf_get_supervisor_candidates_by_type($conn, (int)$companyId, $co
                         </tbody>
                     </table>
                 </div>
-                <div class="bg-gray-50 px-6 py-3 border-t border-gray-200 text-xs text-gray-500">
-                    Showing <strong><?php echo count($companyUsers); ?></strong> user(s) in your company
+                <div class="bg-gray-50 px-6 py-3 border-t border-gray-200 text-xs text-gray-500 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <span>
+                        Showing <strong><?php echo (int)$rowStart; ?>-<?php echo (int)$rowEnd; ?></strong> of
+                        <strong><?php echo (int)$totalUsersCount; ?></strong> user(s)
+                    </span>
+                    <span>Page <strong><?php echo (int)$page; ?></strong> of <strong><?php echo (int)$totalPages; ?></strong></span>
                 </div>
             </div>
+
+            <?php if ($totalPages > 1): ?>
+                <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+                    <div class="text-xs text-gray-500">
+                        Sorted by <strong><?php echo htmlspecialchars(ucfirst($sortKey)); ?></strong> (<?php echo htmlspecialchars(strtoupper($sortDir)); ?>)
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <?php
+                            $prevParams = $baseQueryParams;
+                            $prevParams['sort'] = $sortKey;
+                            $prevParams['dir'] = $sortDir;
+                            $prevParams['page'] = max(1, $page - 1);
+                            $nextParams = $baseQueryParams;
+                            $nextParams['sort'] = $sortKey;
+                            $nextParams['dir'] = $sortDir;
+                            $nextParams['page'] = min($totalPages, $page + 1);
+                        ?>
+                        <a href="/company-admin?<?php echo htmlspecialchars(http_build_query($prevParams)); ?>"
+                           class="btn btn-secondary text-sm <?php echo ($page <= 1) ? 'pointer-events-none opacity-50' : ''; ?>">
+                            <i class="fas fa-chevron-left mr-1"></i> Prev
+                        </a>
+                        <a href="/company-admin?<?php echo htmlspecialchars(http_build_query($nextParams)); ?>"
+                           class="btn btn-secondary text-sm <?php echo ($page >= $totalPages) ? 'pointer-events-none opacity-50' : ''; ?>">
+                            Next <i class="fas fa-chevron-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            <?php endif; ?>
 
             <?php
             // ── VIEW: Add user ──────────────────────────────────────────────

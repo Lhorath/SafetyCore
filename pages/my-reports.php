@@ -26,15 +26,17 @@ $reports = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 ?>
 
-<div class="max-w-7xl mx-auto py-8">
-    <div class="mb-8 border-b-2 border-primary pb-4">
-        <h2 class="text-3xl font-extrabold text-primary flex items-center tracking-tight">
-            <i class="fas fa-history text-secondary mr-3"></i> My Hazard Reports
-        </h2>
-        <p class="text-base text-gray-500 mt-2 font-medium">Review the status and details of the hazards you have submitted.</p>
+<div class="max-w-7xl mx-auto py-8 app-page reports-shell">
+    <div class="app-page-header">
+        <div class="app-page-heading">
+            <h2 class="app-page-title text-3xl font-extrabold text-primary flex items-center tracking-tight">
+                <i class="fas fa-history text-secondary mr-3"></i> My Hazard Reports
+            </h2>
+            <p class="app-page-subtitle text-base text-gray-500 mt-2 font-medium">Review the status and details of the hazards you have submitted.</p>
+        </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden grid grid-cols-1 lg:grid-cols-3">
+    <div class="reports-surface bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden grid grid-cols-1 lg:grid-cols-3">
         
         <!-- Report List -->
         <div class="lg:col-span-1 border-r border-gray-200 bg-white flex flex-col relative z-10">
@@ -70,8 +72,8 @@ $stmt->close();
         </div>
 
         <!-- Report Viewer -->
-        <div class="lg:col-span-2 bg-slate-50 relative overflow-y-auto custom-scrollbar min-h-[500px]">
-            <div id="reportViewer" class="h-full relative">
+        <div class="report-viewer-pane lg:col-span-2 bg-slate-50 relative overflow-y-auto custom-scrollbar min-h-[500px]">
+            <div id="reportViewer" class="report-viewer-pane h-full relative">
                 <div class="flex flex-col items-center justify-center h-full text-gray-400">
                     <i class="fas fa-search text-5xl mb-4 opacity-50"></i>
                     <p class="text-lg font-medium">Select a report to view details</p>

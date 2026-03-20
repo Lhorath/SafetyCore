@@ -112,11 +112,11 @@ if (!$user) {
 }
 ?>
 
-<div class="max-w-3xl mx-auto">
+<div class="max-w-3xl mx-auto app-page">
     
     <!-- Page Header -->
-    <div class="flex justify-between items-center mb-8">
-        <h2 class="text-2xl font-bold text-primary border-b-2 border-primary pb-2">
+    <div class="app-page-header">
+        <h2 class="app-page-title text-2xl font-bold text-primary border-b-2 border-primary pb-2">
             Your Profile
         </h2>
         

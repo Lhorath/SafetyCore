@@ -111,7 +111,7 @@ if (in_array($userRole, ['Admin', 'Owner / CEO', 'Safety Manager'])) {
     </div>
 
     <!-- Dual Pane Dashboard (Hidden until a store is selected) -->
-    <div id="incDashboardContent" style="display: none;" class="flex flex-col lg:flex-row gap-8 items-start animate-fade-in-up">
+    <div id="incDashboardContent" class="incidents-dashboard-hidden flex flex-col lg:flex-row gap-8 items-start animate-fade-in-up">
         
         <!-- LEFT PANE: Incident List (1/3 Width) -->
         <div class="w-full lg:w-1/3 flex flex-col gap-4">
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     selector.addEventListener('change', function() {
         if (this.value) {
-            content.style.display = 'flex';
+            content.classList.remove('incidents-dashboard-hidden');
             
             // Reset UI states
             viewer.innerHTML = `
@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 listContainer.innerHTML = '<div class="text-red-500 text-center p-4">Network error loading incidents.</div>';
             });
         } else {
-            content.style.display = 'none';
+            content.classList.add('incidents-dashboard-hidden');
         }
     });
 

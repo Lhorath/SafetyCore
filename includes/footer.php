@@ -56,11 +56,11 @@
             <!-- Bottom Row: Copyright & Legal -->
             <div class="pt-8 border-t border-slate-800/80 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p class="text-xs text-slate-500 font-medium">
-                    &copy; <?php echo date('Y'); ?> macweb.ca. All Rights Reserved. <span class="hidden sm:inline">|</span> <span class="block sm:inline mt-1 sm:mt-0 text-slate-600">Sentry OHS Beta 10</span>
+                    &copy; <?php echo date('Y'); ?> <a href="/" class="hover:text-slate-300 transition-colors">SentryOHS</a>. All Rights Reserved. <span class="hidden sm:inline">|</span> Website designed by <a href="https://macweb.ca/" target="_blank" rel="noopener noreferrer" class="hover:text-slate-300 transition-colors">MacWeb.CA</a>
                 </p>
                 <div class="flex gap-6 text-xs font-medium">
-                    <a href="#" class="text-slate-500 hover:text-slate-300 transition-colors">Privacy Policy</a>
-                    <a href="#" class="text-slate-500 hover:text-slate-300 transition-colors">Terms of Service</a>
+                    <a href="/privacy" class="text-slate-500 hover:text-slate-300 transition-colors">Privacy Policy</a>
+                    <a href="/terms" class="text-slate-500 hover:text-slate-300 transition-colors">Terms of Service</a>
                 </div>
             </div>
         </div>
@@ -77,29 +77,54 @@
             const mobileMenu = document.getElementById('mobile-menu');
 
             if (mobileBtn && mobileMenu) {
-                mobileBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    mobileMenu.classList.toggle('hidden');
-                    
+                const syncMobileToggleState = (isOpen) => {
                     const icon = mobileBtn.querySelector('i');
-                    if (mobileMenu.classList.contains('hidden')) {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                        mobileBtn.classList.remove('bg-slate-100', 'text-primary');
-                    } else {
+                    mobileBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+                    if (!icon) return;
+                    if (isOpen) {
                         icon.classList.remove('fa-bars');
                         icon.classList.add('fa-times');
-                        mobileBtn.classList.add('bg-slate-100', 'text-primary');
+                    } else {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
                     }
+                };
+
+                const closeMobileMenu = () => {
+                    if (mobileMenu.classList.contains('hidden')) return;
+                    mobileMenu.classList.add('hidden');
+                    syncMobileToggleState(false);
+                };
+
+                mobileBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isOpen = mobileMenu.classList.toggle('hidden') === false;
+                    syncMobileToggleState(isOpen);
                 });
 
                 document.addEventListener('click', (e) => {
                     if (!mobileMenu.classList.contains('hidden') && !mobileMenu.contains(e.target) && !mobileBtn.contains(e.target)) {
-                        mobileMenu.classList.add('hidden');
-                        const icon = mobileBtn.querySelector('i');
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                        mobileBtn.classList.remove('bg-slate-100', 'text-primary');
+                        closeMobileMenu();
+                    }
+                });
+
+                mobileMenu.addEventListener('click', (e) => {
+                    const clickedLink = e.target.closest('a');
+                    if (clickedLink) {
+                        closeMobileMenu();
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        closeMobileMenu();
+                    }
+                });
+
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth >= 768) {
+                        closeMobileMenu();
                     }
                 });
             }
@@ -254,10 +279,10 @@
                 lockoutRadios.forEach(r => {
                     r.addEventListener('change', function() {
                         if(this.value === 'yes') {
-                            keyHolderGroup.style.display = 'block';
+                            keyHolderGroup.classList.remove('hazard-key-holder-hidden');
                             if (keyHolderInput) keyHolderInput.setAttribute('required', 'required');
                         } else {
-                            keyHolderGroup.style.display = 'none';
+                            keyHolderGroup.classList.add('hazard-key-holder-hidden');
                             if (keyHolderInput) {
                                 keyHolderInput.removeAttribute('required');
                                 keyHolderInput.value = '';
@@ -300,7 +325,7 @@
                             const dateObserved = new Date(r.created_at).toLocaleString();
 
                             let html = `
-                                <div class="p-6 animate-fade-in-up w-full">
+                                <div class="report-detail-pane p-6 animate-fade-in-up w-full">
                                     <div class="flex justify-between items-start border-b border-gray-100 pb-4 mb-6">
                                         <div>
                                             <h3 class="text-2xl font-bold text-primary">Report #${r.id}</h3>

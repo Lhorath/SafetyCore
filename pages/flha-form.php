@@ -76,9 +76,9 @@ $ppeList = [
             <span class="transition-colors duration-300" id="ind-4">4. PPE &amp; Confirm</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden shadow-inner">
-            <div class="bg-secondary h-full rounded-full transition-all duration-500 ease-out relative" id="progress-bar" style="width: 25%">
+            <div class="bg-secondary h-full rounded-full transition-all duration-500 ease-out relative flha-progress-bar-initial" id="progress-bar">
                 <!-- Shine effect on progress bar -->
-                <div class="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-20" style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);"></div>
+                <div class="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-20 flha-progress-shine"></div>
             </div>
         </div>
     </div>

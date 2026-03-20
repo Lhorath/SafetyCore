@@ -41,17 +41,19 @@ $stores = $stmtS->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmtS->close();
 ?>
 
-<div class="max-w-7xl mx-auto py-8">
+<div class="max-w-7xl mx-auto py-8 app-page reports-shell">
     
-    <div class="mb-8 border-b-2 border-primary pb-4">
-        <h2 class="text-3xl font-extrabold text-primary flex items-center tracking-tight">
-            <i class="fas fa-search-location text-blue-600 mr-3"></i> Branch Hazard Review
-        </h2>
-        <p class="text-base text-gray-500 mt-2 font-medium">Investigate, assign corrective actions, and close out hazards reported across your branches.</p>
+    <div class="app-page-header">
+        <div class="app-page-heading">
+            <h2 class="app-page-title text-3xl font-extrabold text-primary flex items-center tracking-tight">
+                <i class="fas fa-search-location text-blue-600 mr-3"></i> Branch Hazard Review
+            </h2>
+            <p class="app-page-subtitle text-base text-gray-500 mt-2 font-medium">Investigate, assign corrective actions, and close out hazards reported across your branches.</p>
+        </div>
     </div>
 
     <!-- Store Selector & Filters -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
+    <div class="reports-surface bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
         <div class="w-full md:w-1/2">
             <label for="branchSelector" class="form-label text-gray-500 mb-2">Select Branch / Job Site</label>
             <!-- BUG FIX: Renamed ID to avoid conflict with legacy form logic -->
@@ -72,7 +74,7 @@ $stmtS->close();
     </div>
 
     <!-- Two Column Layout: List and Viewer -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden grid grid-cols-1 lg:grid-cols-3">
+    <div class="reports-surface bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden grid grid-cols-1 lg:grid-cols-3">
         
         <!-- Left Column: Report List -->
         <div class="lg:col-span-1 border-r border-gray-200 bg-white flex flex-col relative z-10">
@@ -86,8 +88,8 @@ $stmtS->close();
         </div>
 
         <!-- Right Column: Report Viewer -->
-        <div class="lg:col-span-2 bg-slate-50 relative overflow-y-auto custom-scrollbar min-h-[500px]">
-            <div id="managerReportViewer" class="h-full relative">
+        <div class="report-viewer-pane lg:col-span-2 bg-slate-50 relative overflow-y-auto custom-scrollbar min-h-[500px]">
+            <div id="managerReportViewer" class="report-viewer-pane h-full relative">
                 <div class="flex flex-col items-center justify-center h-full text-gray-400">
                     <i class="fas fa-search-location text-5xl mb-4 opacity-50"></i>
                     <p class="text-lg font-medium">Select a report from the list</p>
@@ -181,7 +183,7 @@ $stmtS->close();
                             || r.equipment_locked_out === 'yes';
 
                         managerReportViewer.innerHTML = `
-                            <div class="p-6 animate-fade-in-up w-full">
+                            <div class="report-detail-pane p-6 animate-fade-in-up w-full">
                                 <div class="flex justify-between items-start border-b border-gray-100 pb-4 mb-6">
                                     <div>
                                         <h3 class="text-2xl font-bold text-primary">Report #${r.id}</h3>
@@ -244,9 +246,9 @@ $stmtS->close();
                 
                 items.forEach(item => {
                     if (status === 'All' || item.getAttribute('data-status') === status) {
-                        item.style.display = 'block';
+                        item.classList.remove('is-hidden');
                     } else {
-                        item.style.display = 'none';
+                        item.classList.add('is-hidden');
                     }
                 });
             });

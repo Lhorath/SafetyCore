@@ -167,26 +167,26 @@ $companyType = $_SESSION['user']['company_type'] ?? 'multi_location';
 $supervisors = upf_get_supervisor_candidates_by_type($conn, (int)$companyId, $companyType);
 ?>
 
-<div class="flex flex-col md:flex-row gap-6">
+<div class="flex flex-col md:flex-row gap-6 admin-shell">
 
     <!-- Sidebar -->
     <aside class="w-full md:w-64 shrink-0">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden sticky top-6">
+        <div class="admin-sidebar-panel bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden sticky top-6">
             <div class="p-4 bg-gray-50 border-b border-gray-200">
                 <h3 class="font-bold text-primary uppercase text-xs tracking-wider">Platform Admin</h3>
             </div>
             <nav class="p-2 space-y-1">
                 <a href="/admin?view=manage-users"
-                   class="flex items-center px-4 py-3 rounded-lg transition font-medium <?php echo ($adminView === 'manage-users') ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
+                   class="admin-nav-link flex items-center px-4 py-3 rounded-lg transition font-medium <?php echo ($adminView === 'manage-users') ? 'is-active bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
                     <i class="fas fa-users w-6 text-center mr-2"></i> Manage Users
                 </a>
                 <a href="/admin?view=add-user"
-                   class="flex items-center px-4 py-3 rounded-lg transition font-medium <?php echo ($adminView === 'add-user') ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
+                   class="admin-nav-link flex items-center px-4 py-3 rounded-lg transition font-medium <?php echo ($adminView === 'add-user') ? 'is-active bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
                     <i class="fas fa-user-plus w-6 text-center mr-2"></i> Add New User
                 </a>
                 <div class="border-t border-gray-100 my-2"></div>
                 <a href="/admin?view=manage-company"
-                   class="flex items-center px-4 py-3 rounded-lg transition font-medium <?php echo ($adminView === 'manage-company') ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
+                   class="admin-nav-link flex items-center px-4 py-3 rounded-lg transition font-medium <?php echo ($adminView === 'manage-company') ? 'is-active bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-gray-100 hover:text-primary'; ?>">
                     <i class="fas fa-building w-6 text-center mr-2"></i> Manage Company
                 </a>
             </nav>
@@ -195,7 +195,7 @@ $supervisors = upf_get_supervisor_candidates_by_type($conn, (int)$companyId, $co
 
     <!-- Main Content -->
     <main class="flex-1 min-w-0">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
+        <div class="admin-content-panel bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
             <?php
                 $viewPath = __DIR__ . "/admin-views/{$adminView}.php";
                 if (file_exists($viewPath)) {

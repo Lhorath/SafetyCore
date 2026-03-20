@@ -75,10 +75,13 @@ function get_company_context(mysqli $conn, int $companyId): array {
 
         // Fetch active job sites for this company
         $lStmt = $conn->prepare(
-            "SELECT id, job_number, job_name, client_name, status, site_address, city
-             FROM job_sites
-             WHERE company_id = ? AND status IN ('Planning', 'Active')
-             ORDER BY job_name ASC"
+            "SELECT js.id, js.job_number, js.job_name, js.client_name, js.status, js.site_address, js.city,
+                    js.supervisor_user_id,
+                    CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) AS supervisor_name
+             FROM job_sites js
+             LEFT JOIN users u ON js.supervisor_user_id = u.id
+             WHERE js.company_id = ? AND js.status IN ('Planning', 'Active')
+             ORDER BY js.job_name ASC"
         );
         if ($lStmt) {
             $lStmt->bind_param("i", $companyId);
@@ -89,10 +92,13 @@ function get_company_context(mysqli $conn, int $companyId): array {
     } else {
         // multi_location — fetch stores
         $lStmt = $conn->prepare(
-            "SELECT id, store_name, store_number, location_type, city
-             FROM stores
-             WHERE company_id = ? AND is_active = 1
-             ORDER BY store_name ASC"
+            "SELECT s.id, s.store_name, s.store_number, s.location_type, s.city,
+                    s.manager_user_id,
+                    CONCAT(COALESCE(u.first_name, ''), ' ', COALESCE(u.last_name, '')) AS manager_name
+             FROM stores s
+             LEFT JOIN users u ON s.manager_user_id = u.id
+             WHERE s.company_id = ? AND s.is_active = 1
+             ORDER BY s.store_name ASC"
         );
         if ($lStmt) {
             $lStmt->bind_param("i", $companyId);

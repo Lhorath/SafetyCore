@@ -461,7 +461,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <!-- Conditional Key Holder Input -->
-                <div id="keyHolderGroup" style="display: none;">
+                <div id="keyHolderGroup" class="hazard-key-holder-hidden">
                     <label for="keyHolderName" class="form-label">Who holds the key?</label>
                     <input type="text" id="keyHolderName" name="keyHolderName" class="form-input">
                 </div>

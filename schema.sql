@@ -1,7 +1,7 @@
 -- --------------------------------------------------------
--- Host:                         srv1846.hstgr.io
--- Server version:               11.8.3-MariaDB-log - MariaDB Server
--- Server OS:                    Linux
+-- Host:                         127.0.0.1
+-- Server version:               10.4.32-MariaDB - mariadb.org binary distribution
+-- Server OS:                    Win64
 -- HeidiSQL Version:             12.16.0.7229
 -- --------------------------------------------------------
 
@@ -110,11 +110,9 @@ CREATE TABLE IF NOT EXISTS `companies` (
   KEY `idx_is_active` (`is_active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table u971098166_ad9a31.companies: ~3 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.companies: ~1 rows (approximately)
 REPLACE INTO `companies` (`id`, `company_name`, `company_type`, `is_system`, `industry`, `contact_email`, `is_active`, `created_at`, `updated_at`, `company_code`) VALUES
-	(1, 'MacWeb Canada', 'multi_location', 0, NULL, NULL, 1, '2026-02-18 13:00:12', '2026-03-12 12:15:02', '0001'),
-	(2, 'Elmwood Group', 'multi_location', 0, 'Hardware Retail', NULL, 1, '2026-03-12 12:08:37', '2026-03-12 12:15:02', '0002'),
-	(3, 'Ridgeline Construction Inc.', 'job_based', 0, 'General Contracting', NULL, 1, '2026-03-12 12:08:37', '2026-03-12 12:15:02', '0003');
+	(1, 'Sentry OHS', 'multi_location', 1, 'Platform', 'support@sentryehs.com', 1, '2026-02-18 13:00:12', '2026-03-20 17:22:10', '0001');
 
 -- Dumping structure for table u971098166_ad9a31.contact_messages
 CREATE TABLE IF NOT EXISTS `contact_messages` (
@@ -440,9 +438,9 @@ CREATE TABLE IF NOT EXISTS `page_seo` (
   `requires_login` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1 if behind authentication',
   PRIMARY KEY (`id`),
   UNIQUE KEY `page_route` (`page_route`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table u971098166_ad9a31.page_seo: ~23 rows (approximately)
+-- Dumping data for table u971098166_ad9a31.page_seo: ~25 rows (approximately)
 REPLACE INTO `page_seo` (`id`, `page_route`, `meta_title`, `meta_description`, `meta_keywords`, `og_image`, `requires_login`) VALUES
 	(1, 'home', 'Sentry OHS | Occupational Health and Safety Software', 'Sentry OHS is an occupational health and safety software platform for digital hazard reporting, incident management, FLHA workflows, safety meetings, and compliance tracking.', 'occupational health and safety software, OHS software, EHS software, hazard reporting software, incident management, FLHA, safety compliance, Sentry OHS', '/style/images/logo.png', 0),
 	(2, 'services', 'Sentry OHS Solutions | OHS Software Modules', 'Explore Sentry OHS solutions for digital hazard reporting, incident management, FLHA workflows, toolbox talks, equipment checks, and compliance tracking.', 'Sentry OHS solutions, OHS software modules, EHS solutions, hazard reporting, incident management, FLHA, toolbox talks, safety compliance software', '/style/images/logo.png', 0),
@@ -466,7 +464,9 @@ REPLACE INTO `page_seo` (`id`, `page_route`, `meta_title`, `meta_description`, `
 	(20, 'equipment-management', 'Equipment Management', 'Track equipment inventory, maintenance statuses, and log pre-use inspections.', 'equipment, maintenance, inspection, safety logs', '/style/images/logo.png', 1),
 	(21, 'checklist-builder', 'Checklist Builder', 'Create dynamic pre-shift equipment checklists.', NULL, '/style/images/logo.png', 1),
 	(22, 'preshift-checklist', 'Pre-Shift Checklist', 'Complete daily equipment logs.', NULL, '/style/images/logo.png', 1),
-	(23, 'about', 'About Sentry OHS | OHS Software Platform', 'Learn about Sentry OHS, an occupational health and safety software platform for hazard reporting, incident management, FLHA workflows, and compliance tracking.', 'about Sentry OHS, occupational health and safety software, OHS platform, EHS software, hazard reporting, incident management, FLHA, compliance tracking', '/style/images/logo.png', 0);
+	(23, 'about', 'About Sentry OHS | OHS Software Platform', 'Learn about Sentry OHS, an occupational health and safety software platform for hazard reporting, incident management, FLHA workflows, and compliance tracking.', 'about Sentry OHS, occupational health and safety software, OHS platform, EHS software, hazard reporting, incident management, FLHA, compliance tracking', '/style/images/logo.png', 0),
+	(24, 'terms', 'Terms of Service | Sentry OHS', 'Read the Sentry OHS Terms of Service for platform use, account responsibilities, data ownership, and governing law in New Brunswick, Canada.', 'terms of service, Sentry OHS terms, EHS software legal terms, user responsibilities, data ownership, New Brunswick law', '/style/images/logo.png', 0),
+	(25, 'privacy', 'Privacy Policy | Sentry OHS', 'Read the Sentry OHS Privacy Policy describing personal and operational data collection, use, retention, and rights under PIPEDA.', 'privacy policy, Sentry OHS privacy, PIPEDA, Canadian privacy law, EHS platform data protection, data retention', '/style/images/logo.png', 0);
 
 -- Dumping structure for table u971098166_ad9a31.permissions
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -805,7 +805,7 @@ CREATE TABLE IF NOT EXISTS `stores` (
 
 -- Dumping data for table u971098166_ad9a31.stores: ~1 rows (approximately)
 REPLACE INTO `stores` (`id`, `company_id`, `store_name`, `store_number`, `location_type`, `address`, `city`, `province_state`, `is_active`, `manager_user_id`, `jhsc_leader_user_id`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'Office', '1', 'store', NULL, NULL, NULL, 1, 3, 6, '2026-02-18 13:05:30', '2026-02-18 13:30:18');
+	(1, 1, 'Office', '1', 'store', '23123', 'Moncton', 'NB', 1, 3, 10, '2026-02-18 13:05:30', '2026-03-20 16:51:14');
 
 -- Dumping structure for table u971098166_ad9a31.training_categories
 CREATE TABLE IF NOT EXISTS `training_categories` (
@@ -823,6 +823,23 @@ CREATE TABLE IF NOT EXISTS `training_categories` (
 REPLACE INTO `training_categories` (`id`, `company_id`, `name`, `description`, `validity_months`) VALUES
 	(1, 1, 'Fall Arrest', NULL, 36),
 	(2, 1, 'First Aid', NULL, 36);
+
+-- Dumping structure for table u971098166_ad9a31.user_emergency_contacts
+CREATE TABLE IF NOT EXISTS `user_emergency_contacts` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `contact_name` varchar(120) NOT NULL,
+  `relationship` varchar(80) DEFAULT NULL,
+  `phone_number` varchar(30) NOT NULL,
+  `is_primary` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_uec_user_id` (`user_id`),
+  CONSTRAINT `fk_uec_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table u971098166_ad9a31.user_emergency_contacts: ~0 rows (approximately)
 
 -- Dumping structure for table u971098166_ad9a31.user_job_sites
 CREATE TABLE IF NOT EXISTS `user_job_sites` (
@@ -922,44 +939,27 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `idx_users_status` (`status`),
   KEY `idx_users_department` (`department`),
   KEY `idx_users_supervisor` (`supervisor_user_id`),
-  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
-  CONSTRAINT `fk_users_supervisor` FOREIGN KEY (`supervisor_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `fk_users_supervisor` FOREIGN KEY (`supervisor_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table u971098166_ad9a31.users: ~15 rows (approximately)
-REPLACE INTO `users` (`id`, `role_id`, `email`, `password`, `first_name`, `last_name`, `employee_position`, `created_at`, `updated_at`, `is_platform_admin`) VALUES
-	(1, 1, 'admin@macweb.ca', '$2y$10$4EjAQ.FKXAMQ38nCMKK0TuXrDbUMjpdy2KUeP0W5w0jdw16JsdD52', 'Web', 'Admin', 'System Administrator', '2026-02-18 13:00:13', '2026-03-12 12:17:15', 1),
-	(2, 1, 'justin@bizolver.com', '$2y$10$QGKE3U5PJJEQNhyvtp3umeQU.yYaV.0ix6olJdIoyrgGbaxwHgHDK', 'Justin', 'Weir', 'Admin', '2026-02-18 13:05:59', '2026-03-12 12:17:15', 1),
-	(3, 2, 'manager@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Manager', 'Store Manager', '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
-	(4, 3, 'safety@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'SafetyLead', 'Safety Supervisor', '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
-	(5, 4, 'corporate@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Corporate', 'Regional Director', '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
-	(6, 5, 'jhsc@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'JHSC', 'Committee Member', '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
-	(7, 6, 'ft_employee@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'FullTime', 'Sales Associate', '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
-	(8, 7, 'pt_employee@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'PartTime', 'Cashier', '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
-	(9, 8, 'owner@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Owner', 'CEO', '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
-	(10, 9, 'safetymanager@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'SafetyMgr', 'EHS Director', '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
-	(11, 10, 'training@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Training', 'Training Coordinator', '2026-02-18 13:21:50', '2026-02-18 13:21:50', 0),
-	(12, 11, 'comanager@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'CoManager', 'Assistant Manager', '2026-02-18 13:21:50', '2026-02-18 13:21:50', 0),
-	(13, 12, 'operator@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Operator', 'Forklift Driver', '2026-02-18 13:21:50', '2026-02-18 13:21:50', 0),
-	(14, 13, 'custom@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Custom', 'Contractor', '2026-02-18 13:21:50', '2026-02-18 13:21:50', 0),
-	(15, 1, 'skybordage@hotmail.com', '$2y$10$A/s.41TPZAqpDKKSTJrMoujg97Fr7h/fo6bBNgX7Be0pdsWpIuvYq', 'Caleb', 'Bordage', 'Tester', '2026-02-24 20:45:16', '2026-03-12 12:17:15', 1);
-
--- Dumping structure for table u971098166_ad9a31.user_emergency_contacts
-CREATE TABLE IF NOT EXISTS `user_emergency_contacts` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
-  `contact_name` varchar(120) NOT NULL,
-  `relationship` varchar(80) DEFAULT NULL,
-  `phone_number` varchar(30) NOT NULL,
-  `is_primary` tinyint(1) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `idx_uec_user_id` (`user_id`),
-  CONSTRAINT `fk_uec_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Dumping data for table u971098166_ad9a31.user_emergency_contacts: ~0 rows (approximately)
+REPLACE INTO `users` (`id`, `role_id`, `email`, `password`, `first_name`, `last_name`, `employee_position`, `employee_code`, `status`, `employment_type`, `department`, `phone_number`, `supervisor_user_id`, `hire_date`, `last_login_at`, `password_changed_at`, `mfa_enabled`, `preferred_language`, `timezone`, `created_at`, `updated_at`, `is_platform_admin`) VALUES
+	(1, 1, 'admin@macweb.ca', '$2y$10$4EjAQ.FKXAMQ38nCMKK0TuXrDbUMjpdy2KUeP0W5w0jdw16JsdD52', 'Web', 'Admin', 'System Administrator', NULL, 'active', NULL, NULL, NULL, NULL, NULL, '2026-03-20 13:24:42', NULL, 0, NULL, NULL, '2026-02-18 13:00:13', '2026-03-20 16:24:42', 1),
+	(2, 1, 'justin@bizolver.com', '$2y$10$QGKE3U5PJJEQNhyvtp3umeQU.yYaV.0ix6olJdIoyrgGbaxwHgHDK', 'Justin', 'Weir', 'Admin', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:05:59', '2026-03-12 12:17:15', 1),
+	(3, 2, 'manager@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Manager', 'Store Manager', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
+	(4, 3, 'safety@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'SafetyLead', 'Safety Supervisor', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
+	(5, 4, 'corporate@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Corporate', 'Regional Director', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
+	(6, 5, 'jhsc@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'JHSC', 'Committee Member', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
+	(7, 6, 'ft_employee@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'FullTime', 'Sales Associate', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
+	(8, 7, 'pt_employee@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'PartTime', 'Cashier', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
+	(9, 8, 'owner@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Owner', 'CEO', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
+	(10, 9, 'safetymanager@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'SafetyMgr', 'EHS Director', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:49', '2026-02-18 13:21:49', 0),
+	(11, 10, 'training@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Training', 'Training Coordinator', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:50', '2026-02-18 13:21:50', 0),
+	(12, 11, 'comanager@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'CoManager', 'Assistant Manager', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:50', '2026-02-18 13:21:50', 0),
+	(13, 12, 'operator@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Operator', 'Forklift Driver', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:50', '2026-02-18 13:21:50', 0),
+	(14, 13, 'custom@test.com', '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 'Test', 'Custom', 'Contractor', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-18 13:21:50', '2026-02-18 13:21:50', 0),
+	(15, 1, 'skybordage@hotmail.com', '$2y$10$A/s.41TPZAqpDKKSTJrMoujg97Fr7h/fo6bBNgX7Be0pdsWpIuvYq', 'Caleb', 'Bordage', 'Tester', NULL, 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, '2026-02-24 20:45:16', '2026-03-12 12:17:15', 1);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
